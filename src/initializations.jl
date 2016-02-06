@@ -1,7 +1,7 @@
 include("CDtypes.jl")
 
-N=10
-IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
+#N=10
+#IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
 function initIT(N,t = false,l = false,p = false,s = false,c = false,f = [])
 	components = Int[]
@@ -128,6 +128,17 @@ function initXDY(IT,y,data)
 	end
 
 	return xdy
+end
+
+function initData()
+
+
+
+
+
+
+
+
 end
 
 

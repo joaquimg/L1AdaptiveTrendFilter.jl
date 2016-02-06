@@ -30,7 +30,7 @@ function getCosData(N::Int)
 end
 
 
-function getSineData(N::Int)
+function getSineData(IT,f)
 
     μ = Vector{Float64}(N-1)
     σ = Vector{Float64}(N-1)

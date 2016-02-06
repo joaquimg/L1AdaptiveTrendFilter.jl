@@ -1,3 +1,10 @@
+#ATENCAO
+# considerar mu e sigma como input de cada função
+# as outras entradas são i, j (numeros dos elementos)
+# pode usar o N como numero total de elementos.
+# eu estou usando uma struct chamada iterator (ver em CDtype.jl)
+# posso corrigir isso sem problemas
+# o principla é escrever as fómulas mesmo 
 
 #to complete
 

@@ -12,7 +12,7 @@ type iterator
 end
 
 
-type data
+type dataCD
 	f::Vector{Float64}
 
 	μt::Vector{Float64}
