@@ -1,3 +1,10 @@
+const STEP = 1
+const SLOPE = 2
+const SPIKE = 3
+const SIN = 4
+const COS = 5
+
+
 
 # STEP
 function xdy_step(y::Vector{Float64},L::Vector{Float64},U::Vector{Float64},N::Int)
@@ -13,7 +20,9 @@ function xdy_step(y::Vector{Float64},L::Vector{Float64},U::Vector{Float64},N::In
 end
 
 #SLOPE
-function xdy_slope(y::Vector{Float64},N::Int,...)
+function xdy_slope(IT,y::Vector{Float64},d)
+    N = IT.obs
+
     xdy = zeros(N) 
 
     y_s = sum(y)
@@ -23,8 +32,8 @@ function xdy_slope(y::Vector{Float64},N::Int,...)
         for j in i:N
             xdy[i] += y[j] * (1+j-i)
         end
-        
-        xdy[i] =( xdy[i] -mu[i]*y_s)/sigma[i]
+
+        xdy[i] =( xdy[i] -d.μl[i]*y_s )/d.σl[i]
 
     end
 
@@ -32,35 +41,39 @@ function xdy_slope(y::Vector{Float64},N::Int,...)
 end
 
 #SPIKE
-function xdy_spike(y::Vector{Float64},N::Int,...)
+function xdy_spike(IT,y::Vector{Float64},d)
+    N = IT.obs
+
     xdy = zeros(N) 
 
     y_s = sum(y)
 
     for i in 1:N
         
-        xdy[i] =( y[i] -mu[i]*y_s)/sigma[i]
+        xdy[i] =( y[i] -d.μp[i]*y_s)/d.σp[i]
 
     end
 
-    return xdy33
+    return xdy
 end
 
 #sin
-function xdy_sin(y::Vector{Float64},N::Int,...)
+function xdy_sin(IT,y::Vector{Float64},d)
+    N = IT.obs
     
-    #nf = 
+    nf = IT.nelements[4] 
+    
     xdy = zeros(N) 
 
     y_s = sum(y)
 
-    for i in 1:N#nfreqs
+    for i in 1:nf
 
         for j in 1:N
-            xdy[i] += y[j] * sin(f[i]*j)
+            xdy[i] += y[j] * sin(d.f[i]*j)
         end
         
-        xdy[i] =( xdy[i] -mu[i]*y_s)/sigma[i]
+        xdy[i] =( xdy[i] -d.μs[i]*y_s)/d.σs[i]
 
     end
 
@@ -68,18 +81,22 @@ function xdy_sin(y::Vector{Float64},N::Int,...)
 end
 
 #cos
-function xdy_sin(y::Vector{Float64},N::Int,...)
+function xdy_cos(IT,y::Vector{Float64},d)
+    N = IT.obs
+
+    nf = IT.nelements[5]
+
     xdy = zeros(N-1) 
 
     y_s = sum(y)
 
-    for i in 1:N
+    for i in 1:nf
 
         for j in 1:N
-            xdy[i] += y[j] * cos(f[i]*j)
+            xdy[i] += y[j] * cos(d.f[i]*j)
         end
         
-        xdy[i] =( xdy[i] -mu[i]*y_s)/sigma[i]
+        xdy[i] =( xdy[i] -d.μc[i]*y_s)/d.σc[i]
 
     end
 

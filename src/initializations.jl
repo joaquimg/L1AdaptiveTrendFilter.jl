@@ -91,3 +91,46 @@ function initDense(IT)
 
 	return BCD,beta_tilde,beta,activeSet
 end
+
+function initXDY(IT,y,data)
+	
+	xdy = Vector{Float64}[]
+
+	if in(1, IT.components)
+
+		temp = xdy_step(IT,y,data)
+
+		push!(xdy,temp)
+	end
+	if in(2, IT.components)
+
+		temp = xdy_slope(IT,y,data)
+
+		push!(xdy,temp)
+	end
+	if in(3, IT.components)
+
+		temp = xdy_spike(IT,y,data)
+
+		push!(xdy,temp)
+	end
+	if in(4, IT.components)
+
+		temp = xdy_sin(IT,y,data)
+
+		push!(xdy,temp)
+	end
+	if in(5, IT.components)
+
+		temp = xdy_cos(IT,y,data)
+
+		push!(xdy,temp)
+	end
+
+	return xdy
+end
+
+
+
+
+
