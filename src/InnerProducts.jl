@@ -1,29 +1,87 @@
 
-
-function load_xdy11(y::Vector{Float64},L::Vector{Float64},U::Vector{Float64},N::Int)
-    xdy11 = Vector{Float64}(N-1) 
+# STEP
+function xdy_step(y::Vector{Float64},L::Vector{Float64},U::Vector{Float64},N::Int)
+    xdy = Vector{Float64}(N-1) 
     sumY = 0.0
     
     for i in 1:(N-1)
         sumY = sumY + y[i]
-        xdy11[i] = sumY*(U[i]-L[i])
+        xdy[i] = sumY*(U[i]-L[i])
     end
     
-    return xdy11
+    return xdy
 end
 
-function load_xdy22(y::Vector{Float64},N::Int,...)
-    xdy22 = Vector{Float64}(N-1) 
+#SLOPE
+function xdy_slope(y::Vector{Float64},N::Int,...)
+    xdy = zeros(N-1) 
 
-    return xdy22
+    y_s = sum(y)
+
+    for i in 1:N
+
+        for j in i:N
+            xdy[i] += y[j] * (1+j-i)
+        end
+        
+        xdy[i] =( xdy[i] -mu[i]*y_s)/sigma[i]
+
+    end
+
+    return xdy
 end
-function load_xdy33(y::Vector{Float64},N::Int,...)
-    xdy33 = Vector{Float64}(N-1) 
+
+#SPIKE
+function xdy_spike(y::Vector{Float64},N::Int,...)
+    xdy = Vector{Float64}(N-1) 
+
+    y_s = sum(y)
+
+    for i in 1:N
+        
+        xdy[i] =( y[i] -mu[i]*y_s)/sigma[i]
+
+    end
 
     return xdy33
 end
-function load_xdy44(y::Vector{Float64},N::Int,...)
-    xdy44 = Vector{Float64}(N-1) 
 
-    return xdy44
+#sin
+function xdy_sin(y::Vector{Float64},N::Int,...)
+    xdy = zeros(N-1) 
+
+    y_s = sum(y)
+
+    for i in 1:N#nfreqs
+
+        for j in 1:N
+            xdy[i] += y[j] * sin(f[i]*j)
+        end
+        
+        xdy[i] =( xdy[i] -mu[i]*y_s)/sigma[i]
+
+    end
+
+    return xdy
 end
+
+#cos
+function xdy_sin(y::Vector{Float64},N::Int,...)
+    xdy = zeros(N-1) 
+
+    y_s = sum(y)
+
+    for i in 1:N
+
+        for j in 1:N
+            xdy[i] += y[j] * cos(f[i]*j)
+        end
+        
+        xdy[i] =( xdy[i] -mu[i]*y_s)/sigma[i]
+
+    end
+
+    return xdy
+end
+
+
