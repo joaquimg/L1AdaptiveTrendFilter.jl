@@ -12,46 +12,63 @@ pos = 1
 
 
 
-for k in 1:numλ
+for k in 1:1#numλ #Lambda LOOP
     
-    
-    for i in 1:I #iter num
+    change = true
+    for i in 1:I #Main outer LOOP: fix maximum
     #if flagConv == false
         
-        for j in 1:NN#ℵ  #(N)#-1)
-            
-            temp = 0.0
-            
-            for l in A
-                temp = temp + GM(l,j, L, U, N)*β_tilde[l]
-            end
-                    
-            β_ols = β_tilde[j] + 1.0/NN * (xdy[j] - temp)
-            
-            α = 0.0
-            
-            if abs(β_ols) <= α
-                
-                β_tilde[j] = 0.0
-                
-                setdiff!(A,j)
-                
-                else
-                
-                β_tilde[j] = sign(b_ols)*(abs(β_ols) - α)
-                
-                union!(A,j)
-                
-            end
-            
+        if !change
+            break
         end
-        
+
+        for c1 in IT.components
+            for j in 1:IT.nelements[c1]
+
+                temp = 0.0
+
+                #GramMatrix LOOP (double loop: component and element)
+                for c2 in IT.components
+                    for l in activeSet[c2]
+                        if l
+                            temp = temp + GM[c1,c2](l,j, data)*β_tilde[c2][l]
+                        end
+                    end
+                end
+
+                β_ols = β_tilde[c1][j] + 1.0/NN * (xdy[c1][j] - temp)
+
+                α = 0.0
+                
+                if abs(β_ols) <= α
+                    
+                    if activeSet[c1][j]
+                        β_tilde[c1][j] = 0.0 #talvez nem precise
+                        activeSet[c1][j] = false
+                        change = true
+                    end
+                    
+                else
+                    
+                    β_tilde[c1][j] = sign(β_ols)*(abs(β_ols) - α)
+                    
+                    if !activeSet[c1][j]
+                        activeSet[c1][j] = true
+                        change = true
+                    end 
+                    
+                end
+            end
+        end
+        change = true
     end
+
     
     for j in 1:(N-1)
         β_CD[j, pos] = β_tilde[j]
     end
     pos = pos + 1
+
 end
                 
 
