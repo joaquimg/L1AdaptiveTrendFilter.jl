@@ -14,7 +14,7 @@ end
 
 #SLOPE
 function xdy_slope(y::Vector{Float64},N::Int,...)
-    xdy = zeros(N-1) 
+    xdy = zeros(N) 
 
     y_s = sum(y)
 
@@ -33,7 +33,7 @@ end
 
 #SPIKE
 function xdy_spike(y::Vector{Float64},N::Int,...)
-    xdy = Vector{Float64}(N-1) 
+    xdy = zeros(N) 
 
     y_s = sum(y)
 
@@ -48,7 +48,9 @@ end
 
 #sin
 function xdy_sin(y::Vector{Float64},N::Int,...)
-    xdy = zeros(N-1) 
+    
+    #nf = 
+    xdy = zeros(N) 
 
     y_s = sum(y)
 

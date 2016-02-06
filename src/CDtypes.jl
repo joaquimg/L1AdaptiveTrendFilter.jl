@@ -1,11 +1,4 @@
 #try with sparse
-type coeff
-	t::Vector{Float64}
-	l::Vector{Float64}
-	p::Vector{Float64}
-	s::Vector{Float64}
-	c::Vector{Float64}
-end
 
 type iterator
 	obs::Int
@@ -13,6 +6,9 @@ type iterator
 	components::Vector{Int}
 	nelements::Vector{Int}
 
+	ttelements::Int
+
+	maxIter::Int
 end
 
 

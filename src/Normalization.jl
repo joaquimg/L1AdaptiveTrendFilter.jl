@@ -15,19 +15,18 @@ function getCosData(N::Int)
         cn1f = cos((N+1)*f[i])
 
 
-        μ[i] =  1/2*(sf*cn1f/(cf-1))
-               -1/2*sn1f
-               -1/2*sf*cf/(cf-1)
-               +1/2*sf
+        μ[i] =  -1/2*cn1f
+                -1/2*(sf*sn1f/(cf-1.0))
+                +1/*cf
+                +1/2*sf^2/(cf-1.0)
 
-        σ[i] = (1/2 + μ[i]^2)*(N+1) + 1/2*cn1f*2
+        σ[i] = (1/2 + μ[i]^2)*(N+1) + 1/2*cn1f^2
                -1/2*cf*sn1f*cn1f/sf - μ[i]*sf*cn1f/(cf-1.0)
                +sn1f*μ[i] - 1/2 - μ[i]^2 +μ[i]*sf*cf/(cf-1.0) - μ[i]*sf
 
     end
 
     return σ,μ
-
 end
 
 
@@ -53,14 +52,14 @@ function getSineData(N::Int)
                -1/2*sf*cf/(cf-1)
                +1/2*sf
 
-        σ[i] = (1/2 + μ[i]^2)*(N+1) + 1/2*cn1f*2
-               -1/2*cf*sn1f*cn1f/sf - μ[i]*sf*cn1f/(cf-1.0)
-               +sn1f*μ[i] - 1/2 - μ[i]^2 +μ[i]*sf*cf/(cf-1.0) - μ[i]*sf
+        σ[i] = (1/2 + μ[i]^2)*(N+1) - 1/2*cn1f^2
+               +1/2*cf*sn1f*cn1f/sf + cn1f*μ[i]
+               +μ[i]*sf*sn1f/(cf-1.0)
+               - 1/2 - μ[i]^2 -cf*μ[i] -μ[i]*sf^2/(cf-1.0)
 
     end
 
     return σ,μ
-
 end
 
 
@@ -78,7 +77,6 @@ function getSpikeData(N::Int)
     end
 
     return σ,μ
-
 end
 
 function getSlopeData(N::Int)
@@ -94,14 +92,13 @@ function getSlopeData(N::Int)
     end
 
     return σ,μ
-
 end
 
 function getStepData(N::Int)
 
     μ = Vector{Float64}(N-1)
     σ = Vector{Float64}(N-1)
-    L = Vector{Float64}(N-1)
+    L = Vector{Float64}(N-1)#remove
     U = Vector{Float64}(N-1)
 
     for i = 1:(N-1)
@@ -112,5 +109,4 @@ function getStepData(N::Int)
     end
 
     return U,L,σ,mu
-
 end

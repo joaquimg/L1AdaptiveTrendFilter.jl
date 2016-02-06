@@ -1,7 +1,6 @@
 #has to be moved inside a function
 
 
-
 A=[]
 λ_set = 1:10
 flagConv = false
@@ -11,6 +10,8 @@ NN=convert(Float64,N)
 pos = 1
 
 
+β_ols = 0.0 :: Float64
+temp = 0.0 :: Float64
 
 for k in 1:1#numλ #Lambda LOOP
     
@@ -38,7 +39,7 @@ for k in 1:1#numλ #Lambda LOOP
 
                 β_ols = β_tilde[c1][j] + 1.0/NN * (xdy[c1][j] - temp)
 
-                α = 0.0
+                #α = 0.0
                 
                 if abs(β_ols) <= α
                     
@@ -63,14 +64,10 @@ for k in 1:1#numλ #Lambda LOOP
         change = true
     end
 
-    
-    for j in 1:(N-1)
-        β_CD[j, pos] = β_tilde[j]
-    end
-    pos = pos + 1
+    push!(BCD,β_tilde)
 
 end
-                
+               
 
 
 
