@@ -1,14 +1,17 @@
-function getCosData(N::Int)
+function getCosData(IT,f)
+    N = IT.obs
 
-    μ = Vector{Float64}(N-1)
-    σ = Vector{Float64}(N-1)
+    nf = IT.nelements[5]
+
+    μ = Vector{Float64}(nf)
+    σ = Vector{Float64}(nf)
     sf=0.0
     cf=0.0
     sn1f=0.0
     cn1f=0.0
 
 
-    for i = 1:nfreqs
+    for i = 1:nf
         sf = sin(f[i])
         cf = cos(f[i])
         sn1f = sin((N+1)*f[i])
@@ -31,16 +34,20 @@ end
 
 
 function getSineData(IT,f)
+    N = IT.obs
 
-    μ = Vector{Float64}(N-1)
-    σ = Vector{Float64}(N-1)
+    nf = IT.nelements[4]
+
+
+    μ = Vector{Float64}(nf)
+    σ = Vector{Float64}(nf)
     sf=0.0
     cf=0.0
     sn1f=0.0
     cn1f=0.0
 
 
-    for i = 1:nfreqs
+    for i = 1:nf
         sf = sin(f[i])
         cf = cos(f[i])
         sn1f = sin((N+1)*f[i])
@@ -64,13 +71,15 @@ end
 
 
 
-function getSpikeData(N::Int)
+function getSpikeData(IT)
 
-    μ = Vector{Float64}(N-1)
-    σ = Vector{Float64}(N-1)
+    N = IT.obs
+
+    μ = Vector{Float64}(N)
+    σ = Vector{Float64}(N)
     
     #revisar!!!!
-    for i = 1:(N)
+    for i = 1:N
         μ[i] = 1/N
         σ[i] = (N-1.0)*μ[i] + (1.0-μ[i])^2 
 
@@ -79,13 +88,15 @@ function getSpikeData(N::Int)
     return σ,μ
 end
 
-function getSlopeData(N::Int)
+function getSlopeData(IT)
 
-    μ = Vector{Float64}(N-1)
-    σ = Vector{Float64}(N-1)
+    N = IT.obs
+
+    μ = Vector{Float64}(N)
+    σ = Vector{Float64}(N)
     
     #revisar!!!!
-    for i = 1:(N)
+    for i = 1:N
         μ[i] = (N-i+1.0)*(N-i+2.0)/2.0
         σ[i] = sqrt( μ[i]*(2.0N-2.0i+3.0)/(3.0N) - μ[i]^2.0 )
 
@@ -94,19 +105,21 @@ function getSlopeData(N::Int)
     return σ,μ
 end
 
-function getStepData(N::Int)
+function getStepData(IT)
+
+    N = IT.obs
 
     μ = Vector{Float64}(N-1)
     σ = Vector{Float64}(N-1)
-    L = Vector{Float64}(N-1)#remove
-    U = Vector{Float64}(N-1)
+    #L = Vector{Float64}(N-1)#remove
+    #U = Vector{Float64}(N-1)
 
     for i = 1:(N-1)
         μ[i] = (N-i)/N
         σ[i] = sqrt( ( i*μ[i]^2.0+(N-i)*(1.0-μ[i])^2.0 )/N )
-        U[i] = -μ[i]/σ[i]
-        L[i] = (1.0-μ[i])/σ[i]
+        #U[i] = -μ[i]/σ[i]
+        #L[i] = (1.0-μ[i])/σ[i]
     end
 
-    return U,L,σ,mu
+    return σ,mu#U,L,
 end

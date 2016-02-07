@@ -7,13 +7,16 @@ const COS = 5
 
 
 # STEP
-function xdy_step(y::Vector{Float64},L::Vector{Float64},U::Vector{Float64},N::Int)
+#correct here to remove U an L
+function xdy_step(IT,y::Vector{Float64},d)
+    N = IT.obs
+
     xdy = Vector{Float64}(N-1) 
     sumY = 0.0
     
     for i in 1:(N-1)
         sumY = sumY + y[i]
-        xdy[i] = sumY*(U[i]-L[i])
+        xdy[i] = sumY*(-1.0/d.σt[i])
     end
     
     return xdy
@@ -30,7 +33,7 @@ function xdy_slope(IT,y::Vector{Float64},d)
     for i in 1:N
 
         for j in i:N
-            xdy[i] += y[j] * (1+j-i)
+            xdy[i] += y[j] * (1.0+j-i)
         end
 
         xdy[i] =( xdy[i] -d.μl[i]*y_s )/d.σl[i]
@@ -70,7 +73,7 @@ function xdy_sin(IT,y::Vector{Float64},d)
     for i in 1:nf
 
         for j in 1:N
-            xdy[i] += y[j] * sin(d.f[i]*j)
+            xdy[i] += y[j] * sin(d.fs[i]*j)
         end
         
         xdy[i] =( xdy[i] -d.μs[i]*y_s)/d.σs[i]
@@ -93,7 +96,7 @@ function xdy_cos(IT,y::Vector{Float64},d)
     for i in 1:nf
 
         for j in 1:N
-            xdy[i] += y[j] * cos(d.f[i]*j)
+            xdy[i] += y[j] * cos(d.fc[i]*j)
         end
         
         xdy[i] =( xdy[i] -d.μc[i]*y_s)/d.σc[i]

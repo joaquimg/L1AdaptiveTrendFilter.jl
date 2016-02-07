@@ -130,17 +130,37 @@ function initXDY(IT,y,data)
 	return xdy
 end
 
-function initData()
+#change for no preallocation and simply edit field
+#requires changing normalizations.jl (returns)
+function initData(IT,fs=[],fc=[])
 
+	d = dataCD()
 
+	if in(1, IT.components)
 
+		d.σt,d.μt = getStepData(IT)
+	end
+	if in(2, IT.components)
 
+		d.σl,d.μl = getSlopeData(IT)
+	end
+	if in(3, IT.components)
 
+		d.σp,d.μp = getSpikeData(IT)
+	end
+	if in(4, IT.components)
 
+		d.σs,d.μs = getSineData(IT,fs)
+		d.fs = fs
+	end
+	if in(5, IT.components)
 
+		d.σc,d.μc = getCosData(IT,fc)
+		d.fc = fc
+	end
 
+	return d
 end
-
 
 
 
