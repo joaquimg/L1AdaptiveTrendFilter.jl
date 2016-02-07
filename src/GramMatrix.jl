@@ -18,6 +18,22 @@ GM[1, 4] = GM14
 GM[4, 1] = GM14
 GM[1, 5] = GM15
 GM[5, 1] = GM15
+GM[2, 2] = GM22
+GM[2, 3] = GM23
+GM[3, 2] = GM23
+GM[2, 4] = GM24
+GM[4, 2] = GM24
+GM[2, 5] = GM25
+GM[5, 2] = GM25
+GM[3, 3] = GM33
+GM[3, 4] = GM34
+GM[4, 3] = GM34
+GM[3, 5] = GM35
+GM[5, 3] = GM35
+GM[4, 4] = GM44
+GM[4, 5] = GM45
+GM[5, 4] = GM45
+GM[5, 5] = GM55
 
 function GM11(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   # step x step
@@ -154,8 +170,13 @@ function GM33(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   # spike x spike
   GM = Float64[]
 
-  GM = (
-  )/(σ[i]*σ[j])
+  if i != j
+    GM = (
+      (N-2)*μ[i]^2 - 2*μ[i]*(1-μ[i])
+    )/(σ[i]*σ[j])
+  else
+    GM = 1
+  end
 
   return GM
 end
