@@ -49,9 +49,26 @@ function GM12(i::Int,j::Int,N::Int,μp::Vector{Float64},σp::Vector{Float64},
   return GM
 end
 
-function GM12T(i,j,N,μp,σp,μs,σs) = GM12(j,i,N,μp,σp,μs,σs)
+function GM13(i::Int,j::Int,N::Int,μp::Vector{Float64},σp::Vector{Float64},
+              μs::Vector{Float64},σs::Vector{Float64})
+  # step x spike
+  GM = Float64[]
+
+  if i > j
+    GM = (
+      j*μ[j]*μ[i]-(N-j)*(1-μ[j])*μ[i]+(1-μ[j])*μ[i]+(1-μ[j])*(1-μ[i])
+      )/(σ[i]*σ[j])
+  else
+    GM = (
+      j*μ[j]*μ[i]-μ[i]*μ[j]-μ[j]*(1-μ[i])-(N-j)*(1-μ[j])*μ[i]
+      )/(σ[i]*σ[j])
+  end
+
+  return GM
+end
 
 function GM22(i::Int,j::Int,N::Int,μ::Vector{Float64},σ::Vector{Float64})
+
 
     GM = Float64[]
     ab = convert(Float64,abs(i-j))
