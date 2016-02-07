@@ -109,4 +109,103 @@ function GM22(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   return GM
 end
 
+function GM23(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # slope x spike
+  GM = Float64[]
 
+  if i > j
+    GM = (
+      j*μ[j]*μ[i] + μ[i]*(N+1)*j + μ[i]*μ[j]*(N+1) - 0.5*μ[i]*(N+1)^2 + 0.5*μ[i]*(N+1)
+      - μ[i]*(j+1)*j - μ[i]*μ[j]*(j+1) + 0.5*μ[i]*(j+1)^2 - 0.5*μ[i]*(j+1)
+      + (i-j-μ[j])*μ[i] + (i-j-μ[j])*(1-μ[i])
+    )/(σ[i]*σ[j])
+  else
+    GM = (
+      j*μ[i]*μ[j] + μ[i]*(N+1)*j + μ[i]*μ[j]*(N+1) - 0.5*μ[i]*(N+1)^2 + 0.5*μ[i]*(N+1)
+      - μ[i]*(j+1)*j - μ[i]*μ[j]*(j+1) + 0.5*μ[i]*(j+1)^2 - 0.5*μ[i]*(j+1) - μ[i]*μ[j]
+      - μ[j]*(1-μ[i])
+    )/(σ[i]*σ[j])
+  end
+
+  return GM
+end
+
+function GM24(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # slope x sine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM25(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # slope x cosine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM33(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # spike x spike
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM34(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # spike x sine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM35(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # spike x cosine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM44(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # sine x sine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM45(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # sine x cosine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
+
+function GM55(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+  # cosine x cosine
+  GM = Float64[]
+
+  GM = (
+  )/(σ[i]*σ[j])
+
+  return GM
+end
