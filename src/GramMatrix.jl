@@ -181,7 +181,6 @@ function GM25(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   GM = Float64[]
 
   GM = (
-
   )/(σ[i]*σ[j])
 
   return GM
@@ -207,6 +206,9 @@ function GM34(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   GM = Float64[]
 
   GM = (
+      μ[i]*μ[j]*(N+1) - 0.5*(μ[i]*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
+      + 0.5*μ[i]*sin((N+1)*ω) - μ[i]*μ[j] + 0.5*(μ[i]*sin(ω)cos(ω))/(cos(ω)-1)
+      - 0.5*μ[i]*sin(ω) + μ[i]*(sin(i*ω)-μ[j]) + (1-μ[i])*(sin(i*ω)-μ[j])
   )/(σ[i]*σ[j])
 
   return GM
