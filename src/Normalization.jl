@@ -132,5 +132,5 @@ function getStepData(IT)
         #L[i] = (1.0-μ[i])/σ[i]
     end
 
-    return σ,mu#U,L,
+    return σ,μ#U,L,
 end

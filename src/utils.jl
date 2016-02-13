@@ -10,33 +10,42 @@ function build_xdy0(N::Int,y::Vector{Float64})
 end
 
 
-function findλmax(N::Int,λmax=0.0::Int,sigma0)
+function findλmax(IT,xdy)
     
-    #λmax   = 0.0
+    λmax   = 0.0
     temp  = 0.0
     
     maxPos = 0
     
-    for i in 1:(N-1)
+    for i in IT.components
         
-        temp = abs(sigma[i]*xdy11[i])
+        temp = maxabs(xdy[i])
         
         if temp > λmax
             
             λmax = temp
-            maxPos = i
-            
+
         end
         
-    end
-    if maxPos > 0
-        λmax = λmax/sigma[maxPos]
-    else
-        λmax = λmax/sigma0
     end
     
     return λmax
 end
+
+function computeλvec(IT,xdy,numλ)
+
+    λmax = findλmax(IT,xdy)
+
+    logarit = 1
+    if logarit == 1
+
+        vec =  λmax*(logspace(1,0,numλ)-1.0)/9.0 
+
+    end
+    return vec
+end
+
+
 
 function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β::Vector{Float64}, N::Int, ɛ = 1e-5::Float64)
     

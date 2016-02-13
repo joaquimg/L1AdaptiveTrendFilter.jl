@@ -132,7 +132,7 @@ function initData(IT,fs=[],fc=[])
 
 	d = dataCD()
 	for i in IT.components
-		d.σ[i],d.μ[i] = getData[i](IT)
+		d.σ[i],d.μ[i] = getData[i](IT,fs)
 	end
 
 	return d
