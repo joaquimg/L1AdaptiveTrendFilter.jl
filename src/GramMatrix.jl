@@ -219,6 +219,10 @@ function GM35(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   GM = Float64[]
 
   GM = (
+      μ[i]*μ[j]*(N+1) + 0.5*μ[i]*cos((N+1)*ω)
+      + 0.5*(μ[i]*sin(ω)*sin((N+1)*ω))/(cos(ω)-1) -μ[i]*μ[j]
+      - 0.5*μ[i]*cos(ω) - 0.5*(μ[i]*sin(ω)^2)/(cos(ω)-1)
+      + μ[i]*(cos(i*ω)-μ[j]) + (1-μ[i])*(cos(i*ω)-μ[j])
   )/(σ[i]*σ[j])
 
   return GM
