@@ -1,5 +1,7 @@
 
+function compute_estimate()
 
+end
 
 function compute_step(y, β, μ, σ, IT)
     

@@ -3,7 +3,7 @@ include("CDtypes.jl")
 #N=10
 #IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
-function initIT_range(N,components,f = [])
+function initIT_range(N,components; f = Float64[])
 	#components = Int[]
 	nelements = zeros(Int,5)
 	elements = 

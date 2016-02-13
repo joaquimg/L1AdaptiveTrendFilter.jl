@@ -1,15 +1,7 @@
 #has to be moved inside a function
 
 
-A=[]
-λ_set = 1:10
-flagConv = false
-β_CD = zeros(numλ,N)
-β_tilde = zeros(N)
-NN=convert(Float64,N)
-pos = 1
-
-function CD(y,components,f=[])
+function CD(y,components; f=Float64[])
 
     #prepare check for dimension sizes
     N = size(y)[1]
@@ -28,17 +20,15 @@ function CD(y,components,f=[])
 end
 
 
-function CoordinateDescent(IT,d,xdy,λ)
+function CoordinateDescent(IT,d,xdy,λ; sparse = 1)
     
-    sparse=1
     if sparse == 1
         BCD,β_tilde,β,activeSet = initSparse(IT)
     else
         BCD,β_tilde,β,activeSet = initDense(IT)
     end
 
-
-    
+ 
     β_ols = 0.0 :: Float64
     temp = 0.0 :: Float64
     

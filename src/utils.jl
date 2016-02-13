@@ -32,12 +32,12 @@ function findλmax(IT,xdy)
     return λmax
 end
 
-function computeλvec(IT,xdy,numλ)
+function computeλvec(IT,xdy,numλ; logarit = true )
 
     λmax = findλmax(IT,xdy)
 
-    logarit = 1
-    if logarit == 1
+
+    if logarit 
 
         vec =  λmax*(logspace(1,0,numλ)-1.0)/9.0 
 
