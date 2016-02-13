@@ -1,4 +1,7 @@
-function compute_level(y::Vector{Float64}, β::Vector{Float64}, N::Int)
+
+
+
+function compute_step(y::Vector{Float64}, β::Vector{Float64}, IT)
     
     for j in 1:(N-1)
         for i in (j+1):N
@@ -9,7 +12,7 @@ function compute_level(y::Vector{Float64}, β::Vector{Float64}, N::Int)
     return y
 end
 
-function compute_slope(y::Vector{Float64}, β::Vector{Float64}, N::Int)
+function compute_slope(y::Vector{Float64}, β::Vector{Float64}, IT)
     
     for j in 1:(N-1)
         for i in (j+1):N
@@ -20,7 +23,7 @@ function compute_slope(y::Vector{Float64}, β::Vector{Float64}, N::Int)
     return y
 end
 
-function compute_spike(y::Vector{Float64}, β::Vector{Float64}, N::Int)
+function compute_spike(y::Vector{Float64}, β::Vector{Float64}, IT)
 
     for i in 1:N
         y[i] = y[i] + β[i]

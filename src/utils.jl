@@ -38,5 +38,30 @@ function findλmax(N::Int,λmax=0.0::Int,sigma0)
     return λmax
 end
 
+function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β::Vector{Float64}, N::Int, ɛ = 1e-5::Float64)
+    
+    BIC = 0.0
+    err = zeros(N)
+    
+    N2 = size(β,1)
+    
+    for i in 1:N
+        err[i] = y[i] - y_hat[i]
+    end
+    
+    k = 0 ::Int
+    
+    for i in 1:N2
+        if abs(β[i]) > ɛ
+            k = k + 1
+        end
+    end
+    
+    BIC = N2*var(err) + k * ln(N2)
+    
+    return BIC
+    
+end
+
 #achar um mx por coponente depois juntar tudo...
 

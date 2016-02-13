@@ -18,7 +18,7 @@ function xdy_step(IT,y::Vector{Float64},d)
     
     for i in 1:(N-1)
         sumY = sumY + y[i]
-        xdy[i] = sumY*(-1.0/d.σt[i])
+        xdy[i] = sumY*(-1.0/d.σ[STEP][i])
     end
     
     return xdy
@@ -38,7 +38,7 @@ function xdy_slope(IT,y::Vector{Float64},d)
             xdy[i] += y[j] * (1.0+j-i)
         end
 
-        xdy[i] =( xdy[i] -d.μl[i]*y_s )/d.σl[i]
+        xdy[i] =( xdy[i] -d.μ[SLOPE][i]*y_s )/d.σ[SLOPE][i]
 
     end
 
@@ -55,7 +55,7 @@ function xdy_spike(IT,y::Vector{Float64},d)
 
     for i in 1:N
         
-        xdy[i] =( y[i] -d.μp[i]*y_s)/d.σp[i]
+        xdy[i] =( y[i] -d.μ[SPIKE][i]*y_s)/d.σ[SPIKE][i]
 
     end
 
@@ -78,7 +78,7 @@ function xdy_sin(IT,y::Vector{Float64},d)
             xdy[i] += y[j] * sin(d.fs[i]*j)
         end
         
-        xdy[i] =( xdy[i] -d.μs[i]*y_s)/d.σs[i]
+        xdy[i] =( xdy[i] -d.μ[SIN][i]*y_s)/d.σ[SIN][i]
 
     end
 
@@ -101,7 +101,7 @@ function xdy_cos(IT,y::Vector{Float64},d)
             xdy[i] += y[j] * cos(d.fc[i]*j)
         end
         
-        xdy[i] =( xdy[i] -d.μc[i]*y_s)/d.σc[i]
+        xdy[i] =( xdy[i] -d.μ[COS][i]*y_s)/d.σ[COS][i]
 
     end
 

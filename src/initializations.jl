@@ -131,28 +131,8 @@ end
 function initData(IT,fs=[],fc=[])
 
 	d = dataCD()
-
-	if STEP in IT.components
-
-		d.σt,d.μt = getStepData(IT)
-	end
-	if SLOPE in IT.components
-
-		d.σl,d.μl = getSlopeData(IT)
-	end
-	if SPIKE in  IT.components
-
-		d.σp,d.μp = getSpikeData(IT)
-	end
-	if SIN in IT.components
-
-		d.σs,d.μs = getSineData(IT,fs)
-		d.fs = fs
-	end
-	if COS in IT.components
-
-		d.σc,d.μc = getCosData(IT,fc)
-		d.fc = fc
+	for i in IT.components
+		d.σ[i],d.μ[i] = getData[i](IT)
 	end
 
 	return d
