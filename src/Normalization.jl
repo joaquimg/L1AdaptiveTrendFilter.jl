@@ -1,3 +1,12 @@
+getData = Vector{Function}(5)
+
+getData[STEP] = getStepData
+getData[SLOPE] = getSlopeData
+getData[SPIKE] = getSpikeData
+getData[SIN] = getSineData
+getData[COS] = getCosData
+
+
 function getCosData(IT,f)
     N = IT.obs
 
@@ -70,7 +79,7 @@ function getSineData(IT,f)
 end
 
 
-
+function getSpikeData(IT,f) = getSpikeData(IT)
 function getSpikeData(IT)
 
     N = IT.obs
@@ -88,6 +97,7 @@ function getSpikeData(IT)
     return σ,μ
 end
 
+function getSlopeData(IT,f) = getSlopeData(IT)
 function getSlopeData(IT)
 
     N = IT.obs
@@ -105,6 +115,7 @@ function getSlopeData(IT)
     return σ,μ
 end
 
+function getStepData(IT,f) = getStepData(IT) 
 function getStepData(IT)
 
     N = IT.obs

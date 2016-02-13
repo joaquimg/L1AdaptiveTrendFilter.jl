@@ -1,8 +1,10 @@
-const STEP = 1
-const SLOPE = 2
-const SPIKE = 3
-const SIN = 4
-const COS = 5
+xdy = Vector{Function}(5)
+
+xdy[STEP] = xdy_step
+xdy[SLOPE] = xdy_slope
+xdy[SPIKE] = xdy_spike
+xdy[SIN] = xdy_sin
+xdy[COS] = xdy_cos
 
 
 

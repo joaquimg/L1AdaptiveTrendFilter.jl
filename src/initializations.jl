@@ -3,30 +3,46 @@ include("CDtypes.jl")
 #N=10
 #IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
-function initIT(N,t = false,l = false,p = false,s = false,c = false,f = [])
-	components = Int[]
+function initIT_range(N,components,f = [])
+	#components = Int[]
 	nelements = zeros(Int,5)
+	elements = 
 	obs = N
 
-	if t
-		push!(components,1)
-		nelements[1] = N-1
+	if STEP in components
+		#push!(components,STEP)
+		nelements[STEP] = N-1
+		elements[STEP] = 1:(N-1)
 	end
-	if l
-		push!(components,2)
-		t ? nelements[2] = N-1 : nelements[2] = N 
+	if SLOPE in components
+		#push!(components,SLOPE)
+		if STEP in components 
+			nelements[SLOPE] = N-1 
+			elements[SLOPE] = 1:(N-1)
+		else 
+			nelements[SLOPE] = N 
+			elements[SLOPE] = 1:N
+		end
 	end
-	if p
-		push!(components,3)
-		( t || l ) ? nelements[3] = N-1 : nelements[3] = N
+	if SPIKE in components
+		#push!(components,SPIKE)
+		if ( STEP in components || SLOPE in components ) 
+			nelements[SPIKE] = N-1
+			elements[SPIKE] = 1:(N-1) 
+		else
+			nelements[SPIKE] = N
+			elements[SPIKE] = 1:N
+		end
 	end
-	if s
-		push!(components,4)
-		nelements[4] = size(f)[1]
+	if SIN in components
+		#push!(components,SIN)
+		nelements[SIN] = size(f)[1]
+		elements = 1:size(f)[1]
 	end	
-	if c
-		push!(components,5)
-		nelements[4] = size(f)[1]
+	if COS in components
+		#push!(components,COS)
+		nelements[COS] = size(f)[1]
+		elements = 1:size(f)[1]
 	end
 
 	out = iterator(obs,components,nelements,sum(nelements),20)
@@ -44,7 +60,7 @@ function initSparse(IT)
 	
 	for i in 1:5
 	
-		if in(i,IT.components)
+		if i in IT.components
 	
 			push!(beta_tilde,spzeros(IT.nelements[i],1))
 			push!(beta,spzeros(IT.nelements[i],1))
@@ -73,7 +89,7 @@ function initDense(IT)
 	
 	for i in 1:5
 	
-		if in(i,IT.components)
+		if i in IT.components
 	
 			push!(beta_tilde,zeros(IT.nelements[i]))
 			push!(beta,zeros(IT.nelements[i])
@@ -96,36 +112,16 @@ function initXDY(IT,y,data)
 	
 	xdy = Vector{Float64}[]
 
-	if in(1, IT.components)
+	for i in 1:TOTALCOMPONENTS
+		if i in  IT.components
 
-		temp = xdy_step(IT,y,data)
-
+			temp = xdy[i](IT,y,data)
+		else
+			temp = Vector{Float64}(0)
+		end
 		push!(xdy,temp)
 	end
-	if in(2, IT.components)
 
-		temp = xdy_slope(IT,y,data)
-
-		push!(xdy,temp)
-	end
-	if in(3, IT.components)
-
-		temp = xdy_spike(IT,y,data)
-
-		push!(xdy,temp)
-	end
-	if in(4, IT.components)
-
-		temp = xdy_sin(IT,y,data)
-
-		push!(xdy,temp)
-	end
-	if in(5, IT.components)
-
-		temp = xdy_cos(IT,y,data)
-
-		push!(xdy,temp)
-	end
 
 	return xdy
 end
@@ -136,24 +132,24 @@ function initData(IT,fs=[],fc=[])
 
 	d = dataCD()
 
-	if in(1, IT.components)
+	if STEP in IT.components
 
 		d.σt,d.μt = getStepData(IT)
 	end
-	if in(2, IT.components)
+	if SLOPE in IT.components
 
 		d.σl,d.μl = getSlopeData(IT)
 	end
-	if in(3, IT.components)
+	if SPIKE in  IT.components
 
 		d.σp,d.μp = getSpikeData(IT)
 	end
-	if in(4, IT.components)
+	if SIN in IT.components
 
 		d.σs,d.μs = getSineData(IT,fs)
 		d.fs = fs
 	end
-	if in(5, IT.components)
+	if COS in IT.components
 
 		d.σc,d.μc = getCosData(IT,fc)
 		d.fc = fc

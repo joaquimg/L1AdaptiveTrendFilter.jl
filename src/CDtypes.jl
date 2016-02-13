@@ -1,10 +1,22 @@
 #try with sparse
+const STEP = 1
+const SLOPE = 2
+const SPIKE = 3
+const SIN = 4
+const COS = 5
+
 
 type iterator
 	obs::Int
 	
 	components::Vector{Int}
+??
+	elements::Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
+	
 	nelements::Vector{Int}
+	
+	isrange::Vector{Bool}
+
 
 	ttelements::Int
 
