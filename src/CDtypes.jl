@@ -26,6 +26,9 @@ end
 
 
 type dataCD
+
+	#y0::Float64
+
 	fs::Vector{Float64}
 	fc::Vector{Float64}
 
