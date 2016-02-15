@@ -8,7 +8,7 @@
 
 #to complete
 
-GM = Matrix{Function}(2,2)
+GM = Matrix{Function}(5,5)
 GM[1, 1] = GM11
 GM[1, 2] = GM12
 GM[2, 1] = GM12
