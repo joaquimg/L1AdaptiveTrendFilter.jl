@@ -1,6 +1,4 @@
-
-define parameter os the algorithm
-
+TODO:
 -maxiter
 -lambda log or linear
 -no normalization (equivalent to std unnormalization in lambda values)
@@ -9,7 +7,12 @@ define parameter os the algorithm
 -first run speedup
 
 
-future work
--elasticnet
--ridge
--allocate GM
+FUTURE WORK:
+.regularizers:
+  - elasticnet
+  - ridge
+  - allocate GM
+
+.loss functions:
+  - l1
+  - Huber loss
