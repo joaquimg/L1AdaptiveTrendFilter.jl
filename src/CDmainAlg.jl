@@ -28,6 +28,7 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 1)
         BCD,β_tilde,β,activeSet = initDense(IT)
     end
 
+    BIC = Inf::Float64
  
     β_ols = 0.0 :: Float64
     temp = 0.0 :: Float64
@@ -84,10 +85,16 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 1)
         end
     
         push!(BCD,β_tilde)
+        
+        BIC_new = compute_BIC(y, β_tilde, IT)
+        if BIC_new < BIC
+            BIC = BIC_new
+            β = β_tilde
+        end
     
     end
 
-    return BCD
+    return BCD,β
 end
                
 
