@@ -1,0 +1,15 @@
+
+define parameter os the algorithm
+
+-maxiter
+-lambda log or linear
+-no normalization (equivalent to std unnormalization in lambda values)
+-adaptive init
+-IC: BIC, eBIC, AIC
+-first run speedup
+
+
+future work
+-elasticnet
+-ridge
+-allocate GM
