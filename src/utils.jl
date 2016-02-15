@@ -1,13 +1,5 @@
 
 
-#lambda max
-function build_xdy0(N::Int,y::Vector{Float64}) 
-    xdy0 = 0.0
-    for i in 1.0:N
-            xdy0 = xdy0 + i*y[i]
-    end
-    return xdy0
-end
 
 
 function findλmax(IT,xdy)
@@ -71,6 +63,4 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β::Vector{Floa
     return BIC
     
 end
-
-#achar um mx por coponente depois juntar tudo...
 

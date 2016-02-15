@@ -44,7 +44,19 @@ function compute_sin()
     return y
 end
 
+function compute_cos()
 
+    for i in 1:N
+        for f in 1:nfreqs
+            y[i] = y[i]+sin(freq[f]*i)*β[f]
+        end
+    end
+    return y
+end
+
+function stdβ2usualβ()
+
+end
     
     
     
