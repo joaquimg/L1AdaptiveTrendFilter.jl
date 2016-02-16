@@ -53,21 +53,21 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
     k = 0.0::Float64
     
     for i in IT.components
-        for j in IT.elements
+        for j in IT.elements[i]
             if abs(β[i][j]) > ɛ
                 k += 1.0
             end
         end
     end
     
-    BIC = N2 * var(err) + k * ln(N2)
+    BIC = N2 * var(err) + k * log(N2)
     
     return BIC
     
 end
-function compute_BIC(y::Vector{Float64}, β, IT; ɛ = 1e-5::Float64, std = 1)
+function compute_BIC(y::Vector{Float64}, β, IT, d; ɛ = 1e-5::Float64, std = 1)
 
-    y_hat, β_new = compute_estimate(IT, β)
+    y_hat, β_new = compute_estimate(zeros(y), IT, β, d)
     
     if std == 1
         BIC = compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β_new, IT)

@@ -1,10 +1,3 @@
-xdy = Vector{Function}(5)
-
-xdy[STEP] = xdy_step
-xdy[SLOPE] = xdy_slope
-xdy[SPIKE] = xdy_spike
-xdy[SIN] = xdy_sin
-xdy[COS] = xdy_cos
 
 
 
@@ -68,21 +61,22 @@ function xdy_sin(IT,y::Vector{Float64},d)
     
     nf = IT.nelements[4] 
     
-    xdy = zeros(N) 
+    xdy0 = zeros(nf) 
 
     y_s = sum(y)
 
     for i in 1:nf
 
         for j in 1:N
-            xdy[i] += y[j] * sin(d.fs[i]*j)
+
+            xdy0[i] += y[j] * sin(d.fs[i]*j)
         end
         
-        xdy[i] =( xdy[i] -d.μ[SIN][i]*y_s)/d.σ[SIN][i]
+        xdy0[i] =( xdy0[i] -d.μ[SIN][i]*y_s)/d.σ[SIN][i]
 
     end
 
-    return xdy
+    return xdy0
 end
 
 #cos
@@ -109,3 +103,10 @@ function xdy_cos(IT,y::Vector{Float64},d)
 end
 
 
+xdy = Vector{Function}(5)
+
+xdy[STEP] = xdy_step
+xdy[SLOPE] = xdy_slope
+xdy[SPIKE] = xdy_spike
+xdy[SIN] = xdy_sin
+xdy[COS] = xdy_cos

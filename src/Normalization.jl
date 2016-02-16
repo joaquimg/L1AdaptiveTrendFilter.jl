@@ -1,10 +1,3 @@
-getData = Vector{Function}(5)
-
-getData[STEP] = getStepData
-getData[SLOPE] = getSlopeData
-getData[SPIKE] = getSpikeData
-getData[SIN] = getSineData
-getData[COS] = getCosData
 
 
 function getCosData(IT,f)
@@ -29,7 +22,7 @@ function getCosData(IT,f)
 
         μ[i] =  -1/2*cn1f
                 -1/2*(sf*sn1f/(cf-1.0))
-                +1/*cf
+                +1/2*cf
                 +1/2*sf^2/(cf-1.0)
 
         σ[i] = (1/2 + μ[i]^2)*(N+1) + 1/2*cn1f^2
@@ -79,7 +72,9 @@ function getSineData(IT,f)
 end
 
 
-function getSpikeData(IT,f) = getSpikeData(IT)
+function getSpikeData(IT,f)
+    getSpikeData(IT)
+end
 function getSpikeData(IT)
 
     N = IT.obs
@@ -97,7 +92,9 @@ function getSpikeData(IT)
     return σ,μ
 end
 
-function getSlopeData(IT,f) = getSlopeData(IT)
+function getSlopeData(IT,f)
+    getSlopeData(IT)
+end
 function getSlopeData(IT)
 
     N = IT.obs
@@ -105,17 +102,19 @@ function getSlopeData(IT)
     μ = Vector{Float64}(N)
     σ = Vector{Float64}(N)
     
-    #revisar!!!!
+    #revisar!!!! -- Passar as expressões do arquivo "APorraToda.pdf".
     for i = 1:N
-        μ[i] = (N-i+1.0)*(N-i+2.0)/2.0
-        σ[i] = sqrt( μ[i]*(2.0N-2.0i+3.0)/(3.0N) - μ[i]^2.0 )
+        μ[i] = 1
+        σ[i] = 1
 
     end
 
     return σ,μ
 end
 
-function getStepData(IT,f) = getStepData(IT) 
+function getStepData(IT,f)
+    getStepData(IT) 
+end
 function getStepData(IT)
 
     N = IT.obs
@@ -134,3 +133,12 @@ function getStepData(IT)
 
     return σ,μ#U,L,
 end
+
+
+getData = Vector{Function}(5)
+
+getData[STEP] = getStepData
+getData[SLOPE] = getSlopeData
+getData[SPIKE] = getSpikeData
+getData[SIN] = getSineData
+getData[COS] = getCosData

@@ -1,20 +1,16 @@
 compute_components! = Vector{Any}(TOTALCOMPONENTS)
 
-compute_components![STEP] = compute_step!
-compute_components![SLOPE] = compute_slope!
-compute_components![SPIKE] = compute_spike!
-compute_components![SIN] = compute_sin!
-compute_components![COS] = compute_cos!
 
 
 
-function compute_estimate(IT, β)
+
+function compute_estimate(y,IT,β,d)
 
     β_new, β0 = stdβ2usualβ(β,IT,d)
 
     y = zeros(IT.obs)
     for i in IT.components
-        compute_components![i](y, β_new[i], IT)
+        compute_components![i](y, β_new[i], IT, d)
     end
     for i in IT.components
         for j in 1:IT.obs
@@ -25,7 +21,7 @@ function compute_estimate(IT, β)
     return y,β_new
 end
 
-function compute_step!(y, β, IT)
+function compute_step!(y,β,IT,d)
 
     for j in IT.elements[STEP]
         for i in (j+1):IT.obs
@@ -34,7 +30,7 @@ function compute_step!(y, β, IT)
     end
 end
 
-function compute_slope!(y, β, IT)
+function compute_slope!(y,β,IT,d)
 
     for j in IT.elements[SLOPE]
         for i in (j+1):IT.obs
@@ -43,7 +39,7 @@ function compute_slope!(y, β, IT)
     end
 end
 
-function compute_spike!(y, β, IT)
+function compute_spike!(y,β,IT,d)
 
     for i in IT.elements[SPIKE]
         y[i] = y[i] + β[i]
@@ -51,7 +47,9 @@ function compute_spike!(y, β, IT)
 end
 
 
-function compute_sin!(y, β, IT, d::CDdata) = compute_sin!(y, β[SIN], IT, d.fs)
+function compute_sin!(y, β, IT, d::dataCD) 
+    compute_sin!(y, β, IT, d.fs)
+end
 function compute_sin!(y, β, IT, f)
 
     for j in IT.elements[SIN]
@@ -61,7 +59,9 @@ function compute_sin!(y, β, IT, f)
     end
 end
 
-function compute_cos!(y, β, IT, d::CDdata) = compute_cos!(y, β[COS], IT, d.fc)
+function compute_cos!(y, β, IT, d::dataCD)
+    compute_cos!(y, β, IT, d.fc)
+end
 function compute_cos!(y, β, IT, f)
 
     for j in IT.elements[COS]
@@ -74,7 +74,6 @@ end
 
 
 function stdβ2usualβ(β,IT,d)
-
     β_new = copy(β)
 
     β0 = zeros(TOTALCOMPONENTS)
@@ -87,7 +86,7 @@ function stdβ2usualβ(β,IT,d)
     end
     for i in IT.components
         for j in IT.elements[i]
-            β_0[i] -= β[i][j]*d.μ[i][j]/d.σ[i][j]
+            β0[i] -= β[i][j]*d.μ[i][j]/d.σ[i][j]
         end
     end
 
@@ -95,4 +94,8 @@ function stdβ2usualβ(β,IT,d)
 end
 
 
-
+compute_components![STEP] = compute_step!
+compute_components![SLOPE] = compute_slope!
+compute_components![SPIKE] = compute_spike!
+compute_components![SIN] = compute_sin!
+compute_components![COS] = compute_cos!

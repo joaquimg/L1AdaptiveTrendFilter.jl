@@ -3,10 +3,10 @@ include("CDtypes.jl")
 #N=10
 #IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
-function initIT_range(N,components; f = Float64[])
+function initIT_range(N,components, f = Vector{Float64}(0) )
 	#components = Int[]
 	nelements = zeros(Int,5)
-	elements = 
+	elements = Vector{Any}(5)
 	obs = N
 
 	if STEP in components
@@ -37,15 +37,15 @@ function initIT_range(N,components; f = Float64[])
 	if SIN in components
 		#push!(components,SIN)
 		nelements[SIN] = size(f)[1]
-		elements = 1:size(f)[1]
+		elements[SIN] = 1:size(f)[1]
 	end	
 	if COS in components
 		#push!(components,COS)
 		nelements[COS] = size(f)[1]
-		elements = 1:size(f)[1]
+		elements[COS] = 1:size(f)[1]
 	end
 
-	out = iterator(obs,components,nelements,sum(nelements),20)
+	out = iterator(obs,components,elements,nelements,ones(Bool,TOTALCOMPONENTS),sum(nelements),20)
 
 	return out
 end
@@ -85,21 +85,21 @@ function initDense(IT)
 	beta_tilde = Vector{Float64}[]
 	beta = Vector{Float64}[]
 	
-	activeSet = Vector{Float64}[]
+	activeSet = Vector{Bool}[]
 	
 	for i in 1:5
 	
 		if i in IT.components
 	
 			push!(beta_tilde,zeros(IT.nelements[i]))
-			push!(beta,zeros(IT.nelements[i])
+			push!(beta,zeros(IT.nelements[i]))
 			push!(activeSet,zeros(Bool,IT.nelements[i]))
 	
 		else
 	
-			push!(beta_tilde,spzeros(0))
-			push!(beta,spzeros(0))
-			push!(activeSet,spzeros(Bool,0))
+			push!(beta_tilde,zeros(0))
+			push!(beta,zeros(0))
+			push!(activeSet,zeros(Bool,0))
 	
 		end
 	
@@ -110,7 +110,7 @@ end
 
 function initXDY(IT,y,data)
 	
-	xdy = Vector{Float64}[]
+	xdy0 = Vector{Float64}[]
 
 	for i in 1:TOTALCOMPONENTS
 		if i in  IT.components
@@ -119,11 +119,11 @@ function initXDY(IT,y,data)
 		else
 			temp = Vector{Float64}(0)
 		end
-		push!(xdy,temp)
+		push!(xdy0,temp)
 	end
 
 
-	return xdy
+	return xdy0
 end
 
 #change for no preallocation and simply edit field
@@ -134,7 +134,8 @@ function initData(IT,fs=[],fc=[])
 	for i in IT.components
 		d.σ[i],d.μ[i] = getData[i](IT,fs)
 	end
-
+	d.fs = fs
+	d.fc = fc
 	return d
 end
 
