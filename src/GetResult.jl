@@ -8,13 +8,13 @@ compute_components![COS] = compute_cos!
 
 
 
-function compute_estimate!(IT, β)
+function compute_estimate(IT, β)
 
     β_new, β0 = stdβ2usualβ(β,IT,d)
 
     y = zeros(IT.obs)
     for i in IT.components
-        compute_components![i](y, β_new, IT)
+        compute_components![i](y, β_new[i], IT)
     end
     for i in IT.components
         for j in 1:IT.obs
@@ -22,7 +22,7 @@ function compute_estimate!(IT, β)
         end
     end
 
-    return y
+    return y,β_new
 end
 
 function compute_step!(y, β, IT)
