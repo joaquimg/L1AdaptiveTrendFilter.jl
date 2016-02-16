@@ -9,13 +9,13 @@ const TOTALCOMPONENTS = 5
 
 type iterator
 	obs::Int
-	
+
 	components::Vector{Int}
     #??
-	elements::Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
-	
+	elements#::Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
+
 	nelements::Vector{Int}
-	
+
 	isrange::Vector{Bool}
 
 

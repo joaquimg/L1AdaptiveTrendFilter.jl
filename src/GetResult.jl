@@ -1,4 +1,4 @@
-compute_components! = Vector{Function}(TOTALCOMPONENTS)
+compute_components! = Vector{Any}(TOTALCOMPONENTS)
 
 compute_components![STEP] = compute_step!
 compute_components![SLOPE] = compute_slope!
@@ -26,7 +26,7 @@ function compute_estimate!(IT, β)
 end
 
 function compute_step!(y, β, IT)
-    
+
     for j in IT.elements[STEP]
         for i in (j+1):IT.obs
             y[i] = y[i] + β[j]
@@ -35,7 +35,7 @@ function compute_step!(y, β, IT)
 end
 
 function compute_slope!(y, β, IT)
-    
+
     for j in IT.elements[SLOPE]
         for i in (j+1):IT.obs
             y[i] = y[i] + (i-j)*β[j]
@@ -68,7 +68,7 @@ function compute_cos!(y, β, IT, f)
         for i in 1:IT.obs
             y[i] = y[i]+cos(f[j]*i)*β[j]
         end
-    end 
+    end
 end
 
 
@@ -93,7 +93,6 @@ function stdβ2usualβ(β,IT,d)
 
     return β_new, β0
 end
-    
-    
-    
-    
+
+
+
