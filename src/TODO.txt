@@ -1,3 +1,7 @@
+IMPORTANT:
+-REVIEW ACCESS FROM OMEGA VALUE IN GM
+-fix mean value and variances in normalization
+
 TODO:
 -maxiter
 -lambda log or linear
