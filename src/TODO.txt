@@ -1,5 +1,4 @@
 IMPORTANT:
--REVIEW ACCESS FROM OMEGA VALUE IN GM
 -fix mean value and variances in normalization
 
 TODO:
@@ -9,6 +8,7 @@ TODO:
 -adaptive init
 -IC: BIC, eBIC, AIC
 -first run speedup
+-test sparse
 
 
 FUTURE WORK:
