@@ -91,7 +91,7 @@ function getCosData(IT, ω)
     μ = Vector{Float64}(nf)
     σ = Vector{Float64}(nf)
 
-    for i = 1:nf
+    for i = 1:N_frequencies
         sin_ω = sin(ω[i])
         cos_ω = cos(ω[i])
         sin_N1ω = sin((N+1)*ω[i])
