@@ -52,7 +52,7 @@ function GM12(i::Int, j::Int, d, IT)
     return GM12(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
 end
 function GM21(i::Int, j::Int, d, IT)
-    return GM12(j, i, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[STEP], d.σ[STEP])
+    return GM12(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
 end
 
 function GM13(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64})
@@ -75,10 +75,10 @@ function GM13(i::Int, j::Int, d, IT)
     return GM13(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SPIKE], d.σ[SPIKE])
 end
 function GM31(i::Int, j::Int, d, IT)
-    return GM13(j, i, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[STEP], d.σ[STEP])
+    return GM13(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SPIKE], d.σ[SPIKE])
 end
 
-function GM14(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μSIN::Vector{Float64}, σSIN::Vector{Float64})
+function GM14(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Float64)
   # step x sine
   GM = Float64[]
 
@@ -93,13 +93,13 @@ function GM14(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Fl
   return GM
 end
 function GM14(i::Int, j::Int, d, IT)
-    return GM14(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SIN], d.σ[SIN])
+    return GM14(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SIN], d.σ[SIN],d.fs[j])
 end
 function GM41(i::Int, j::Int, d, IT)
-    return GM14(j, i, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[STEP], d.σ[STEP])
+    return GM14(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SIN], d.σ[SIN],d.fs[i])
 end
 
-function GM15(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64})
+function GM15(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Float64)
   # step x cosine
 
   ω = 0
@@ -117,10 +117,10 @@ function GM15(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Fl
   return GM
 end
 function GM15(i::Int, j::Int, d, IT)
-    return GM15(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[COS], d.σ[COS])
+    return GM15(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[COS], d.σ[COS],d.fc[j])
 end
 function GM51(i::Int, j::Int, d, IT)
-    return GM15(j, i, IT.obs, d.μ[COS], d.σ[COS], d.μ[STEP], d.σ[STEP])
+    return GM15(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[COS], d.σ[COS],d.fc[i])
 end
 
 function GM22(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
@@ -144,7 +144,7 @@ function GM22(i::Int, j::Int, d, IT)
     return GM22(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE])
 end
 
-function GM23(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+function GM23(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64})
   # slope x spike
   GM = Float64[]
 
@@ -168,10 +168,10 @@ function GM23(i::Int, j::Int, d, IT)
     return GM23(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[SPIKE], d.σ[SPIKE])
 end
 function GM32(i::Int, j::Int, d, IT)
-    return GM23(j, i, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[SLOPE], d.σ[SLOPE])
+    return GM23(j, i, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[SPIKE], d.σ[SPIKE])
 end
 
-function GM24(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μSIN::Vector{Float64}, σSIN::Vector{Float64})
+function GM24(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Float64)
   # slope x sine
   GM = Float64[]
 
@@ -191,13 +191,13 @@ function GM24(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{
   return GM
 end
 function GM24(i::Int, j::Int, d, IT)
-    return GM24(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[SIN], d.σ[SIN])
+    return GM24(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[SIN], d.σ[SIN], d.fs[j])
 end
 function GM42(i::Int, j::Int, d, IT)
-    return GM24(j, i, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[SLOPE], d.σ[SLOPE])
+    return GM24(j, i, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[SIN], d.σ[SIN], d.fs[i])
 end
 
-function GM25(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64})
+function GM25(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Float64)
   # slope x cosine
   GM = Float64[]
   ω = 0
@@ -217,10 +217,10 @@ function GM25(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{
   return GM
 end
 function GM25(i::Int, j::Int, d, IT)
-    return GM25(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[COS], d.σ[COS])
+    return GM25(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[COS], d.σ[COS],d.fc[j])
 end
 function GM52(i::Int, j::Int, d, IT)
-    return GM25(j, i, IT.obs, d.μ[COS], d.σ[COS], d.μ[SLOPE], d.σ[SLOPE])
+    return GM25(j, i, IT.obs, d.μ[SLOPE], d.σ[SLOPE], d.μ[COS], d.σ[COS],d.fc[i])
 end
 
 function GM33(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64})
@@ -254,13 +254,13 @@ function GM34(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{
   return GM
 end
 function GM34(i::Int, j::Int, d, IT)
-    return GM34(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[SIN], d.σ[SIN])
+    return GM34(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[SIN], d.σ[SIN], d.fs[j])
 end
 function GM43(i::Int, j::Int, d, IT)
-    return GM34(j, i, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[SPIKE], d.σ[SPIKE])
+    return GM34(j, i, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[SIN], d.σ[SIN], d.fs[i])
 end
 
-function GM35(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64} μCOS::Vector{Float64}, σCOS::Vector{Float64})
+function GM35(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64} μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Float64)
   # spike x cosine
   GM = Float64[]
 
@@ -274,25 +274,25 @@ function GM35(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{
   return GM
 end
 function GM35(i::Int, j::Int, d, IT)
-    return GM35(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[COS], d.σ[COS])
+    return GM35(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[COS], d.σ[COS],d.fc[j])
 end
 function GM53(i::Int, j::Int, d, IT)
-    return GM35(j, i, IT.obs, d.μ[COS], d.σ[COS], d.μ[SPIKE], d.σ[SPIKE])
+    return GM35(j, i, IT.obs, d.μ[COS], d.σ[COS], d.μ[SPIKE], d.σ[SPIKE],d.fc[i])
 end
 
-function GM44(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64})
+function GM44(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Vector{Float64})
   # sine x sine
   GM = Float64[]
 
   GM = (
-      μSIN[i]*μSIN[j]*(N+1) - 0.5*(sin(j)*cos((N+1)*j)*sin(N+1)*i)/(cos(i)-cos(j))
-      + 0.5*(sin(i)*sin((N+1)*j)*cos((N+1)*i))/(cos(i)-cos(j))
-      - 0.5*sin((N+1)*j)*sin((N+1)*i) - 0.5*(μSIN[j]*sin(i)*cos((N+1)*i))/(cos(i)-1)
-      - 0.5*(μSIN[i]*sin(j)*cos((N+1)*j))/(cos(j)-1) + 0.5*μSIN[j]*sin((N+1)*i)
-      + 0.5*μSIN[i]*sin((N+1)*j) - μSIN[i]*μSIN[j] + 0.5*(sin(i)*sin(j)*cos(j))/(cos(i)-cos(j))
-      - 0.5*(sin(j)*sin(i)*cos(i))/(cos(i)-cos(j)) + 0.5*sin(i)*sin(j)
-      + 0.5*(μSIN[j]*sin(i)*cos(i))/(cos(i)-1) + 0.5*(μSIN[i]*sin(j)*cos(j))/(cos(j)-1)
-      - 0.5*μSIN[j]*sin(i) - 0.5*μSIN[i]*sin(j)
+      μSIN[i]*μSIN[j]*(N+1) - 0.5*(sin(ω[j])*cos((N+1)*ω[j])*sin(N+1)*ω[i])/(cos(ω[i])-cos(ω[j]))
+      + 0.5*(sin(ω[i])*sin((N+1)*ω[j])*cos((N+1)*ω[i]))/(cos(ω[i])-cos(ω[j]))
+      - 0.5*sin((N+1)*ω[j])*sin((N+1)*ω[i]) - 0.5*(μSIN[j]*sin(ω[i])*cos((N+1)*ω[i]))/(cos(ω[i])-1)
+      - 0.5*(μSIN[i]*sin(ω[j])*cos((N+1)*ω[j]))/(cos(ω[j])-1) + 0.5*μSIN[j]*sin((N+1)*ω[i])
+      + 0.5*μSIN[i]*sin((N+1)*ω[j]) - μSIN[i]*μSIN[j] + 0.5*(sin(ω[i])*sin(ω[j])*cos(j))/(cos(i)-cos(j))
+      - 0.5*(sin(ω[j])*sin(ω[i])*cos(ω[i]))/(cos(ω[i])-cos(ω[j])) + 0.5*sin(ω[i])*sin(ω[j])
+      + 0.5*(μSIN[j]*sin(ω[i])*cos(ω[i]))/(cos(ω[i])-1) + 0.5*(μSIN[i]*sin(ω[j])*cos(ω[j]))/(cos(ω[j])-1)
+      - 0.5*μSIN[j]*sin(ω[i]) - 0.5*μSIN[i]*sin(ω[j])
   )/(σSIN[i]*σSIN[j])
 
   return GM
@@ -302,55 +302,55 @@ function GM44(i::Int, j::Int, d, IT)
 end
 
 #CORRIGIG INPUT DOS SENOIDES
-function GM45(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64})
+function GM45(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64}, ωs::Vector{Float64}, ωc::Vector{Float64})
   # sine x cosine
   GM = Float64[]
 
   GM = (
-      μSINE[i]*μCOS[j]*(N+1) + 0.5*(sin(i)*cos((N+1)*j)*cos((N+1)*i))/(cos(i)-cos(j))
-      - 0.5*cos((N+1)*j)*sin((N+1)*i)
-      + 0.5*(sin(j)*sin((N+1)*j)*sin((N+1)*i))/(cos(i)-cos(j))
-      - 0.5*(μCOS[j]*sin(i)*cos((N+1)*i))/(cos(i)-1) + 0.5*μSINE[i]cos((N+1)*j)
-      + 0.5*μCOS[j]*sin((N+1)*i) + 0.5*(μSINE[i]*sin(j)*sin((N+1)*j))/(cos(j)-1)
-      - μSINE[i]*μCOS[j] - 0.5*(sin(i)*cos(j)*cos(i))/(cos(i)-cos(j))
-      + 0.5*cos(j)*sin(i) - 0.5*(sin(j)^2*sin(i))/(cos(i)-cos(j))
-      + 0.5*(μCOS[j]*sin(i)*cos(i))/(cos(i)-1) - 0.5*μSINE[i]*cos(j)
-      - 0.5*sin(i)*μCOS[j] - 0.5*(μSINE[i]*sin(j)^2)/(cos(j)-1)
+      μSINE[i]*μCOS[j]*(N+1) + 0.5*(sin(ωs[i])*cos((N+1)*ωc[j])*cos((N+1)*ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
+      - 0.5*cos((N+1)*ωc[j])*sin((N+1)*ωs[i])
+      + 0.5*(sin(ωc[j])*sin((N+1)*ωc[j])*sin((N+1)*ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
+      - 0.5*(μCOS[j]*sin(ωs[i])*cos((N+1)*ωs[i]))/(cos(ωs[i])-1) + 0.5*μSINE[i]*cos((N+1)*ωc[j])
+      + 0.5*μCOS[j]*sin((N+1)*ωs[i]) + 0.5*(μSINE[i]*sin(ωc[j])*sin((N+1)*ωc[j]))/(cos(ωc[j])-1)
+      - μSINE[i]*μCOS[j] - 0.5*(sin(ωs[i])*cos(ωc[j])*cos(ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
+      + 0.5*cos(ωc[j])*sin(ωs[i]) - 0.5*(sin(ωc[j])^2*sin(ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
+      + 0.5*(μCOS[j]*sin(ωs[i])*cos(ωs[i]))/(cos(ωs[i])-1) - 0.5*μSINE[i]*cos(ωc[j])
+      - 0.5*sin(ωs[i])*μCOS[j] - 0.5*(μSINE[i]*sin(ωc[j])^2)/(cos(ωc[j])-1)
   )/(σ[i]*σ[j])
 
   return GM
 end
 function GM45(i::Int, j::Int, d, IT)
-    return GM45(i, j, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[COS], d.σ[COS])
+    return GM45(i, j, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[COS], d.σ[COS],d.fs,d.fc)
 end
 function GM54(i::Int, j::Int, d, IT)
-    return GM45(j, i, IT.obs, d.μ[COS], d.σ[COS], d.μ[SIN], d.σ[SIN])
+    return GM45(j, i, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[COS], d.σ[COS],d.fs,d.fc)
 end
 
-function GM55(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+function GM55(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64},ω::Vector{Float64})
   # cosine x cosine
   GM = Float64[]
 
   GM = (
-      μCOS[i]*μCOS[j]*(N+1) - 0.5*cos((N+1)*j)*cos((N+1)*i)
-      - 0.5*(sin(i)*cos((N+1)*j)*sin((N+1)*i))/(cos(i)-cos(j))
-      + 0.5*(sin(j)*sin((N+1)*j)*cos((N+1)*i))/(cos(i)-cos(j))
-      + 0.5*μCOS[j]*cos((N+1)*i) + 0.5*cos((N+1)*j)*μCOS[i]
-      + 0.5*(μCOS[j]*sin(i)*sin((N+1)*i))/(cos(i)-1)
-      + 0.5*(μCOS[i]*sin(j)*sin((N+1)*j))/(cos(j)-1) - μCOS[i]*μCOS[j]
-      + 0.5*cos(i)*cos(j) + 0.5*(sin(i)^2*cos(j))/(cos(i)-cos(j))
-      - 0.5*(sin(j)^2*cos(i))/(cos(i)-cos(j)) - 0.5*μCOS[j]*cos(i)
-      - 0.5*μCOS[i]*cos(j) - 0.5*(μCOS[j]*sin(i)^2)/(cos(i)-1)
-      - 0.5*(μCOS[i]*sin(j)^2)/(cos(j)-1)
+      μCOS[i]*μCOS[j]*(N+1) - 0.5*cos((N+1)*ω[j])*cos((N+1)*ω[i])
+      - 0.5*(sin(ω[i])*cos((N+1)*ω[j])*sin((N+1)*ω[i]))/(cos(ω[i])-cos(ω[j]))
+      + 0.5*(sin(ω[j])*sin((N+1)*ω[j])*cos((N+1)*ω[i]))/(cos(ω[i])-cos(ω[j]))
+      + 0.5*μCOS[j]*cos((N+1)*ω[i]) + 0.5*cos((N+1)*ω[j])*μCOS[i]
+      + 0.5*(μCOS[j]*sin(ω[i])*sin((N+1)*ω[i]))/(cos(ω[i])-1)
+      + 0.5*(μCOS[i]*sin(ω[j])*sin((N+1)*ω[j]))/(cos(ω[j])-1) - μCOS[i]*μCOS[j]
+      + 0.5*cos(ω[i])*cos(ω[j]) + 0.5*(sin(ω[i])^2*cos(ω[j]))/(cos(ω[i])-cos(ω[j]))
+      - 0.5*(sin(ω[j])^2*cos(ω[i]))/(cos(ω[i])-cos(ω[j])) - 0.5*μCOS[j]*cos(ω[i])
+      - 0.5*μCOS[i]*cos(ω[j]) - 0.5*(μCOS[j]*sin(ω[i])^2)/(cos(ω[i])-1)
+      - 0.5*(μCOS[i]*sin(ω[j])^2)/(cos(ω[j])-1)
   )/(σ[i]*σ[j])
 
   return GM
 end
 function GM55(i::Int, j::Int, d, IT)
-    return GM55(i, j, IT.obs, d.μ[COS], d.σ[COS])
+    return GM55(i, j, IT.obs, d.μ[COS], d.σ[COS],d.fc)
 end
 
-GM = Matrix{Function}(5,5)
+GM = Matrix{Function}(TOTALCOMPOENTS,TOTALCOMPOENTS)
 GM[1, 1] = GM11
 GM[1, 2] = GM12
 GM[2, 1] = GM21
