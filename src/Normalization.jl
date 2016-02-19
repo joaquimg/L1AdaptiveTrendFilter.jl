@@ -46,12 +46,13 @@ function getSpikeData(IT,f)
 end
 function getSpikeData(IT)
     N = IT.obs
-    μ = Vector{Float64}(N)
-    σ = Vector{Float64}(N)
+    Nel = IT.nelements[SPIKE]
+    μ = Vector{Float64}(Nel)
+    σ = Vector{Float64}(Nel)
 
-    for i = 1:N
-        μ[i] = i/N
-        σ[i] = (N-1)*μ[i]^2 + (1-μ[i])^2
+    for i = 1:Nel
+        μ[i] = 1/N
+        σ[i] = sqrt( ((N-1)*μ[i]^2 + (1-μ[i])^2)/N )
     end
     return σ,μ
 end
