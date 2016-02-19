@@ -8,8 +8,6 @@
 
 #to complete
 
-
-
 function GM11(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   # step x step
   GM = Float64[]
@@ -260,7 +258,7 @@ function GM43(i::Int, j::Int, d, IT)
     return GM34(j, i, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[SIN], d.σ[SIN], d.fs[i])
 end
 
-function GM35(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64} μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Float64)
+function GM35(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64}, ω::Float64)
   # spike x cosine
   GM = Float64[]
 
@@ -350,7 +348,7 @@ function GM55(i::Int, j::Int, d, IT)
     return GM55(i, j, IT.obs, d.μ[COS], d.σ[COS],d.fc)
 end
 
-GM = Matrix{Function}(TOTALCOMPOENTS,TOTALCOMPOENTS)
+GM = Matrix{Function}(5, 5)
 GM[1, 1] = GM11
 GM[1, 2] = GM12
 GM[2, 1] = GM21

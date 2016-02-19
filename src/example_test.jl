@@ -1,6 +1,3 @@
-
-
-
 include("CDtypes.jl")
 include("initializations.jl")
 include("CDmainAlg.jl")
@@ -10,9 +7,6 @@ include("InnerProducts.jl")
 include("Normalization.jl")
 include("utils.jl")
 
-
-
-op=1
 srand(10)
 y=rand(500)
 
