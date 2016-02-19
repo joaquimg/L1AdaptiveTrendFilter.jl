@@ -6,7 +6,7 @@
 function xdy_step(IT,y::Vector{Float64},d)
     N = IT.obs
 
-    Nel = IT.nelements[SLOPE]
+    Nel = IT.nelements[STEP]
 
     xdy = zeros(Nel) 
 

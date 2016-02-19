@@ -61,7 +61,7 @@ end
                         end
                     end
 
-                    β_ols = β_tilde[c1][j] + 1.0/IT.obs * (xdy[c1][j] - temp)
+                    β_ols = β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - temp)
                     if isnan(β_ols) || abs(β_ols)>1e77
                         println([c1;j;temp;xdy[c1][j]])
                     end
@@ -88,7 +88,9 @@ end
             change = true
         end
         βtemp = copy(β_tilde)
-        push!(BCD,βtemp)
+        println(βtemp)
+        #push!(BCD,copy(β_tilde))
+        #println(BCD)
         BIC_new = compute_BIC(y, βtemp, IT, d)
         if BIC_new < BIC
             BIC = BIC_new

@@ -113,13 +113,14 @@ function initXDY(IT,y,data)
 	xdy0 = Vector{Float64}[]
 
 	for i in 1:TOTALCOMPONENTS
-		if i in  IT.components
+		if in(i,IT.components)
+			
+			push!(xdy0,xdy[i](IT,y,data) )
 
-			temp = xdy[i](IT,y,data)
 		else
-			temp = Vector{Float64}(0)
+			push!(xdy0,Vector{Float64}(0) )
 		end
-		push!(xdy0,temp)
+		#temp)
 	end
 
 

@@ -1,6 +1,8 @@
 IMPORTANT:
--fix mena and variances in maple doc
+-fix mean and variances in maple doc
 -fix sine and cos sigularity of sin/(cos-1)
+-fix copy for giving all solution from lasso path
+
 TODO:
 -maxiter
 -lambda log or linear
