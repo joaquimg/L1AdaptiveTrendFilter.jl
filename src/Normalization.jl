@@ -60,8 +60,8 @@ end
 function getSineData(IT, ω)
     N = IT.obs
     N_frequencies = IT.nelements[4]
-    μ = Vector{Float64}(nf)
-    σ = Vector{Float64}(nf)
+    μ = Vector{Float64}(N_frequencies)
+    σ = Vector{Float64}(N_frequencies)
 
     for i = 1:N_frequencies
         sin_ω = sin(ω[i])
@@ -88,8 +88,8 @@ end
 function getCosData(IT, ω)
     N = IT.obs
     N_frequencies = IT.nelements[5]
-    μ = Vector{Float64}(nf)
-    σ = Vector{Float64}(nf)
+    μ = Vector{Float64}(N_frequencies)
+    σ = Vector{Float64}(N_frequencies)
 
     for i = 1:N_frequencies
         sin_ω = sin(ω[i])
