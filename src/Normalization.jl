@@ -21,21 +21,22 @@ function getSlopeData(IT,f)
 end
 function getSlopeData(IT)
     N = IT.obs
-    μ = Vector{Float64}(N)
-    σ = Vector{Float64}(N)
+    Nel = IT.nelements[SLOPE]
+    μ = Vector{Float64}(Nel)
+    σ = Vector{Float64}(Nel)
 
-    for i = 1:N
+    for i = 1:Nel
         μ[i] = (
       0.5*(N+1)^2 - 0.5*N - i*(N+1) - 0.5*(i+1)^2 + 0.5*i + i*(i+1)
       )/N
 
-        σ[i] = (
+        σ[i] = sqrt((
       i*μ[i]^2 + (N+1)*i^2 + 2*(N+1)*i*μ[i] + (N+1)*μ[i]^2 - i*(N+1)^2
       + i*(N+1) - μ[i]*(N+1)^2 + μ[i]*(N+1) + (1/3)*(N+1)^3
       - 0.5*(N+1)^2 + (1/6)*N - (i+1)*i^2 - 2*(i+1)*i*μ[i]
       - (i+1)*μ[i]^2 + i*(i+1)^2 - i*(i+1) + μ[i]*(i+1)^2
       - μ[i]*(i+1) - (1/3)*(i+1)^3 + 0.5*(i+1)^2 - (1/6)*i
-      )
+      )/N)
     end
     return σ,μ
 end
