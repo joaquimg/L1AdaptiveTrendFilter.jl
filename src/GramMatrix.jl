@@ -81,7 +81,7 @@ function GM14(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Fl
   GM = Float64[]
 
   GM = (
-    μSTEP[i]*μSIN[j]*(i+1) - 0.5*(μSTEP[i]*sin(ω)*cos((i+1)*ω))/(cos(ω)-1) + 0.5*μSTEP[i]*sin((t+1)*ω)
+    μSTEP[i]*μSIN[j]*(i+1) - 0.5*(μSTEP[i]*sin(ω)*cos((i+1)*ω))/(cos(ω)-1) + 0.5*μSTEP[i]*sin((i+1)*ω)
     - μSTEP[i]*μSIN[j] + 0.5*(μSTEP[i]*sin(ω)*cos(ω))/(cos(ω)-1) - 0.5*μSTEP[i]*sin(ω)
     + (μSTEP[i]*μSIN[j]-μSIN[j])*(N+1) - 0.5*((μSTEP[i]-1)*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
     + 0.5*(μSTEP[i]-1)*sin((N+1*ω)) - (μSTEP[i]μSIN[j]-μSIN[j])*(i+1)
@@ -130,9 +130,9 @@ function GM22(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   GM = (
     (1/6)*N + m*μ[m]*μ[M] - (1/6)*M-0.5*(N+1)^2 + (1/3)*(N+1)^3 + 0.5*μ[M]*(m+1)^2
     - 0.5*μ[M]*(m+1) - μ[M]*(m+1)*m - μ[M]*μ[m]*(m+1) + 0.5*(M+1)^2 - (1/3)*(M+1)^3
-    + 0.5*m*(M+1)^2 - 0.5*m(M+1) + 0.5*μ[m]*(M+1)^2 - 0.5*μ[m]*(M+1) + 0.5*M*(M+1)^2
+    + 0.5*m*(M+1)^2 - 0.5*m*(M+1) + 0.5*μ[m]*(M+1)^2 - 0.5*μ[m]*(M+1) + 0.5*M*(M+1)^2
     - 0.5*M*(M+1) - 0.5*m*(N+1)^2 + 0.5*m*(N+1) - 0.5*μ[m]*(N+1)^2 + 0.5*μ[m]*(N+1)
-    -0.5*M*(N+1)^2 + 0.5*M*(N+1) - 0.5*μ[M]*(N+1)^2 + 0.5*μ[M]*(N+1) - (M+1)*n*M
+    -0.5*M*(N+1)^2 + 0.5*M*(N+1) - 0.5*μ[M]*(N+1)^2 + 0.5*μ[M]*(N+1) - (M+1)*N*M
     - (M+1)*μ[m]*M + (N+1)*m*M + μ[M]*(N+1)*m
   )/(σ[i]*σ[j])
 
@@ -157,7 +157,7 @@ function GM23(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{
       j*μSLOPE[i]*μSPIKE[j] + μSLOPE[i]*(N+1)*j + μSLOPE[i]*μSPIKE[j]*(N+1) - 0.5*μSLOPE[i]*(N+1)^2 + 0.5*μSLOPE[i]*(N+1)
       - μSLOPE[i]*(j+1)*j - μSLOPE[i]*μSPIKE[j]*(j+1) + 0.5*μSLOPE[i]*(j+1)^2 - 0.5*μSLOPE[i]*(j+1) - μSLOPE[i]*μSPIKE[j]
       - μSPIKE[j]*(1-μSLOPE[i])
-    )/(σ[i]*σ[j])
+    )/(σSLOPE[i]*σSPIKE[j])
   end
 
   return GM
@@ -228,7 +228,7 @@ function GM33(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{
   if i != j
     GM = (
       (N-2)*μSPIKE[i]^2 - 2*μSPIKE[i]*(1-μSPIKE[i])
-    )/(σ[i]*σ[j])
+    )/(σSPIKE[i]*σSPIKE[j])
   else
     GM = 1
   end
@@ -239,7 +239,7 @@ function GM33(i::Int, j::Int, d, IT)
     return GM33(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE])
 end
 
-function GM34(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64}, μSIN::Vector{Float64}, σSIN::Vector{Float64})
+function GM34(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64}, μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Float64)
   # spike x sine
   GM = Float64[]
 
@@ -275,7 +275,7 @@ function GM35(i::Int, j::Int, d, IT)
     return GM35(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[COS], d.σ[COS],d.fc[j])
 end
 function GM53(i::Int, j::Int, d, IT)
-    return GM35(j, i, IT.obs, d.μ[COS], d.σ[COS], d.μ[SPIKE], d.σ[SPIKE],d.fc[i])
+    return GM35(j, i, IT.obs, d.μ[SPIKE], d.σ[SPIKE], d.μ[COS], d.σ[SPIKE],d.fc[i])
 end
 
 function GM44(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Vector{Float64})
@@ -296,11 +296,11 @@ function GM44(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Floa
   return GM
 end
 function GM44(i::Int, j::Int, d, IT)
-    return GM44(i, j, IT.obs, d.μ[SIN], d.σ[SIN])
+    return GM44(i, j, IT.obs, d.μ[SIN], d.σ[SIN], d.fs)
 end
 
 #CORRIGIG INPUT DOS SENOIDES
-function GM45(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64}, ωs::Vector{Float64}, ωc::Vector{Float64})
+function GM45(i::Int, j::Int, N::Int, μSINE::Vector{Float64}, σSIN::Vector{Float64}, μCOS::Vector{Float64}, σCOS::Vector{Float64}, ωs::Vector{Float64}, ωc::Vector{Float64})
   # sine x cosine
   GM = Float64[]
 
@@ -314,7 +314,7 @@ function GM45(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Floa
       + 0.5*cos(ωc[j])*sin(ωs[i]) - 0.5*(sin(ωc[j])^2*sin(ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
       + 0.5*(μCOS[j]*sin(ωs[i])*cos(ωs[i]))/(cos(ωs[i])-1) - 0.5*μSINE[i]*cos(ωc[j])
       - 0.5*sin(ωs[i])*μCOS[j] - 0.5*(μSINE[i]*sin(ωc[j])^2)/(cos(ωc[j])-1)
-  )/(σ[i]*σ[j])
+  )/(σSIN[i]*σCOS[j])
 
   return GM
 end
@@ -325,7 +325,7 @@ function GM54(i::Int, j::Int, d, IT)
     return GM45(j, i, IT.obs, d.μ[SIN], d.σ[SIN], d.μ[COS], d.σ[COS],d.fs,d.fc)
 end
 
-function GM55(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64},ω::Vector{Float64})
+function GM55(i::Int, j::Int, N::Int, μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Vector{Float64})
   # cosine x cosine
   GM = Float64[]
 
@@ -340,7 +340,7 @@ function GM55(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64},�
       - 0.5*(sin(ω[j])^2*cos(ω[i]))/(cos(ω[i])-cos(ω[j])) - 0.5*μCOS[j]*cos(ω[i])
       - 0.5*μCOS[i]*cos(ω[j]) - 0.5*(μCOS[j]*sin(ω[i])^2)/(cos(ω[i])-1)
       - 0.5*(μCOS[i]*sin(ω[j])^2)/(cos(ω[j])-1)
-  )/(σ[i]*σ[j])
+  )/(σCOS[i]*σCOS[j])
 
   return GM
 end

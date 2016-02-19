@@ -52,7 +52,7 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
                     for c2 in IT.components
                         for l in size(activeSet[c2])[1]
                             if activeSet[c2][l]
-                                temp = temp + GM[c1,c2](l,j,d)*β_tilde[c2][l]
+                                temp = temp + GM[c1,c2](j,l,d,IT)*β_tilde[c2][l]
                             end
                         end
                     end
