@@ -74,13 +74,13 @@ function getSineData(IT, ω)
 
         μ[i] =  (
       (sin_ω*cos_N1ω)/(cos_ω-1) - sin_N1ω - (sin_ω*cos_ω)/(cos_ω-1) + sin_ω
-      )/2
+      )/(2*N)
 
-        σ[i] = (
+        σ[i] = sqrt( (
       - μ[i]*sin_ω + (0.5+μ[i]^2)*(N+1) + 0.5*cos_N1ω^2
       - 0.5*(cos_ω*sin_N1ω*cos_N1ω)/sin_ω - (μ[i]*sin_ω*cos_N1ω)/(cos_ω-1)
       + sin_N1ω*μ[i] - 0.5 - μ[i]^2 + (μ[i]*sin_ω*cos_ω)/(cos_ω-1)
-      )
+      )/N )
     end
     return σ,μ
 end
@@ -103,13 +103,13 @@ function getCosData(IT, ω)
         μ[i] =  (
       - 0.5*cos_N1ω - 0.5*(sin_ω*sin_N1ω)/(cos_ω-1) + 0.5*cos_ω
       + 0.5*sin_ω^2/(cos_ω-1)
-      )
+      )/N
 
-        σ[i] = (
+        σ[i] = sqrt( (
       (0.5+μ[i]^2)*(N+1) - 0.5*cos_N1ω^2 - (μ[i]*sin_ω^2)/(cos_ω-1)
       + 0.5*(cos_ω*sin_N1ω*cos_N1ω)/sin_ω + cos_N1ω*μ[i]
       + (μ[i]*sin_ω*sin_N1ω)/(cos_ω-1) -0.5 -μ[i]^2 - cos_ω*μ[i]
-      )
+      )/N )
     end
     return σ,μ
 end

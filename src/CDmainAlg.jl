@@ -1,7 +1,7 @@
 #has to be moved inside a function
 
 
-@debug function CD(y,components; f = Vector{Float64}(0))
+function CD(y,components; f = Vector{Float64}(0))
 
     #prepare check for dimension sizes
     N = size(y)[1]
@@ -9,7 +9,7 @@
     IT = initIT_range(N,components,f)
 
     d = initData(IT,f, f)
-@bp
+
     xdy = initXDY(IT,y,d)
 
     λ = computeλvec(IT,xdy,10)
