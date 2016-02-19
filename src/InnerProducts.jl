@@ -6,12 +6,20 @@
 function xdy_step(IT,y::Vector{Float64},d)
     N = IT.obs
 
-    xdy = Vector{Float64}(N-1) 
-    sumY = 0.0
+    Nel = IT.nelements[SLOPE]
+
+    xdy = zeros(Nel) 
+
+    y_s = sum(y)
     
-    for i in 1:(N-1)
-        sumY = sumY + y[i]
-        xdy[i] = sumY*(-1.0/d.σ[STEP][i])
+    for i in 1:Nel
+
+        for j in i+1:N
+            xdy[i] += y[j]
+        end
+
+        xdy[i]=( xdy[i] -d.μ[STEP][i]*y_s )/d.σ[STEP][i]
+
     end
     
     return xdy
@@ -21,14 +29,16 @@ end
 function xdy_slope(IT,y::Vector{Float64},d)
     N = IT.obs
 
-    xdy = zeros(N) 
+    Nel = IT.nelements[SLOPE]
+
+    xdy = zeros(Nel) 
 
     y_s = sum(y)
 
-    for i in 1:N
+    for i in 1:Nel
 
         for j in i:N
-            xdy[i] += y[j] * (1.0+j-i)
+            xdy[i] += y[j] * (j-i)
         end
 
         xdy[i] =( xdy[i] -d.μ[SLOPE][i]*y_s )/d.σ[SLOPE][i]
@@ -41,12 +51,12 @@ end
 #SPIKE
 function xdy_spike(IT,y::Vector{Float64},d)
     N = IT.obs
-
+    Nel = IT.nelements[SPIKE]
     xdy = zeros(N) 
 
     y_s = sum(y)
 
-    for i in 1:N
+    for i in 1:Nel
         
         xdy[i] =( y[i] -d.μ[SPIKE][i]*y_s)/d.σ[SPIKE][i]
 

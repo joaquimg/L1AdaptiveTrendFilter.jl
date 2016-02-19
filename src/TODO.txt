@@ -1,6 +1,6 @@
 IMPORTANT:
--fix mean value and variances in normalization
-
+-fix mena and variances in maple doc
+-fix sine and cos sigularity of sin/(cos-1)
 TODO:
 -maxiter
 -lambda log or linear

@@ -1,7 +1,7 @@
 #has to be moved inside a function
 
 
-function CD(y,components; f = Vector{Float64}(0))
+@debug function CD(y,components; f = Vector{Float64}(0))
 
     #prepare check for dimension sizes
     N = size(y)[1]
@@ -11,7 +11,7 @@ function CD(y,components; f = Vector{Float64}(0))
     d = initData(IT,f, f)
 
     xdy = initXDY(IT,y,d)
-
+@bp
     λ = computeλvec(IT,xdy,10)
 
     BCD = CoordinateDescent(IT,d,xdy,λ)
@@ -19,7 +19,7 @@ function CD(y,components; f = Vector{Float64}(0))
     return BCD
 end
 
-function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
+@debug function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
     
     if sparse == 1
         BCD,β_tilde,β,activeSet = initSparse(IT)
@@ -53,7 +53,7 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
                         for l in 1:size(activeSet[c2])[1]
                             if activeSet[c2][l]
                                 temp = temp + GM[c1,c2](j,l,d,IT)*β_tilde[c2][l]
-                                if isnan(temp)
+                                if isnan(temp) || abs(β_tilde[c2][l])>1e77
                                     println([c1;c2;j;l;GM[c1,c2](j,l,d,IT);β_tilde[c2][l]])
                                     break
                                 end
@@ -61,8 +61,8 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
                         end
                     end
 
-                    β_ols = β_tilde[c1][j] + 1.0/IT.ttelements * (xdy[c1][j] - temp)
-                    if isnan(β_ols)
+                    β_ols = β_tilde[c1][j] + 1.0/IT.obs * (xdy[c1][j] - temp)
+                    if isnan(β_ols) || abs(β_ols)>1e77
                         println([c1;j;temp;xdy[c1][j]])
                     end
 
