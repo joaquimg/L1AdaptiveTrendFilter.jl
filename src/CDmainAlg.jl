@@ -1,7 +1,7 @@
 #has to be moved inside a function
 
 
-function CD(y,components; f = Vector{Float64}(0))
+@debug function CD(y,components; f = Vector{Float64}(0))
 
     #prepare check for dimension sizes
     N = size(y)[1]
@@ -9,7 +9,7 @@ function CD(y,components; f = Vector{Float64}(0))
     IT = initIT_range(N,components,f)
 
     d = initData(IT,f, f)
-
+@bp
     xdy = initXDY(IT,y,d)
 
     λ = computeλvec(IT,xdy,10)
@@ -50,14 +50,21 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
 
                     #GramMatrix LOOP (double loop: component and element)
                     for c2 in IT.components
-                        for l in size(activeSet[c2])[1]
+                        for l in 1:size(activeSet[c2])[1]
                             if activeSet[c2][l]
                                 temp = temp + GM[c1,c2](j,l,d,IT)*β_tilde[c2][l]
+                                if isnan(temp)
+                                    println([c1;c2;j;l;GM[c1,c2](j,l,d,IT);β_tilde[c2][l]])
+                                    break
+                                end
                             end
                         end
                     end
 
                     β_ols = β_tilde[c1][j] + 1.0/IT.ttelements * (xdy[c1][j] - temp)
+                    if isnan(β_ols)
+                        println([c1;j;temp;xdy[c1][j]])
+                    end
 
                     #α = 0.0
 

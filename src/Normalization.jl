@@ -5,12 +5,13 @@ function getStepData(IT,f)
 end
 function getStepData(IT)
     N = IT.obs
-    μ = Vector{Float64}(N)
-    σ = Vector{Float64}(N)
+    Nel = IT.nelements[STEP]
+    μ = Vector{Float64}(Nel)
+    σ = Vector{Float64}(Nel)
 
-    for i = 1:N
-        μ[i] = i/N
-        σ[i] = i*μ[i]^2+(N-1)*(1-μ[i])^2
+    for i = 1:Nel
+        μ[i] = (N-i)/N
+        σ[i] = sqrt(( i*μ[i]^2+(N-i)*(1-μ[i])^2 )/N)
     end
     return σ,μ
 end
