@@ -230,10 +230,10 @@ function GM33(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{
       (N-2)*μSPIKE[i]^2 - 2*μSPIKE[i]*(1-μSPIKE[i])
     )/(σSPIKE[i]*σSPIKE[j])
   else
-    GM = 1
+    GM = N
   end
 
-  return GM
+  return GM :: Float64
 end
 function GM33(i::Int, j::Int, d, IT)
     return GM33(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE])
