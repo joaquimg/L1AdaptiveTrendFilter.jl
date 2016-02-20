@@ -57,13 +57,13 @@ function GM13(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Fl
   # step x spike
   GM = Float64[]
 
-  if i > j
+  if j > i
     GM = (
-      j*μSPIKE[j]*μSTEP[i] - (N-j)*(1-μSPIKE[j])*μSTEP[i] + (1-μSPIKE[j])*μSTEP[i] + (1-μSPIKE[j])*(1-μSTEP[i])
+      i*μSPIKE[j]*μSTEP[i] - (N-i)*(1-μSTEP[i])*μSPIKE[j] + (1-μSTEP[i])*μSPIKE[j] + (1-μSPIKE[j])*(1-μSTEP[i])
       )/(σSTEP[i]*σSPIKE[j])
   else
     GM = (
-      j*μSPIKE[j]*μSTEP[i] - μSTEP[i]*μSPIKE[j] - μSPIKE[j]*(1-μSTEP[i]) - (N-j)*(1-μSPIKE[j])*μSTEP[i]
+      i*μSPIKE[j]*μSTEP[i] - μSTEP[i]*μSPIKE[j] - μSTEP[i]*(1-μSPIKE[j]) - (N-i)*(1-μSTEP[i])*μSPIKE[j]
       )/(σSTEP[i]*σSPIKE[j])
   end
 
