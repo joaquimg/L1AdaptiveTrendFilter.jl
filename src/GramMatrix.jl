@@ -1,12 +1,11 @@
-#ATENCAO
+# Closed-form formulas for the inner products between different kinds of components
+
 # considerar mu e sigma como input de cada função
 # as outras entradas são i, j (numeros dos elementos)
 # pode usar o N como numero total de elementos.
 # eu estou usando uma struct chamada iterator (ver em CDtype.jl)
 # posso corrigir isso sem problemas
 # o principla é escrever as fómulas mesmo
-
-#to complete
 
 function GM11(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
   # step x step
@@ -162,7 +161,7 @@ function GM23(l::Int, p::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{
     #  + (i-j-μSPIKE[j])*μSLOPE[i] + (i-j-μSPIKE[j])*(1-μSLOPE[i])
     #)/(σSLOPE[i]*σSPIKE[j])
   else
-    
+
     GM = (l*μSLOPE[l]*μSPIKE[p]+μSPIKE[p]*(N+1)*l+μSPIKE[p]*(N+1)*μSLOPE[l]-(1/2)*μSPIKE[p]*(N+1)^2+(1/2)*μSPIKE[p]*(N+1)-μSPIKE[p]*(l+1)*l-μSPIKE[p]*(l+1)*μSLOPE[l]+(1/2)*μSPIKE[p]*(l+1)^2-(1/2)*μSPIKE[p]*(l+1)-μSLOPE[l]*μSPIKE[p]-μSLOPE[l]*(1-μSPIKE[p]))/(σSLOPE[l]*σSPIKE[p])
 
     #GM = (
@@ -386,4 +385,3 @@ GM[4, 4] = GM44
 GM[4, 5] = GM45
 GM[5, 4] = GM54
 GM[5, 5] = GM55
-

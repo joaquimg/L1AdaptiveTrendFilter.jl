@@ -1,4 +1,4 @@
-# computes μ (mean) and σ (standard deviation) for each kind of component
+# Computes μ(mean) and σ(standard deviation) for each kind of component
 
 function getStepData(IT,f)
     getStepData(IT)

@@ -12,6 +12,4 @@ include("utils.jl")
 srand(10)
 y=rand(10)
 
-
-
 BCD=CD(y,[1,2,3], f = [10.0, 11.0])
