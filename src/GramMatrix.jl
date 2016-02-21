@@ -148,22 +148,28 @@ function GM22(i::Int, j::Int, d, IT)
     return GM22(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE])
 end
 
-function GM23(i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64})
+function GM23(l::Int, p::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64})
   # slope x spike
   GM = Float64[]
 
-  if i > j
-    GM = (
-      j*μSPIKE[j]*μSLOPE[i] + μSLOPE[i]*(N+1)*j + μSLOPE[i]*μSPIKE[j]*(N+1) - 0.5*μSLOPE[i]*(N+1)^2 + 0.5*μSLOPE[i]*(N+1)
-      - μSLOPE[i]*(j+1)*j - μSLOPE[i]*μSPIKE[j]*(j+1) + 0.5*μSLOPE[i]*(j+1)^2 - 0.5*μSLOPE[i]*(j+1)
-      + (i-j-μSPIKE[j])*μSLOPE[i] + (i-j-μSPIKE[j])*(1-μSLOPE[i])
-    )/(σSLOPE[i]*σSPIKE[j])
+  if p > l
+
+    GM = (l*μSLOPE[l]*μSPIKE[p]+μSPIKE[p]*(N+1)*l+μSPIKE[p]*(N+1)*μSLOPE[l]-(1/2)*μSPIKE[p]*(N+1)^2+(1/2)*μSPIKE[p]*(N+1)-μSPIKE[p]*(l+1)*l-μSPIKE[p]*(l+1)*μSLOPE[l]+(1/2)*μSPIKE[p]*(l+1)^2-(1/2)*μSPIKE[p]*(l+1)+(p-l-μSLOPE[l])*μSPIKE[p]+(p-l-μSLOPE[l])*(1-μSPIKE[p]))/(σSLOPE[l]*σSPIKE[p])
+
+    #GM = (
+    #  j*μSPIKE[j]*μSLOPE[i] + μSLOPE[i]*(N+1)*j + μSLOPE[i]*μSPIKE[j]*(N+1) - 0.5*μSLOPE[i]*(N+1)^2 + 0.5*μSLOPE[i]*(N+1)
+    #  - μSLOPE[i]*(j+1)*j - μSLOPE[i]*μSPIKE[j]*(j+1) + 0.5*μSLOPE[i]*(j+1)^2 - 0.5*μSLOPE[i]*(j+1)
+    #  + (i-j-μSPIKE[j])*μSLOPE[i] + (i-j-μSPIKE[j])*(1-μSLOPE[i])
+    #)/(σSLOPE[i]*σSPIKE[j])
   else
-    GM = (
-      j*μSLOPE[i]*μSPIKE[j] + μSLOPE[i]*(N+1)*j + μSLOPE[i]*μSPIKE[j]*(N+1) - 0.5*μSLOPE[i]*(N+1)^2 + 0.5*μSLOPE[i]*(N+1)
-      - μSLOPE[i]*(j+1)*j - μSLOPE[i]*μSPIKE[j]*(j+1) + 0.5*μSLOPE[i]*(j+1)^2 - 0.5*μSLOPE[i]*(j+1) - μSLOPE[i]*μSPIKE[j]
-      - μSPIKE[j]*(1-μSLOPE[i])
-    )/(σSLOPE[i]*σSPIKE[j])
+    
+    GM = (l*μSLOPE[l]*μSPIKE[p]+μSPIKE[p]*(N+1)*l+μSPIKE[p]*(N+1)*μSLOPE[l]-(1/2)*μSPIKE[p]*(N+1)^2+(1/2)*μSPIKE[p]*(N+1)-μSPIKE[p]*(l+1)*l-μSPIKE[p]*(l+1)*μSLOPE[l]+(1/2)*μSPIKE[p]*(l+1)^2-(1/2)*μSPIKE[p]*(l+1)-μSLOPE[l]*μSPIKE[p]-μSLOPE[l]*(1-μSPIKE[p]))/(σSLOPE[l]*σSPIKE[p])
+
+    #GM = (
+    #  j*μSLOPE[i]*μSPIKE[j] + μSLOPE[i]*(N+1)*j + μSLOPE[i]*μSPIKE[j]*(N+1) - 0.5*μSLOPE[i]*(N+1)^2 + 0.5*μSLOPE[i]*(N+1)
+    #  - μSLOPE[i]*(j+1)*j - μSLOPE[i]*μSPIKE[j]*(j+1) + 0.5*μSLOPE[i]*(j+1)^2 - 0.5*μSLOPE[i]*(j+1) - μSLOPE[i]*μSPIKE[j]
+    #  - μSPIKE[j]*(1-μSLOPE[i])
+    #)/(σSLOPE[i]*σSPIKE[j])
   end
 
   return GM
