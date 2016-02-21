@@ -1,7 +1,11 @@
 #has to be moved inside a function
 
 
-@debug function CD(y,components; f = Vector{Float64}(0))
+function CD(y,components; f = Vector{Float64}(0))
+    
+    ym = mean(y)
+
+    y = y - ym
 
     #prepare check for dimension sizes
     N = size(y)[1]
@@ -11,7 +15,7 @@
     d = initData(IT,f, f)
 
     xdy = initXDY(IT,y,d)
-@bp
+
     λ = computeλvec(IT,xdy,10)
 
     BCD = CoordinateDescent(IT,d,xdy,λ)
@@ -19,7 +23,7 @@
     return BCD
 end
 
-@debug function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
+function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
     
     if sparse == 1
         BCD,β_tilde,β,activeSet = initSparse(IT)

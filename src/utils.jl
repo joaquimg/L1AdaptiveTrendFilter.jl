@@ -18,7 +18,7 @@ function findλmax(IT,xdy)
         
     end
     
-    return λmax
+    return λmax/IT.obs
 end
 
 function computeλvec(IT,xdy,numλ; logarit = true )
