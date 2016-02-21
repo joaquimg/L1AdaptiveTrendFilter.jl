@@ -24,23 +24,27 @@ function GM11(i::Int, j::Int, d, IT)
     return GM11(i, j, IT.obs, d.μ[STEP], d.σ[STEP])
 end
 
-function GM12(i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64})
+function GM12(t::Int, l::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64}, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64})
   # step x slope
   GM = Float64[]
 
-  if i > j
-    GM = (
-      j*μSLOPE[j]*μSTEP[i] - (i-j)*(1-μSLOPE[j])*μSTEP[i] - μSTEP[i]*(N+1) + μSTEP[i]*μSLOPE[j]*(N+1)
-      + 0.5*(N+1)^2 - 0.5*N - 0.5*μSLOPE[j]*(N+1)^2 + 0.5*μSLOPE[j]*(N+1)
-      + μSTEP[i]*(i+1) - μSTEP[i]*μSLOPE[j]*(i+1) - 0.5*(i+1)^2 + 0.5*i
-      + 0.5*μSLOPE[j]*(i+1)^2 - 0.5*μSLOPE[j]*(i+1)
-      )/(σSTEP[i]*σSLOPE[j])
+  if l > t
+
+    GM = (t*μSTEP[t]*μSLOPE[l]-(l-t)*(1-μSTEP[t])*μSLOPE[l]-(N+1)*l-μSLOPE[l]*(N+1)+(N+1)*l*μSTEP[t]+μSLOPE[l]*(N+1)*μSTEP[t]+(1/2)*(N+1)^2-(1/2)*N-(1/2)*μSTEP[t]*(N+1)^2+(1/2)*μSTEP[t]*(N+1)+(l+1)*l+μSLOPE[l]*(l+1)-(l+1)*l*μSTEP[t]-μSLOPE[l]*(l+1)*μSTEP[t]-(1/2)*(l+1)^2+(1/2)*l+(1/2)*μSTEP[t]*(l+1)^2-(1/2)*μSTEP[t]*(l+1))/(σSTEP[t]*σSLOPE[l])
+    #GM = (
+    #  j*μSLOPE[j]*μSTEP[i] - (i-j)*(1-μSLOPE[j])*μSTEP[i] - μSTEP[i]*(N+1) + μSTEP[i]*μSLOPE[j]*(N+1)
+    #  + 0.5*(N+1)^2 - 0.5*N - 0.5*μSLOPE[j]*(N+1)^2 + 0.5*μSLOPE[j]*(N+1)
+    #  + μSTEP[i]*(i+1) - μSTEP[i]*μSLOPE[j]*(i+1) - 0.5*(i+1)^2 + 0.5*i
+    #  + 0.5*μSLOPE[j]*(i+1)^2 - 0.5*μSLOPE[j]*(i+1)
+    #  )/(σSTEP[i]*σSLOPE[j])
   else
-    GM = (
-      i*μSTEP[i]*μSLOPE[j] - (i+1)*μSTEP[i]*μSLOPE[j] + 0.5*μSLOPE[j]*(i+1)^2 - 0.5*μSLOPE[j]*(i+1)
-      - μSTEP[i]*(N+1) + μSTEP[i]*μSLOPE[j]*(N+1) + 0.5*(N+1)^2 - 0.5*N-0.5*μSLOPE[j]*(N+1)^2
-      + 0.5*μSLOPE[j]*(N+1) + μSTEP[i]*(j+1) - 0.5*(j+1)^2 + 0.5*j
-      )/(σSTEP[i]*σSLOPE[j])
+
+    GM = (-(l+1)*l*μSTEP[t]+(1/2)*t-(1/2)*N+(1/2)*(N+1)^2+μSLOPE[l]*(N+1)*μSTEP[t]-μSLOPE[l]*(l+1)*μSTEP[t]-μSLOPE[l]*(N+1)-(1/2)*μSTEP[t]*(N+1)^2+(1/2)*μSTEP[t]*(N+1)+(1/2)*μSTEP[t]*(l+1)^2-(1/2)*μSTEP[t]*(l+1)+μSLOPE[l]*(t+1)+l*μSTEP[t]*μSLOPE[l]-(1/2)*(t+1)^2+(N+1)*l*μSTEP[t]-(N+1)*l+(t+1)*l)/(σSTEP[t]*σSLOPE[l])
+    #GM = (
+    #  i*μSTEP[i]*μSLOPE[j] - (i+1)*μSTEP[i]*μSLOPE[j] + 0.5*μSLOPE[j]*(i+1)^2 - 0.5*μSLOPE[j]*(i+1)
+    #  - μSTEP[i]*(N+1) + μSTEP[i]*μSLOPE[j]*(N+1) + 0.5*(N+1)^2 - 0.5*N-0.5*μSLOPE[j]*(N+1)^2
+    #  + 0.5*μSLOPE[j]*(N+1) + μSTEP[i]*(j+1) - 0.5*(j+1)^2 + 0.5*j
+    #  )/(σSTEP[i]*σSLOPE[j])
   end
 
   return GM
