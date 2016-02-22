@@ -3,7 +3,6 @@
 # step x step
 function GM11(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
 
-  GM = Float64[]
   m = min(i, j)
   M = max(i, j)
 
@@ -22,8 +21,6 @@ function GM12(
     t::Int, l::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64},
     μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64}
     )
-
-  GM = Float64[]
 
   if l > t
     GM = (
@@ -58,8 +55,6 @@ function GM13(
     μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64}
     )
 
-  GM = Float64[]
-
   if j > i
     GM = (
       i*μSPIKE[j]*μSTEP[i] - (N-i)*(1-μSTEP[i])*μSPIKE[j] + (1-μSTEP[i])*μSPIKE[j] + (1-μSPIKE[j])*(1-μSTEP[i])
@@ -81,19 +76,17 @@ end
 
 # step x sine
 function GM14(
-    i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64},
+    t::Int, s::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64},
     μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Float64
     )
 
-  GM = Float64[]
-
-  GM = (
-    μSTEP[i]*μSIN[j]*(i+1) - 0.5*(μSTEP[i]*sin(ω)*cos((i+1)*ω))/(cos(ω)-1) + 0.5*μSTEP[i]*sin((i+1)*ω)
-    - μSTEP[i]*μSIN[j] + 0.5*(μSTEP[i]*sin(ω)*cos(ω))/(cos(ω)-1) - 0.5*μSTEP[i]*sin(ω)
-    + (μSTEP[i]*μSIN[j]-μSIN[j])*(N+1) - 0.5*((μSTEP[i]-1)*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
-    + 0.5*(μSTEP[i]-1)*sin((N+1*ω)) - (μSTEP[i]μSIN[j]-μSIN[j])*(i+1)
-    + 0.5*((μSTEP[i]-1)*sin(ω)*cos((N+1)*ω))/(cos(ω)-1) - 0.5*(μSTEP[i]-1)*sin((i+1)*ω)
-  )/(σSTEP[i]*σSIN[j])
+  GM = (μSTEP[t]*μSIN[s]*(t+1)-(1/2)*μSTEP[t]*sin(ω)*cos((t+1)*ω)/(cos(ω)-1)
+        +(1/2)*μSTEP[t]*sin((t+1)*ω)-μSTEP[t]*μSIN[s]+(1/2)*μSTEP[t]*sin(ω)*cos(ω)/(cos(ω)-1)
+        -(1/2)*μSTEP[t]*sin(ω)+(μSTEP[t]*μSIN[s]-μSIN[s])*(N+1)-(1/2)*(-1+μSTEP[t])*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
+        +(-1/2+(1/2)*μSTEP[t])*sin((N+1)*ω)-(μSTEP[t]*μSIN[s]-μSIN[s])*(t+1)
+        +(1/2)*(-1+μSTEP[t])*sin(ω)*cos((t+1)*ω)/(cos(ω)-1)-(-1/2+(1/2)*μSTEP[t])*sin((t+1)*ω)
+        )/(σSTEP[t]*σSIN[s]
+        )
 
   return GM
 end
@@ -106,21 +99,18 @@ end
 
 # step x cosine
 function GM15(
-    i::Int, j::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64},
+    t::Int, c::Int, N::Int, μSTEP::Vector{Float64}, σSTEP::Vector{Float64},
     μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Float64
     )
 
-  ω = 0
-  GM = Float64[]
-
-  GM = (
-    μSTEP[i]*μCOS[j]*(i+1) + 0.5*μSTEP[i]*cos((i+1)*ω) + 0.5*(μSTEP[i]*sin(ω)*sin((i+1)*ω))/(cos(ω)-1)
-    - μSTEP[i]*μCOS[j] - 0.5*μSTEP[i]*cos(ω) - 0.5*(μSTEP[i]*sin(ω)^2)/(cos(ω)-1)
-    + (μSTEP[i]*μCOS[j]-μCOS[j])*(N+1) - 0.5*((μSTEP[i]-1)*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
-    + 0.5*(μSTEP[i]-1)*sin((N+1)*ω) - (μSTEP[i]*μCOS[j]-μCOS[j])*(i+1)
-    + 0.5*((μSTEP[i]-1)*sin(ω)*cos((i+1)*ω))/(cos(ω)-1) - 0.5*(μSTEP[i]-1)*sin((i+1)*ω)
-  )/(σSTEP[i]*σCOS[j])
-
+  GM = (μSTEP[t]*μCOS[c]*(t+1)+(1/2)*μSTEP[t]*cos((t+1)*ω)+(1/2)*μSTEP[t]*sin(ω)*sin((t+1)*ω)/(cos(ω)-1)
+        -μSTEP[t]*μCOS[c]-(1/2)*μSTEP[t]*cos(ω)-(1/2)*μSTEP[t]*sin(ω)^2/(cos(ω)-1)
+        +(μSTEP[t]*μCOS[c]-μCOS[c])*(N+1)-(1/2)*(-1+μSTEP[t])*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
+        +(-1/2+(1/2)*μSTEP[t])*sin((N+1)*ω)-(μSTEP[t]*μCOS[c]-μCOS[c])*(t+1)
+        +(1/2)*(-1+μSTEP[t])*sin(ω)*cos((t+1)*ω)/(cos(ω)-1)-(-1/2+(1/2)*μSTEP[t])*sin((t+1)*ω)
+        )/(σSTEP[t]*σCOS[c]
+        )
+  
   return GM
 end
 function GM15(i::Int, j::Int, d, IT)
@@ -133,7 +123,6 @@ end
 # slope x slope
 function GM22(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
 
-  GM = Float64[]
   m = min(i, j)
   M = max(i, j)
 
@@ -160,8 +149,6 @@ function GM23(
     l::Int, p::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64},
     μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64}
     )
-
-  GM = Float64[]
 
   if p > l
     GM = (
@@ -191,25 +178,24 @@ end
 
 # slope x sine
 function GM24(
-    i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64},
+    l::Int, s::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64},
     μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Float64
     )
 
-  GM = Float64[]
-
-  GM = (
-    μSLOPE[i]*μSIN[j]*(i+1) - 0.5*(μSLOPE[i]*sin(ω)*cos((i+1)*ω))/(cos(ω)-1) + 0.5*μSLOPE[i]*sin((i+1)*ω)
-    -μSLOPE[i]*μSIN[j] + 0.5*(μSLOPE[i]*sin(ω)*cos(ω))/(cos(ω)-1) - 0.5*μSLOPE[i]*sin(ω)
-    + (i*μSIN[j]+μSLOPE[i]*μSIN[j]+0.5*μSIN[j])*(N+1) - 0.5*μSIN[j]*(N+1)^2
-    + 0.5*(sin(ω)*(N+1)*cos((N+1)*ω))/(cos(ω)-1) - 0.5*(N+1)*sin((N+1)*ω)
-    +0.5*((-i-μSLOPE[i])*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
-    + 0.5*((i*cos(ω)+μSLOPE[i]*cos(ω)-μSLOPE[i]-i-1)*sin((N+1)*ω))/(cos(ω)-1)
-    - (i*μSIN[j]+μSLOPE[i]*μSIN[j]+0.5*μSIN[j])*(i+1) + 0.5*μSIN[j]*(i+1)^2
-    - 0.5*(sin(ω)*(i+1)*cos((i+1)*ω))/(cos(ω)-1) + 0.5*(i+1)*sin((i+1)*ω)
-    - 0.5*((-i-μSLOPE[i])*sin(ω)*cos((i+1)*ω))/(cos(ω)-1)
-    - 0.5*((i*cos(ω)+μSLOPE[i]*cos(ω)-i-μSLOPE[i]-1)*sin((i+1)*ω)/(cos(ω)-1))
-    )/(σSLOPE[i]*σSIN[j])
-
+  GM = (μSLOPE[l]*μSIN[s]*(l+1)-(1/2)*μSLOPE[l]*sin(ω)*cos((l+1)*ω)/(cos(ω)-1)
+        +(1/2)*μSLOPE[l]*sin((l+1)*ω)-μSLOPE[l]*μSIN[s]+(1/2)*μSLOPE[l]*sin(ω)*cos(ω)/(cos(ω)-1)
+        -(1/2)*μSLOPE[l]*sin(ω)+(l*μSIN[s]+(1/2)*μSIN[s]+μSLOPE[l]*μSIN[s])*(N+1)
+        -(1/2)*μSIN[s]*(N+1)^2+(1/2)*sin(ω)*(N+1)*cos((N+1)*ω)/(cos(ω)-1)-(1/2*(N+1))*sin((N+1)*ω)
+        -(1/2)*(μSLOPE[l]+l)*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
+        +(1/2)*(l*cos(ω)+μSLOPE[l]*cos(ω)-l-μSLOPE[l]-1)*sin((N+1)*ω)/(cos(ω)-1)
+        -(l*μSIN[s]+(1/2)*μSIN[s]+μSLOPE[l]*μSIN[s])*(l+1)
+        +(1/2)*μSIN[s]*(l+1)^2-(1/2)*sin(ω)*(l+1)*cos((l+1)*ω)/(cos(ω)-1)
+        +(1/2*(l+1))*sin((l+1)*ω)
+        +(1/2)*(μSLOPE[l]+l)*sin(ω)*cos((l+1)*ω)/(cos(ω)-1)
+        -(1/2)*(l*cos(ω)+μSLOPE[l]*cos(ω)-l-μSLOPE[l]-1)*sin((l+1)*ω)/(cos(ω)-1)
+        )/(σSLOPE[l]*σSIN[s]
+        )
+  
   return GM
 end
 function GM24(i::Int, j::Int, d, IT)
@@ -221,24 +207,22 @@ end
 
 # slope x cosine
 function GM25(
-    i::Int, j::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64},
+    l::Int, c::Int, N::Int, μSLOPE::Vector{Float64}, σSLOPE::Vector{Float64},
     μCOS::Vector{Float64}, σCOS::Vector{Float64}, ω::Float64
     )
 
-  GM = Float64[]
-  ω = 0
-
-  GM = (
-      μSLOPE[i]*μCOS[j]*(i+1) + 0.5*μSLOPE[i]*cos((i+1)*ω) + 0.5*(μSLOPE[i]*sin(ω)*sin((i+1)*ω))/(cos(ω)-1)
-      -μSLOPE[i]*μCOS[j] - 0.5*μSLOPE[i]*cos(ω) -0.5*(μSLOPE[i]*sin(ω)^2)/(cos(ω)-1)#sera que eh mais
-      + (i*μCOS[j]+μSLOPE[i]*μCOS[j]+0.5*μCOS[j])*(N+1)
-      - 0.5*μCOS[j]*(N+1)^2 + 0.5*(sin(ω)*(N+1)*cos((N+1)*ω))/(cos(ω)-1)
-      - 0.5*(N+1)sin((N+1)*ω) + 0.5*((-i-μSLOPE[i])*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
-      + 0.5*(i*cos(ω)+μSLOPE[i]*cos(ω)-i-μSLOPE[i]-1)/(cos(ω)-1)-(i*μCOS[j]+μSLOPE[i]*μCOS[j]+0.5*μCOS[j])*(i+1)
-      + 0.5*μCOS[j]*(i+1)^2 - 0.5*(sin(ω)*(i+1)*cos((i+1)*ω))/(cos(ω)-1)
-      + 0.5*(i+1)*sin((i+1)*ω) - 0.5*((-i-μSLOPE[i])*sin(ω)*cos((i+1)*ω))/(cos(ω)-1)
-      - 0.5*((i*cos(ω)+μSLOPE[i]*cos(ω)-i-μSLOPE[i]-1)*sin((i+1)*ω))/(cos(ω)-1)
-  )/(σSLOPE[i]*σCOS[j])
+  GM = (μSLOPE[l]*μCOS[c]*(l+1)+(1/2)*μSLOPE[l]*cos((l+1)*ω)
+        +(1/2)*μSLOPE[l]*sin(ω)*sin((l+1)*ω)/(cos(ω)-1)-μSLOPE[l]*μCOS[c]
+        -(1/2)*μSLOPE[l]*cos(ω)-(1/2)*μSLOPE[l]*sin(ω)^2/(cos(ω)-1)
+        +((1/2)*μCOS[c]+l*μCOS[c]+μSLOPE[l]*μCOS[c])*(N+1)
+        -(1/2)*μCOS[c]*(N+1)^2+(1/2)*sin(ω)*(N+1)*cos((N+1)*ω)/(cos(ω)-1)
+        -(1/2*(N+1))*sin((N+1)*ω)-(1/2)*(μSLOPE[l]+l)*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
+        +(1/2)*(l*cos(ω)+μSLOPE[l]*cos(ω)-l-μSLOPE[l]-1)*sin((N+1)*ω)/(cos(ω)-1)
+        -((1/2)*μCOS[c]+l*μCOS[c]+μSLOPE[l]*μCOS[c])*(l+1)+(1/2)*μCOS[c]*(l+1)^2
+        -(1/2)*sin(ω)*(l+1)*cos((l+1)*ω)/(cos(ω)-1)+(1/2*(l+1))*sin((l+1)*ω)
+        +(1/2)*(μSLOPE[l]+l)*sin(ω)*cos((l+1)*ω)/(cos(ω)-1)-(1/2)*(l*cos(ω)
+        +μSLOPE[l]*cos(ω)-l-μSLOPE[l]-1)*sin((l+1)*ω)/(cos(ω)-1)
+        )/(σSLOPE[l]*σCOS[c])
 
   return GM
 end
@@ -270,17 +254,14 @@ end
 
 # spike x sine
 function GM34(
-    i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64},
+    p::Int, s::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64},
     μSIN::Vector{Float64}, σSIN::Vector{Float64}, ω::Float64
     )
 
-  GM = Float64[]
-
-  GM = (
-      μSPIKE[i]*μSIN[j]*(N+1) - 0.5*(μSPIKE[i]*sin(ω)*cos((N+1)*ω))/(cos(ω)-1)
-      + 0.5*μSPIKE[i]*sin((N+1)*ω) - μSPIKE[i]*μSIN[j] + 0.5*(μSPIKE[i]*sin(ω)cos(ω))/(cos(ω)-1)
-      - 0.5*μSPIKE[i]*sin(ω) + μSPIKE[i]*(sin(i*ω)-μSIN[j]) + (1-μSPIKE[i])*(sin(i*ω)-μSIN[j])
-  )/(σSPIKE[i]*σSIN[j])
+  GM = (μSPIKE[p]*μSIN[s]*(N+1)-(1/2)*μSPIKE[p]*sin(ω)*cos((N+1)*ω)/(cos(ω])-1)
+        +(1/2)*μSPIKE[p]*sin((N+1)*ω)-μSPIKE[p]*μSIN[s]+(1/2)*μSPIKE[p]*sin(ω)*cos(f[s])/(cos(f[s])-1)
+        -(1/2)*μSPIKE[p]*sin(ω)+μSPIKE[p]*(sin(p*ω)-μSIN[s])+(1-μSPIKE[p])*(sin(p*ω)-μSIN[s])
+        )/(σSPIKE[p]*σSIN[s])
 
   return GM
 end
@@ -293,18 +274,15 @@ end
 
 # spike x cosine
 function GM35(
-    i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64},
+    p::Int, c::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64},
     μCOS::Vector{Float64}, σCOS::Vector{Float64}, ω::Float64
     )
 
-  GM = Float64[]
-
-  GM = (
-      μSPIKE[i]*μCOS[j]*(N+1) + 0.5*μSPIKE[i]*cos((N+1)*ω)
-      + 0.5*(μSPIKE[i]*sin(ω)*sin((N+1)*ω))/(cos(ω)-1) -μSPIKE[i]*μCOS[j]
-      - 0.5*μSPIKE[i]*cos(ω) - 0.5*(μSPIKE[i]*sin(ω)^2)/(cos(ω)-1)
-      + μSPIKE[i]*(cos(i*ω)-μCOS[j]) + (1-μSPIKE[i])*(cos(i*ω)-μCOS[j])
-  )/(σSPIKE[i]*σCOS[j])
+  GM = (μSPIKE[p]*μCOS[c]*(N+1)+(1/2)*μSPIKE[p]*cos((N+1)*ω)
+        +(1/2)*μSPIKE[p]*sin(ω)*sin((N+1)*ω)/(cos(ω)-1)-μSPIKE[p]*μCOS[c]
+        -(1/2)*μSPIKE[p]*cos(ω)-(1/2)*μSPIKE[p]*sin(ω)^2/(cos(ω)-1)
+        +μSPIKE[p]*(cos(p*ω)-μCOS[c])+(1-μSPIKE[p])*(cos(p*ω)-μCOS[c])
+        )/(σSPIKE[p]*σCOS[c])
 
   return GM
 end
@@ -318,18 +296,31 @@ end
 # sine x sine
 function GM44(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64},ω::Vector{Float64})
 
-  GM = Float64[]
-
-  GM = (
-      μSIN[i]*μSIN[j]*(N+1) - 0.5*(sin(ω[j])*cos((N+1)*ω[j])*sin(N+1)*ω[i])/(cos(ω[i])-cos(ω[j]))
-      + 0.5*(sin(ω[i])*sin((N+1)*ω[j])*cos((N+1)*ω[i]))/(cos(ω[i])-cos(ω[j]))
-      - 0.5*sin((N+1)*ω[j])*sin((N+1)*ω[i]) - 0.5*(μSIN[j]*sin(ω[i])*cos((N+1)*ω[i]))/(cos(ω[i])-1)
-      - 0.5*(μSIN[i]*sin(ω[j])*cos((N+1)*ω[j]))/(cos(ω[j])-1) + 0.5*μSIN[j]*sin((N+1)*ω[i])
-      + 0.5*μSIN[i]*sin((N+1)*ω[j]) - μSIN[i]*μSIN[j] + 0.5*(sin(ω[i])*sin(ω[j])*cos(j))/(cos(i)-cos(j))
-      - 0.5*(sin(ω[j])*sin(ω[i])*cos(ω[i]))/(cos(ω[i])-cos(ω[j])) + 0.5*sin(ω[i])*sin(ω[j])
-      + 0.5*(μSIN[j]*sin(ω[i])*cos(ω[i]))/(cos(ω[i])-1) + 0.5*(μSIN[i]*sin(ω[j])*cos(ω[j]))/(cos(ω[j])-1)
-      - 0.5*μSIN[j]*sin(ω[i]) - 0.5*μSIN[i]*sin(ω[j])
-  )/(σSIN[i]*σSIN[j])
+  #ATENTION HERE
+  #there still may be a ptoblem from cos(ωi) = cos(ωj) with i != j
+  if i == j
+    GM = float(N)
+  elseif cos(ω[j])-cos(ω[i]) == 0
+    #cancelation that need to happen for finiteness
+    GM = (μSIN[j]*μSIN[i]*(N+1)
+          -(1/2)*sin((N+1)*ω[j])*sin((N+1)*ω[i])-(1/2)*μSIN[j]*sin(ω[i])*cos((N+1)*ω[i])/(-1+cos(ω[i]))
+          -(1/2)*μSIN[i]*sin(ω[j])*cos((N+1)*ω[j])/(cos(ω[j])-1)+(1/2)*μSIN[j]*sin((N+1)*ω[i])
+          +(1/2)*sin((N+1)*ω[j])*μSIN[i]-μSIN[j]*μSIN[i]
+          +(1/2)*sin(ω[i])*sin(ω[j])
+          +(1/2)*μSIN[j]*sin(ω[i])*cos(ω[i])/(-1+cos(ω[i]))+(1/2)*μSIN[i]*sin(ω[j])*cos(ω[j])/(cos(ω[j])-1)
+          -(1/2)*μSIN[j]*sin(ω[i])-(1/2)*μSIN[i]*sin(ω[j])
+          )/(σSIN[j]*σSIN[i])
+  else
+    GM = (μSIN[j]*μSIN[i]*(N+1)+(1/2)*sin(ω[j])*cos((N+1)*ω[j])*sin((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
+          -(1/2)*sin(ω[i])*sin((N+1)*ω[j])*cos((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
+          -(1/2)*sin((N+1)*ω[j])*sin((N+1)*ω[i])-(1/2)*μSIN[j]*sin(ω[i])*cos((N+1)*ω[i])/(-1+cos(ω[i]))
+          -(1/2)*μSIN[i]*sin(ω[j])*cos((N+1)*ω[j])/(cos(ω[j])-1)+(1/2)*μSIN[j]*sin((N+1)*ω[i])
+          +(1/2)*sin((N+1)*ω[j])*μSIN[i]-μSIN[j]*μSIN[i]-(1/2)*sin(ω[j])*cos(ω[j])*sin(ω[i])/(cos(ω[j])-cos(ω[i]))
+          +(1/2)*sin(ω[i])*sin(ω[j])*cos(ω[i])/(cos(ω[j])-cos(ω[i]))+(1/2)*sin(ω[i])*sin(ω[j])
+          +(1/2)*μSIN[j]*sin(ω[i])*cos(ω[i])/(-1+cos(ω[i]))+(1/2)*μSIN[i]*sin(ω[j])*cos(ω[j])/(cos(ω[j])-1)
+          -(1/2)*μSIN[j]*sin(ω[i])-(1/2)*μSIN[i]*sin(ω[j])
+          )/(σSIN[j]*σSIN[i])
+  end
 
   return GM
 end
@@ -337,26 +328,32 @@ function GM44(i::Int, j::Int, d, IT)
     return GM44(i, j, IT.obs, d.μ[SIN], d.σ[SIN], d.fs)
 end
 
-#CORRIGIG INPUT DOS SENOIDES
+
 # sine x cosine
 function GM45(
-    i::Int, j::Int, N::Int, μSINE::Vector{Float64}, σSIN::Vector{Float64},
+    s::Int, c::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{Float64},
     μCOS::Vector{Float64}, σCOS::Vector{Float64}, ωs::Vector{Float64}, ωc::Vector{Float64}
     )
 
-  GM = Float64[]
-
-  GM = (
-      μSINE[i]*μCOS[j]*(N+1) + 0.5*(sin(ωs[i])*cos((N+1)*ωc[j])*cos((N+1)*ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
-      - 0.5*cos((N+1)*ωc[j])*sin((N+1)*ωs[i])
-      + 0.5*(sin(ωc[j])*sin((N+1)*ωc[j])*sin((N+1)*ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
-      - 0.5*(μCOS[j]*sin(ωs[i])*cos((N+1)*ωs[i]))/(cos(ωs[i])-1) + 0.5*μSINE[i]*cos((N+1)*ωc[j])
-      + 0.5*μCOS[j]*sin((N+1)*ωs[i]) + 0.5*(μSINE[i]*sin(ωc[j])*sin((N+1)*ωc[j]))/(cos(ωc[j])-1)
-      - μSINE[i]*μCOS[j] - 0.5*(sin(ωs[i])*cos(ωc[j])*cos(ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
-      + 0.5*cos(ωc[j])*sin(ωs[i]) - 0.5*(sin(ωc[j])^2*sin(ωs[i]))/(cos(ωs[i])-cos(ωc[j]))
-      + 0.5*(μCOS[j]*sin(ωs[i])*cos(ωs[i]))/(cos(ωs[i])-1) - 0.5*μSINE[i]*cos(ωc[j])
-      - 0.5*sin(ωs[i])*μCOS[j] - 0.5*(μSINE[i]*sin(ωc[j])^2)/(cos(ωc[j])-1)
-  )/(σSIN[i]*σCOS[j])
+  if cos(ωc[c])-cos(ωs[s]) != 0
+    GM = (μSIN[s]*μCOS[c]*(N+1)+(1/2)*sin(ωs[s])*cos((N+1)*ωs[s])*cos((N+1)*ωc[c])/(cos(ωs[s])-cos(ωc[c]))
+          -(1/2)*sin((N+1)*ωs[s])*cos((N+1)*ωc[c])+(1/2)*sin(ωc[c])*sin((N+1)*ωs[s])*sin((N+1)*ωc[c])/(cos(ωs[s])-cos(ωc[c]))
+          +(1/2)*μSIN[s]*cos((N+1)*ωc[c])-(1/2)*μCOS[c]*sin(ωs[s])*cos((N+1)*ωs[s])/(cos(ωs[s])-1)
+          +(1/2)*μSIN[s]*sin(ωc[c])*sin((N+1)*ωc[c])/(cos(ωc[c])-1)+(1/2)*sin((N+1)*ωs[s])*μCOS[c]-μSIN[s]*μCOS[c]
+          -(1/2)*sin(ωs[s])*cos(ωs[s])*cos(ωc[c])/(cos(ωs[s])-cos(ωc[c]))+(1/2)*sin(ωs[s])*cos(ωc[c])
+          -(1/2)*sin(ωc[c])^2*sin(ωs[s])/(cos(ωs[s])-cos(ωc[c]))-(1/2)*μSIN[s]*cos(ωc[c])
+          +(1/2)*μCOS[c]*sin(ωs[s])*cos(ωs[s])/(cos(ωs[s])-1)-(1/2)*μSIN[s]*sin(ωc[c])^2/(cos(ωc[c])-1)
+          -(1/2)*sin(μSIN[s])*μCOS[c])/(σCOS[c]*σSIN[s])
+  else
+    GM = (μSIN[s]*μCOS[c]*(N+1)+
+          -(1/2)*sin((N+1)*ωs[s])*cos((N+1)*ωc[c])
+          +(1/2)*μSIN[s]*cos((N+1)*ωc[c])-(1/2)*μCOS[c]*sin(ωs[s])*cos((N+1)*ωs[s])/(cos(ωs[s])-1)
+          +(1/2)*μSIN[s]*sin(ωc[c])*sin((N+1)*ωc[c])/(cos(ωc[c])-1)+(1/2)*sin((N+1)*ωs[s])*μCOS[c]-μSIN[s]*μCOS[c]
+          +(1/2)*sin(ωs[s])*cos(ωc[c])
+          -(1/2)*μSIN[s]*cos(ωc[c])
+          +(1/2)*μCOS[c]*sin(ωs[s])*cos(ωs[s])/(cos(ωs[s])-1)-(1/2)*μSIN[s]*sin(ωc[c])^2/(cos(ωc[c])-1)
+          -(1/2)*sin(μSIN[s])*μCOS[c])/(σCOS[c]*σSIN[s])
+  end
 
   return GM
 end
@@ -370,21 +367,27 @@ end
 # cosine x cosine
 function GM55(i::Int, j::Int, N::Int, μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Vector{Float64})
 
-  GM = Float64[]
-
-  GM = (
-      μCOS[i]*μCOS[j]*(N+1) - 0.5*cos((N+1)*ω[j])*cos((N+1)*ω[i])
-      - 0.5*(sin(ω[i])*cos((N+1)*ω[j])*sin((N+1)*ω[i]))/(cos(ω[i])-cos(ω[j]))
-      + 0.5*(sin(ω[j])*sin((N+1)*ω[j])*cos((N+1)*ω[i]))/(cos(ω[i])-cos(ω[j]))
-      + 0.5*μCOS[j]*cos((N+1)*ω[i]) + 0.5*cos((N+1)*ω[j])*μCOS[i]
-      + 0.5*(μCOS[j]*sin(ω[i])*sin((N+1)*ω[i]))/(cos(ω[i])-1)
-      + 0.5*(μCOS[i]*sin(ω[j])*sin((N+1)*ω[j]))/(cos(ω[j])-1) - μCOS[i]*μCOS[j]
-      + 0.5*cos(ω[i])*cos(ω[j]) + 0.5*(sin(ω[i])^2*cos(ω[j]))/(cos(ω[i])-cos(ω[j]))
-      - 0.5*(sin(ω[j])^2*cos(ω[i]))/(cos(ω[i])-cos(ω[j])) - 0.5*μCOS[j]*cos(ω[i])
-      - 0.5*μCOS[i]*cos(ω[j]) - 0.5*(μCOS[j]*sin(ω[i])^2)/(cos(ω[i])-1)
-      - 0.5*(μCOS[i]*sin(ω[j])^2)/(cos(ω[j])-1)
-  )/(σCOS[i]*σCOS[j])
-
+  if cos(ω[i])-cos(ω[j]) != 0
+    GM = (μCOS[j]*μCOS[i]*(N+1)-(1/2)*cos((N+1)*ω[j])*cos((N+1)*ω[i])
+          +(1/2)*sin(ω[i])*cos((N+1)*ω[j])*sin((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
+          -(1/2)*sin(ω[j])*sin((N+1)*ω[j])*cos((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
+          +(1/2)*μCOS[j]*cos((N+1)*ω[i])+(1/2)*cos((N+1)*ω[j])*μCOS[i]
+          +(1/2)*μCOS[j]*sin(ω[i])*sin((N+1)*ω[i])/(-1+cos(ω[i]))
+          +(1/2)*μCOS[i]*sin(ω[j])*sin((N+1)*ω[j])/(cos(ω[j])-1)
+          -μCOS[j]*μCOS[i]+(1/2)*cos(ω[j])*cos(ω[i])-(1/2)*sin(ω[i])^2*cos(ω[j])/(cos(ω[j])-cos(ω[i]))
+          +(1/2)*sin(ω[j])^2*cos(ω[i])/(cos(ω[j])-cos(ω[i]))-(1/2)*μCOS[j]*cos(ω[i])
+          -(1/2)*cos(ω[j])*μCOS[i]-(1/2)*μCOS[j]*sin(ω[i])^2/(-1+cos(ω[i]))
+          -(1/2)*μCOS[i]*sin(ω[j])^2/(cos(ω[j])-1))/(σCOS[j]*σCOS[i])
+  else
+    GM = (μCOS[j]*μCOS[i]*(N+1)-(1/2)*cos((N+1)*ω[j])*cos((N+1)*ω[i])
+          +(1/2)*μCOS[j]*cos((N+1)*ω[i])+(1/2)*cos((N+1)*ω[j])*μCOS[i]
+          +(1/2)*μCOS[j]*sin(ω[i])*sin((N+1)*ω[i])/(-1+cos(ω[i]))
+          +(1/2)*μCOS[i]*sin(ω[j])*sin((N+1)*ω[j])/(cos(ω[j])-1)
+          -μCOS[j]*μCOS[i]+(1/2)*cos(ω[j])*cos(ω[i])
+          -(1/2)*μCOS[j]*cos(ω[i])
+          -(1/2)*cos(ω[j])*μCOS[i]-(1/2)*μCOS[j]*sin(ω[i])^2/(-1+cos(ω[i]))
+          -(1/2)*μCOS[i]*sin(ω[j])^2/(cos(ω[j])-1))/(σCOS[j]*σCOS[i])
+  end
   return GM
 end
 function GM55(i::Int, j::Int, d, IT)
