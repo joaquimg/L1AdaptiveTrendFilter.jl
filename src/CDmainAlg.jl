@@ -34,6 +34,7 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
     BIC = Inf::Float64
     β_ols = 0.0 :: Float64
     temp = 0.0 :: Float64
+    tolerance = 1e77
 
     for λ in Λ # regularization path
 
@@ -52,19 +53,13 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
                     for c2 in IT.components
                         for l in 1:size(activeSet[c2])[1]
                             if activeSet[c2][l]
-                                temp = temp + GM[c1,c2](j,l,d,IT)*β_tilde[c2][l]
-                                if isnan(temp) || abs(β_tilde[c2][l])>1e77
-                                    println([c1;c2;j;l;GM[c1,c2](j,l,d,IT);β_tilde[c2][l]])
-                                    break
-                                end
+                                temp = temp + GM[c1,c2](j,l,d,IT) * β_tilde[c2][l]
                             end
                         end
                     end
 
+                    # univariate ordinary leasts squares coefficient
                     β_ols = β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - temp)
-                    if isnan(β_ols) || abs(β_ols)>1e77
-                        println([c1;j;temp;xdy[c1][j]])
-                    end
 
                     # soft thresholding operator
                     if abs(β_ols) <= λ
@@ -74,7 +69,7 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
                             change = true
                         end
                     else
-                        β_tilde[c1][j] = sign(β_ols)*(abs(β_ols)-λ)
+                        β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ)
 
                         if !activeSet[c1][j]
                             activeSet[c1][j] = true
