@@ -2,14 +2,14 @@
 
 
 function CD(y,components; f = Vector{Float64}(0))
-    
+
     ym = mean(y)
 
     y = y - ym
 
     #prepare check for dimension sizes
     N = size(y)[1]
-    
+
     IT = initIT_range(N,components,f)
 
     d = initData(IT,f, f)
@@ -23,35 +23,31 @@ function CD(y,components; f = Vector{Float64}(0))
     return BCD
 end
 
-function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
-    
+function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
+
     if sparse == 1
-        BCD,β_tilde,β,activeSet = initSparse(IT)
+        BCD, β_tilde, β, activeSet = initSparse(IT)
     else
-        BCD,β_tilde,β,activeSet = initDense(IT)
+        BCD, β_tilde, β, activeSet = initDense(IT)
     end
 
     BIC = Inf::Float64
-
     β_ols = 0.0 :: Float64
     temp = 0.0 :: Float64
 
-    for k in λ#numλ #Lambda LOOP
+    for λ in Λ # regularization path
 
         change = true
-        for i in 1:IT.maxIter #Main outer LOOP: fix maximum
-        #if flagConv == false
-
+        for iter in 1:IT.maxIter #Main outer LOOP: fix maximum
             if !change
                 break
             end
 
+            # cycle through every component
             for c1 in IT.components
-                
                 for j in IT.elements[c1]
 
                     temp = 0.0
-
                     #GramMatrix LOOP (double loop: component and element)
                     for c2 in IT.components
                         for l in 1:size(activeSet[c2])[1]
@@ -70,17 +66,15 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
                         println([c1;j;temp;xdy[c1][j]])
                     end
 
-                    #α = 0.0
-
-                    if abs(β_ols) <= k#α
+                    # soft thresholding operator
+                    if abs(β_ols) <= λ
                         if activeSet[c1][j]
                             β_tilde[c1][j] = 0.0 #talvez nem precise
                             activeSet[c1][j] = false
                             change = true
                         end
-
                     else
-                        β_tilde[c1][j] = sign(β_ols)*(abs(β_ols) - k)
+                        β_tilde[c1][j] = sign(β_ols)*(abs(β_ols)-λ)
 
                         if !activeSet[c1][j]
                             activeSet[c1][j] = true
@@ -89,8 +83,8 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
                     end
                 end
             end
-            change = true
         end
+
         βtemp = copy(β_tilde)
         println(βtemp)
         #push!(BCD,copy(β_tilde))
@@ -104,7 +98,3 @@ function CoordinateDescent(IT,d,xdy,λ; sparse = 0)
 
     return BCD,β
 end
-
-
-
-
