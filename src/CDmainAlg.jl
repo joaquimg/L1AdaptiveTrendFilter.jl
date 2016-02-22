@@ -34,8 +34,7 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
 
   BIC = Inf::Float64
   β_ols = 0.0 :: Float64
-  temp = 0.0 :: Float64
-  tolerance = 1e77
+  partial_fit = 0.0 :: Float64
 
   # regularization path
   for λ in Λ
@@ -51,7 +50,7 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
       for c1 in IT.components
         for j in IT.elements[c1]
 
-          # compute the partial fit with the component in the active set
+          # compute the partial fit with the components in the active set
           partial_fit = 0.0
           for c2 in IT.components
             for l in 1:size(activeSet[c2])[1]
