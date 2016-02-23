@@ -46,7 +46,7 @@ function GMStepSlope(i::Int, j::Int, d, IT)
     return GMStepSlope(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
 end
 function GMSlopeStep(i::Int, j::Int, d, IT)
-    return GMSlopeSpike(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
+    return GMSlopeStep(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
 end
 
 # step x spike
@@ -110,7 +110,7 @@ function GMStepCos(
         +(1/2)*(-1+μSTEP[t])*sin(ω)*cos((t+1)*ω)/(cos(ω)-1)-(-1/2+(1/2)*μSTEP[t])*sin((t+1)*ω)
         )/(σSTEP[t]*σCOS[c]
         )
-  
+
   return GM
 end
 function GMStepCos(i::Int, j::Int, d, IT)
@@ -195,7 +195,7 @@ function GMSlopeSin(
         -(1/2)*(l*cos(ω)+μSLOPE[l]*cos(ω)-l-μSLOPE[l]-1)*sin((l+1)*ω)/(cos(ω)-1)
         )/(σSLOPE[l]*σSIN[s]
         )
-  
+
   return GM
 end
 function GMSlopeSin(i::Int, j::Int, d, IT)
