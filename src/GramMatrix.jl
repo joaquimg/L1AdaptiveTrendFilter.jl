@@ -46,7 +46,7 @@ function GMStepSlope(i::Int, j::Int, d, IT)
     return GMStepSlope(i, j, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
 end
 function GMSlopeStep(i::Int, j::Int, d, IT)
-    return GMSlopeStep(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
+    return GMStepSlope(j, i, IT.obs, d.μ[STEP], d.σ[STEP], d.μ[SLOPE], d.σ[SLOPE])
 end
 
 # step x spike
