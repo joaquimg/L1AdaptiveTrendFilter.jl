@@ -3,7 +3,7 @@ include("CDtypes.jl")
 #N=10
 #IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
-function initIT_range(N,components, f = Vector{Float64}(0) )
+function initIT_range(N,components, f = Vector{Float64}(0) ; MAXITER=100)
 	#components = Int[]
 	nelements = zeros(Int,5)
 	elements = Vector{Any}(5)
@@ -14,16 +14,6 @@ function initIT_range(N,components, f = Vector{Float64}(0) )
 		nelements[STEP] = N-1
 		elements[STEP] = 1:(N-1)
 	end
-	if SLOPE in components
-		#push!(components,SLOPE)
-		if STEP in components
-			nelements[SLOPE] = N-1
-			elements[SLOPE] = 1:(N-1)
-		else
-			nelements[SLOPE] = N
-			elements[SLOPE] = 1:N
-		end
-	end
 	if SPIKE in components
 		#push!(components,SPIKE)
 		if ( STEP in components || SLOPE in components )
@@ -33,6 +23,11 @@ function initIT_range(N,components, f = Vector{Float64}(0) )
 			nelements[SPIKE] = N
 			elements[SPIKE] = 1:N
 		end
+	end
+	if SLOPE in components
+		#push!(components,SLOPE)
+		nelements[SLOPE] = N-1
+		elements[SLOPE] = 1:(N-1)
 	end
 	if SIN in components
 		#push!(components,SIN)
@@ -45,7 +40,7 @@ function initIT_range(N,components, f = Vector{Float64}(0) )
 		elements[COS] = 1:size(f)[1]
 	end
 
-	out = iterator(obs,components,elements,nelements,ones(Bool,TOTALCOMPONENTS),sum(nelements),20)
+	out = iterator(obs,components,elements,nelements,ones(Bool,TOTALCOMPONENTS),sum(nelements),MAXITER)
 
 	return out
 end

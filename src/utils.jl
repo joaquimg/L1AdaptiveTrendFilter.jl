@@ -28,10 +28,10 @@ function computeλvec(IT,xdy,numλ; logarit = true )
 
     if logarit 
 
-        vec =  λmax*(logspace(1,0,numλ)-1.0)/9.0 
+        vec = λmax*(logspace(1,0.001,numλ)-1.0)/9.0 
     else
 
-        vec = λmax*(linspace(1,0,numλ))
+        vec = λmax*(linspace(1,0.001,numλ))
 
     end
     return vec
@@ -44,7 +44,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
     BIC = 0.0
     err = zeros(y)
     
-    N2 = IT.ttelements
+    N = IT.obs
     
     for i in 1:IT.obs
         err[i] = y[i] - y_hat[i]
@@ -60,7 +60,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
         end
     end
     
-    BIC = N2 * var(err) + k * log(N2)
+    BIC = N * log(var(err)) + k * log(N)
     
     return BIC
     
@@ -78,3 +78,27 @@ function compute_BIC(y::Vector{Float64}, β, IT, d; ɛ = 1e-5::Float64, std = 1)
     return BIC
 end
 
+function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
+
+    β_ols = deepcopy(β_tilde)
+    for c1 in IT.components
+        for j in IT.elements[c1]
+            # compute the partial fit with the components in the active set
+            partial_fit = 0.0
+            for c2 in IT.components
+                for l in 1:size(activeSet[c2])[1]
+                    if activeSet[c2][l]
+                        partial_fit = partial_fit + GM[c1,c2](j,l,d,IT) * β_tilde[c2][l]
+                    end
+                end
+            end
+            # univariate ordinary least squares coefficient
+            β_ols[c1][j] = β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - partial_fit)
+            # soft thresholding operator
+            if abs(β_ols[c1][j]) <= λ
+                β_ols[c1][j] = 0.0
+            end
+        end
+    end
+    return β_ols
+end

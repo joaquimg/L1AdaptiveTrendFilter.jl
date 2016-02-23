@@ -1,4 +1,6 @@
-#using Debug
+cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
+
+using PyPlot
 
 include("CDtypes.jl")
 include("initializations.jl")
@@ -9,7 +11,51 @@ include("InnerProducts.jl")
 include("Normalization.jl")
 include("utils.jl")
 
-srand(10)
-y=rand(10)
+y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
+y = y[:,1]
+##TESTE STEP + SPIKE
+#@time BCD,β1,β2 = CD(y,[1,2], numλ = 100)
+# a = β1[1] + β1[2]
+# b = β2[1] + β2[2]
+# plot(a)
+# plot(b)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
 
-BCD=CD(y,[1,2,3], f = [10.0, 11.0])
+##TESTE SLOPE
+# @time BCD,β1,β2 = CD(y,[3], numλ = 100)
+# a = β1[3]
+# b = β2[3]
+# plot(a)
+# plot(b)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
+
+##TESTE STEP + SPIKE + SLOPE
+# @time BCD,β1,β2 = CD(y,[1,2,3], numλ = 100)
+# a = β1[1] + β1[2] + β1[3]
+# b = β2[1] + β2[2] + β2[3]
+# plot(a)
+# plot(b)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
+
+##TESTE STEP + SLOPE
+@time BCD,β1,β2 = CD(y,[1,3], numλ = 100)
+a = β1[1] + β1[3]
+b = β2[1] + β2[3]
+plot(a)
+plot(b)
+writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
+writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
+
+##TESTE SINE
+# f = 2*pi./collect(1:100)
+# plot(f)
+# @time BCD,β1,β2 = CD(y,[4], numλ = 100, f = f)
+# a = β1[4]
+# b = β2[4]
+# plot(a)
+# plot(b)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
+# writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)

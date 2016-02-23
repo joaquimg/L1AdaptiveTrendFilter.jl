@@ -1,7 +1,7 @@
 #has to be moved inside a function
 
 
-function CD(y,components; f = Vector{Float64}(0))
+function CD(y,components; f = Vector{Float64}(0), numλ = 10)
 
     ym = mean(y)
 
@@ -10,31 +10,33 @@ function CD(y,components; f = Vector{Float64}(0))
     #prepare check for dimension sizes
     N = size(y)[1]
 
-    IT = initIT_range(N,components,f)
+    IT = initIT_range(N,components,f,MAXITER=100)
 
     d = initData(IT,f, f)
 
     xdy = initXDY(IT,y,d)
 
-    λ = computeλvec(IT,xdy,10)
+    Λ = computeλvec(IT,xdy,numλ)
 
-    BCD = CoordinateDescent(IT,d,xdy,λ)
+    BCD,β1,β2 = CoordinateDescent(IT,d,xdy,Λ,y)
 
-    return BCD
+    return BCD,β1,β2
 end
 
 # coordinate descent for the whole regularization path Λ
-function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
+function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
 
   if sparse == 1
     BCD, β_tilde, β, activeSet = initSparse(IT)
   else
     BCD, β_tilde, β, activeSet = initDense(IT)
   end
-
   BIC = Inf::Float64
-  β_ols = 0.0 :: Float64
-  partial_fit = 0.0 :: Float64
+  β_ols = 0.0::Float64
+  partial_fit = 0.0::Float64
+
+  β1 = 0
+  β2 = 0
 
   # regularization path
   for λ in Λ
@@ -54,7 +56,7 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
           partial_fit = 0.0
           for c2 in IT.components
             for l in 1:size(activeSet[c2])[1]
-              if activeSet[c2][l] && (c1, j) != (c2, l)
+              if activeSet[c2][l] #&& (c1, j) != (c2, l)
                 partial_fit = partial_fit + GM[c1,c2](j,l,d,IT) * β_tilde[c2][l]
               end
             end
@@ -72,27 +74,28 @@ function CoordinateDescent(IT, d, xdy, Λ; sparse=0)
             end
           else
             β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ)
-
             if !activeSet[c1][j]
               activeSet[c1][j] = true
               change = true
             end
           end
+
         end
       end
     end
 
     # bayesian information criterion
-    βtemp = copy(β_tilde)
-    println(βtemp)
-    #push!(BCD,copy(β_tilde))
+    #println(βtemp)
+    push!(BCD,deepcopy(β_tilde))
     #println(BCD)
-    BIC_new = compute_BIC(y, βtemp, IT, d)
+    β_unbiased = compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
+    BIC_new = compute_BIC(y, β_unbiased, IT, d)
     if BIC_new < BIC
       BIC = BIC_new
-      β = βtemp
+      β1 = deepcopy(β_unbiased)
+      β2 = deepcopy(β_tilde)
     end
-  end
 
-  return BCD,β
+  end
+  return BCD,β1,β2
 end

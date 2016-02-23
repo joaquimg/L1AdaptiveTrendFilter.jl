@@ -1,7 +1,7 @@
 #try with sparse
 const STEP = 1
-const SLOPE = 2
-const SPIKE = 3
+const SPIKE = 2
+const SLOPE = 3
 const SIN = 4
 const COS = 5
 const TOTALCOMPONENTS = 5

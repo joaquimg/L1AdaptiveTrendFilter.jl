@@ -27,16 +27,15 @@ function getSlopeData(IT)
 
     for i = 1:Nel
         μ[i] = (
-      0.5*(N+1)^2 - 0.5*N - i*(N+1) - 0.5*(i+1)^2 + 0.5*i + i*(i+1)
-      )/N
-
-        σ[i] = sqrt((
-      i*μ[i]^2 + (N+1)*i^2 + 2*(N+1)*i*μ[i] + (N+1)*μ[i]^2 - i*(N+1)^2
-      + i*(N+1) - μ[i]*(N+1)^2 + μ[i]*(N+1) + (1/3)*(N+1)^3
-      - 0.5*(N+1)^2 + (1/6)*N - (i+1)*i^2 - 2*(i+1)*i*μ[i]
-      - (i+1)*μ[i]^2 + i*(i+1)^2 - i*(i+1) + μ[i]*(i+1)^2
-      - μ[i]*(i+1) - (1/3)*(i+1)^3 + 0.5*(i+1)^2 - (1/6)*i
-      )/N)
+        0.5*(N+1)^2 - 0.5*N - i*(N+1) - 0.5*(i+1)^2 + 0.5*i + i*(i+1)
+        )/N
+        aux = 
+        (i*μ[i]^2+(N+1)*i^2+(2*(N+1))*i*μ[i]+(N+1)*μ[i]^2
+        -i*(N+1)^2+i*(N+1)-μ[i]*(N+1)^2+μ[i]*(N+1)+(1/3)*(N+1)^3
+        -(1/2)*(N+1)^2+(1/6)*N-(i+1)*i^2-(2*(i+1))*i*μ[i]
+        -(i+1)*μ[i]^2+i*(i+1)^2-i*(i+1)+μ[i]*(i+1)^2
+        -μ[i]*(i+1)-(1/3)*(i+1)^3+(1/2)*(i+1)^2-(1/6)*i)/N
+        σ[i] = sqrt(aux)
     end
     return σ,μ
 end
@@ -116,7 +115,7 @@ end
 
 getData = Vector{Function}(5)
 getData[STEP] = getStepData
-getData[SLOPE] = getSlopeData
 getData[SPIKE] = getSpikeData
+getData[SLOPE] = getSlopeData
 getData[SIN] = getSineData
 getData[COS] = getCosData
