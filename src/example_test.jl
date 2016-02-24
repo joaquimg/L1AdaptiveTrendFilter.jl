@@ -1,5 +1,5 @@
-cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
-
+#cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
+using Debug
 using PyPlot
 
 include("CDtypes.jl")
@@ -11,8 +11,10 @@ include("InnerProducts.jl")
 include("Normalization.jl")
 include("utils.jl")
 
-y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
-y = y[:,1]
+#y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
+
+#y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
+y = ones(10)
 
 run = 6
 
@@ -74,12 +76,14 @@ end
 if run == 6
 	## WARNING!!!!
 	##TESTE SINE
-	f = 2*pi./collect(1:100)
-	@time BCD,β1,β2 = CD(y,[4], numλ = 100, f = f)
+	t=1:10
+	y= cos(2*pi*t/10)
+	f = 2*pi./collect(5:10)
+	@time BCD,β1,β2 = CD(y,[5], numλ = 100, f = f)
 	a = β1[4]
 	b = β2[4]
 	plot(a)
 	plot(b)
-	writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
-	writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
+	#writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
+	#writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
 end

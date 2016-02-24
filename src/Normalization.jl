@@ -71,14 +71,29 @@ function getSineData(IT, ω)
         sin_N1ω = sin((N+1)*ω[i])
         cos_N1ω = cos((N+1)*ω[i])
 
+        if abs(sin_ω)<1e-8
+            println("sin omega")
+            println("$(ω[i]) $i")
+        end
+        if abs(cos_ω)<1e-8
+            println("cos omega")
+            println("$(ω[i]) $i")
+        end
+
+
         μ[i] =  (
-      (sin_ω*cos_N1ω)/(cos_ω-1) - sin_N1ω - (sin_ω*cos_ω)/(cos_ω-1) + sin_ω
-      )/(2*N)
+        (1/2)*sin_ω*cos_N1ω/(cos_ω-1)-(1/2)*sin_N1ω
+        -(1/2)*sin_ω*cos_ω/(cos_ω-1)+(1/2)*sin_ω
+        )/N
+
 
         σ[i] = sqrt( (
-      - μ[i]*sin_ω + (0.5+μ[i]^2)*(N+1) + 0.5*cos_N1ω^2
-      - 0.5*(cos_ω*sin_N1ω*cos_N1ω)/sin_ω - (μ[i]*sin_ω*cos_N1ω)/(cos_ω-1)
-      + sin_N1ω*μ[i] - 0.5 - μ[i]^2 + (μ[i]*sin_ω*cos_ω)/(cos_ω-1)
+
+        (1/2+μ[i]^2)*(N+1)+(1/2)*cos_N1ω^2
+        -(1/2)*cos_ω*sin_N1ω*cos_N1ω/sin_ω
+        -μ[i]*sin_ω*cos_N1ω/(cos_ω-1)+sin_N1ω*μ[i]
+        -1/2-μ[i]^2+μ[i]*sin_ω*cos_ω/(cos_ω-1)-μ[i]*sin_ω
+
       )/N )
     end
     return σ,μ
@@ -99,16 +114,31 @@ function getCosData(IT, ω)
         sin_N1ω = sin((N+1)*ω[i])
         cos_N1ω = cos((N+1)*ω[i])
 
+        if abs(sin_ω)<1e-8
+            println("sin omega")
+            println("$(ω[i]) $i")
+        end
+        if abs(cos_ω)<1e-8
+            println("cos omega")
+            println("$(ω[i]) $i")
+        end
+
         μ[i] =  (
-      - 0.5*cos_N1ω - 0.5*(sin_ω*sin_N1ω)/(cos_ω-1) + 0.5*cos_ω
-      + 0.5*sin_ω^2/(cos_ω-1)
-      )/N
+                 -(1/2)*cos_N1ω-(1/2)*sin_ω*sin_N1ω/(cos_ω-1)
+                 +(1/2)*cos_ω+(1/2)*sin_ω^2/(cos_ω-1)
+                )/N
+
+                (1/2+μ[i]^2)*(N+1)-(1/2)*cos_N1ω^2
+                +(1/2)*cos_ω*sin_N1ω*cos_N1ω/sin_ω
+                +cos_N1ω*μ[i]+μ[i]*sin_ω*sin_N1ω/(cos_ω-1)
+                -1/2-μ[i]^2-cos_ω*μ[i]-μ[i]*sin_ω^2/(cos_ω-1)
 
         σ[i] = sqrt( (
-      (0.5+μ[i]^2)*(N+1) - 0.5*cos_N1ω^2 - (μ[i]*sin_ω^2)/(cos_ω-1)
-      + 0.5*(cos_ω*sin_N1ω*cos_N1ω)/sin_ω + cos_N1ω*μ[i]
-      + (μ[i]*sin_ω*sin_N1ω)/(cos_ω-1) -0.5 -μ[i]^2 - cos_ω*μ[i]
-      )/N )
+                (1/2+μ[i]^2)*(N+1)-(1/2)*cos_N1ω^2
+                +(1/2)*cos_ω*sin_N1ω*cos_N1ω/sin_ω
+                +cos_N1ω*μ[i]+μ[i]*sin_ω*sin_N1ω/(cos_ω-1)
+                -1/2-μ[i]^2-cos_ω*μ[i]-μ[i]*sin_ω^2/(cos_ω-1)
+                )/N )
     end
     return σ,μ
 end

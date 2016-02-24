@@ -50,7 +50,7 @@ end
 # SINE component
 function xdy_sin(IT,y::Vector{Float64},d)
     N = IT.obs
-    nf = IT.nelements[4]
+    nf = IT.nelements[SIN]
     xdy0 = zeros(nf)
     y_s = sum(y)
 
@@ -58,7 +58,7 @@ function xdy_sin(IT,y::Vector{Float64},d)
         for j in 1:N
             xdy0[i] += y[j] * sin(d.fs[i]*j)
         end
-        xdy0[i] =( xdy0[i] -d.μ[SIN][i]*y_s)/d.σ[SIN][i]
+        xdy0[i] =( xdy0[i] -d.μ[SIN][i]*y_s )/d.σ[SIN][i]
     end
     return xdy0
 end
@@ -66,8 +66,8 @@ end
 # COSINE component
 function xdy_cos(IT,y::Vector{Float64},d)
     N = IT.obs
-    nf = IT.nelements[5]
-    xdy = zeros(N-1)
+    nf = IT.nelements[COS]
+    xdy = zeros(nf)
     y_s = sum(y)
 
     for i in 1:nf
@@ -79,7 +79,7 @@ function xdy_cos(IT,y::Vector{Float64},d)
     return xdy
 end
 
-xdy = Vector{Function}(5)
+xdy = Vector{Function}(TOTALCOMPONENTS)
 xdy[STEP] = xdy_step
 xdy[SLOPE] = xdy_slope
 xdy[SPIKE] = xdy_spike

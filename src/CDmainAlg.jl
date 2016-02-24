@@ -24,7 +24,7 @@ function CD(y,components; f = Vector{Float64}(0), numλ = 10)
 end
 
 # coordinate descent for the whole regularization path Λ
-function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
+@debug function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
 
   if sparse == 1
     BCD, β_tilde, β, activeSet = initSparse(IT)
@@ -37,7 +37,7 @@ function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
 
   β1 = 0
   β2 = 0
-
+@bp
   # regularization path
   for λ in Λ
 

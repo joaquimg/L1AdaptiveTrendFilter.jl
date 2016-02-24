@@ -300,7 +300,7 @@ function GMSinSin(i::Int, j::Int, N::Int, μSIN::Vector{Float64}, σSIN::Vector{
   #there still may be a ptoblem from cos(ωi) = cos(ωj) with i != j
   if i == j
     GM = float(N)
-  elseif cos(ω[j])-cos(ω[i]) == 0
+  elseif abs( cos(ω[j])-cos(ω[i]) ) <= 1e-8
     #cancelation that need to happen for finiteness
     GM = (μSIN[j]*μSIN[i]*(N+1)
           -(1/2)*sin((N+1)*ω[j])*sin((N+1)*ω[i])-(1/2)*μSIN[j]*sin(ω[i])*cos((N+1)*ω[i])/(-1+cos(ω[i]))
@@ -335,7 +335,7 @@ function GMSinCos(
     μCOS::Vector{Float64}, σCOS::Vector{Float64}, ωs::Vector{Float64}, ωc::Vector{Float64}
     )
 
-  if cos(ωc[c])-cos(ωs[s]) != 0
+  if abs(cos(ωc[c])-cos(ωs[s])) >= 1e-8
     GM = (μSIN[s]*μCOS[c]*(N+1)+(1/2)*sin(ωs[s])*cos((N+1)*ωs[s])*cos((N+1)*ωc[c])/(cos(ωs[s])-cos(ωc[c]))
           -(1/2)*sin((N+1)*ωs[s])*cos((N+1)*ωc[c])+(1/2)*sin(ωc[c])*sin((N+1)*ωs[s])*sin((N+1)*ωc[c])/(cos(ωs[s])-cos(ωc[c]))
           +(1/2)*μSIN[s]*cos((N+1)*ωc[c])-(1/2)*μCOS[c]*sin(ωs[s])*cos((N+1)*ωs[s])/(cos(ωs[s])-1)
@@ -367,7 +367,7 @@ end
 # cosine x cosine
 function GMCosCos(i::Int, j::Int, N::Int, μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Vector{Float64})
 
-  if cos(ω[i])-cos(ω[j]) != 0
+  if abs(cos(ω[i])-cos(ω[j]) ) >= 1e-8
     GM = (μCOS[j]*μCOS[i]*(N+1)-(1/2)*cos((N+1)*ω[j])*cos((N+1)*ω[i])
           +(1/2)*sin(ω[i])*cos((N+1)*ω[j])*sin((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
           -(1/2)*sin(ω[j])*sin((N+1)*ω[j])*cos((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
