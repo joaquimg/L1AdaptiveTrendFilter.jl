@@ -367,7 +367,9 @@ end
 # cosine x cosine
 function GMCosCos(i::Int, j::Int, N::Int, μCOS::Vector{Float64}, σCOS::Vector{Float64},ω::Vector{Float64})
 
-  if abs(cos(ω[i])-cos(ω[j]) ) >= 1e-8
+  if i == j
+    GM = float(N)
+  elseif abs(cos(ω[i])-cos(ω[j]) ) >= 1e-8
     GM = (μCOS[j]*μCOS[i]*(N+1)-(1/2)*cos((N+1)*ω[j])*cos((N+1)*ω[i])
           +(1/2)*sin(ω[i])*cos((N+1)*ω[j])*sin((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))
           -(1/2)*sin(ω[j])*sin((N+1)*ω[j])*cos((N+1)*ω[i])/(cos(ω[j])-cos(ω[i]))

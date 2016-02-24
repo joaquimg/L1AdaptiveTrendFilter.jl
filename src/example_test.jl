@@ -79,7 +79,7 @@ if run == 6
 	t=1:10
 	y= cos(2*pi*t/10)
 	f = 2*pi./collect(5:10)
-	@time BCD,β1,β2 = CD(y,[5], numλ = 100, f = f)
+	@time BCD,β1,β2 = CD(y,[4,5], numλ = 100, f = f)
 	a = β1[4]
 	b = β2[4]
 	plot(a)
