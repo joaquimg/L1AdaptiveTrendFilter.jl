@@ -321,13 +321,15 @@ function GMSinCos(
     #      +(1/2)*μCOS[c]*sin(ωs[s])*cos(ωs[s])/(cos(ωs[s])-1)-(1/2)*μSIN[s]*sin(ωc[c])^2/(cos(ωc[c])-1)
     #      -(1/2)*sin(μSIN[s])*μCOS[c])/(σCOS[c]*σSIN[s])
     GM = (μSIN[s]*μCOS[c]*(N+1)+(1/2)*sin(ωs)*cos((N+1)*ωs)*cos((N+1)*ωc)/(cos(ωs)-cos(ωc))-(1/2)*sin((N+1)*ωs)*cos((N+1)*ωc)+(1/2)*sin(ωc)*sin((N+1)*ωs)*sin((N+1)*ωc)/(cos(ωs)-cos(ωc))+(1/2)*μSIN[s]*cos((N+1)*ωc)-(1/2)*μCOS[c]*sin(ωs)*cos((N+1)*ωs)/(cos(ωs)-1)+(1/2)*μSIN[s]*sin(ωc)*sin((N+1)*ωc)/(cos(ωc)-1)+(1/2)*sin((N+1)*ωs)*μCOS[c]-μSIN[s]*μCOS[c]-(1/2)*sin(ωs)*cos(ωs)*cos(ωc)/(cos(ωs)-cos(ωc))+(1/2)*sin(ωs)*cos(ωc)-(1/2)*sin(ωc)^2*sin(ωs)/(cos(ωs)-cos(ωc))-(1/2)*μSIN[s]*cos(ωc)+(1/2)*μCOS[c]*sin(ωs)*cos(ωs)/(cos(ωs)-1)-(1/2)*μSIN[s]*sin(ωc)^2/(cos(ωc)-1)-(1/2)*sin(ωs)*μCOS[c])/(σCOS[c]*σSIN[s])
+
   else
-    GM = (μSIN[s]*μCOS[c]*(N+1)
-        -(1/2)*sin((N+1)*ωs)*cos((N+1)*ωc)+(1/2)*μSIN[s]*cos((N+1)*ωc)-(1/2)*μCOS[c]*sin(ωs)*cos((N+1)*ωs)/(cos(ωs)-1)
-        +(1/2)*μSIN[s]*sin(ωc)*sin((N+1)*ωc)/(cos(ωc)-1)+(1/2)*sin((N+1)*ωs)*μCOS[c]
-        -μSIN[s]*μCOS[c]+(1/2)*sin(ωs)*cos(ωc)
-        -(1/2)*μSIN[s]*cos(ωc)+(1/2)*μCOS[c]*sin(ωs)*cos(ωs)/(cos(ωs)-1)
-        -(1/2)*μSIN[s]*sin(ωc)^2/(cos(ωc)-1)-(1/2)*sin(ωs)*μCOS[c])/(σCOS[c]*σSIN[s])
+    GM = (μSIN[s]*μCOS[c]*(N+1)-(1/2)*cos(ωs)*cos((N+1)*ωs)^2/sin(ωs)-(1/2)*sin((N+1)*ωs)*cos((N+1)*ωs)+(1/2)*(cos(ωs)*μCOS[c]+μSIN[s]*sin(ωs)+μCOS[c])*cos((N+1)*ωs)/sin(ωs)+(1/2)*(-cos(ωs)*μSIN[s]+μCOS[c]*sin(ωs)-μSIN[s])*sin((N+1)*ωs)/sin(ωs)-μSIN[s]*μCOS[c]+(1/2)*cos(ωs)^3/sin(ωs)+(1/2)*cos(ωs)*sin(ωs)-(1/2)*(cos(ωs)*μCOS[c]+μSIN[s]*sin(ωs)+μCOS[c])*cos(ωs)/sin(ωs)+(1/2)*cos(ωs)*μSIN[s]-(1/2)*μCOS[c]*sin(ωs)+(1/2)*μSIN[s])/(σCOS[c]*σSIN[s])
+    #GM = (μSIN[s]*μCOS[c]*(N+1)
+    #    -(1/2)*sin((N+1)*ωs)*cos((N+1)*ωc)+(1/2)*μSIN[s]*cos((N+1)*ωc)-(1/2)*μCOS[c]*sin(ωs)*cos((N+1)*ωs)/(cos(ωs)-1)
+    #    +(1/2)*μSIN[s]*sin(ωc)*sin((N+1)*ωc)/(cos(ωc)-1)+(1/2)*sin((N+1)*ωs)*μCOS[c]
+    #    -μSIN[s]*μCOS[c]+(1/2)*sin(ωs)*cos(ωc)
+    #    -(1/2)*μSIN[s]*cos(ωc)+(1/2)*μCOS[c]*sin(ωs)*cos(ωs)/(cos(ωs)-1)
+    #    -(1/2)*μSIN[s]*sin(ωc)^2/(cos(ωc)-1)-(1/2)*sin(ωs)*μCOS[c])/(σCOS[c]*σSIN[s])
   end
 
   return GM

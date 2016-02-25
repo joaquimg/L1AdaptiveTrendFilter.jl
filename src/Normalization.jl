@@ -72,11 +72,11 @@ function getSineData(IT, ω)
         cos_N1ω = cos((N+1)*ω[i])
 
         if abs(sin_ω)<1e-8
-            println("sin omega")
+            println("sin ωs")
             println("$(ω[i]) $i")
         end
         if abs(cos_ω)<1e-8
-            println("cos omega")
+            println("cos ωs")
             println("$(ω[i]) $i")
         end
 
@@ -115,11 +115,11 @@ function getCosData(IT, ω)
         cos_N1ω = cos((N+1)*ω[i])
 
         if abs(sin_ω)<1e-8
-            println("sin omega")
+            println("sin ωs")
             println("$(ω[i]) $i")
         end
         if abs(cos_ω)<1e-8
-            println("cos omega")
+            println("cos ωs")
             println("$(ω[i]) $i")
         end
 
