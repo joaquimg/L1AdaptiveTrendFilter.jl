@@ -12,7 +12,7 @@ type iterator
 
 	components::Vector{Int}
     #??
-	elements#::Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
+	elements::Vector{UnitRange{Int}}#Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
 
 	nelements::Vector{Int}
 

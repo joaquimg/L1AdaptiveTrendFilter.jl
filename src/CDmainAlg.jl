@@ -8,28 +8,28 @@ function CD(y,components; f = Vector{Float64}(0), numλ = 10)
     y = y - ym
 
     #prepare check for dimension sizes
-    N = size(y)[1]
+    const N = size(y)[1]
 
-    IT = initIT_range(N,components,f,MAXITER=100)
+    const IT = initIT_range(N,components,f,MAXITER=100)
 
-    d = initData(IT,f, f)
+    const d = initData(IT,f, f)
 
-    xdy = initXDY(IT,y,d)
+    const xdy = initXDY(IT,y,d)
 
-    Λ = computeλvec(IT,xdy,numλ)
+    const Λ = computeλvec(IT,xdy,numλ)
 
-    BCD,β1,β2 = CoordinateDescent(IT,d,xdy,Λ,y)
-
+    @time BCD,β1,β2 = CoordinateDescent(IT,d,xdy,Λ,y)
+#CoordinateDescent(IT,d,xdy,Λ,y)
     return BCD,β1,β2
 end
 
 # coordinate descent for the whole regularization path Λ
-@debug function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
+function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
 
   if sparse == 1
     BCD, β_tilde, β, activeSet = initSparse(IT)
   else
-    BCD, β_tilde, β, activeSet = initDense(IT)
+    @time BCD, β_tilde, β, activeSet = initDense(IT)
   end
   BIC = Inf::Float64
   β_ols = 0.0::Float64
@@ -37,9 +37,9 @@ end
 
   β1 = 0
   β2 = 0
-@bp
+#@bp
   # regularization path
-  for λ in Λ
+  @inbounds for λ in Λ
 
     change = true
     # loop until active set converges
@@ -48,6 +48,7 @@ end
         break
       end
 
+      change = false
       # cycle through every component
       for c1 in IT.components
         for j in IT.elements[c1]
