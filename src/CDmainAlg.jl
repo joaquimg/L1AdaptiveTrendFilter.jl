@@ -1,7 +1,7 @@
 #has to be moved inside a function
 
 
-function CD(y,components; f = Vector{Float64}(0), numλ = 10)
+function CD(y,components; f = Vector{Float64}(0), numλ = 40)
 
     ym = mean(y)
 
@@ -10,7 +10,7 @@ function CD(y,components; f = Vector{Float64}(0), numλ = 10)
     #prepare check for dimension sizes
     const N = size(y)[1]
 
-    const IT = initIT_range(N,components,f,MAXITER=100)
+    const IT = initIT_range(N,components,f,MAXITER=20)
 
     const d = initData(IT,f, f)
 
@@ -18,7 +18,7 @@ function CD(y,components; f = Vector{Float64}(0), numλ = 10)
 
     const Λ = computeλvec(IT,xdy,numλ)
 
-    @time BCD,β1,β2 = CoordinateDescent(IT,d,xdy,Λ,y)
+    @time @fastmath BCD,β1,β2 = CoordinateDescent(IT,d,xdy,Λ,y)
 #CoordinateDescent(IT,d,xdy,Λ,y)
     return BCD,β1,β2
 end
@@ -56,10 +56,8 @@ function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
           # compute the partial fit with the components in the active set
           partial_fit = 0.0
           for c2 in IT.components
-            for l in 1:size(activeSet[c2])[1]
-              if activeSet[c2][l] #&& (c1, j) != (c2, l)
-                partial_fit = partial_fit + GM[c1,c2](j,l,d,IT) * β_tilde[c2][l]
-              end
+            @inbounds for l in 1:size(activeSet[c2])[1]
+              @inbounds activeSet[c2][l] ? partial_fit += GM2(c1,c2,j,l,d,IT) * β_tilde[c2][l] *activeSet[c2][l] : true
             end
           end
 
@@ -85,17 +83,17 @@ function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
       end
     end
 
-    # bayesian information criterion
-    #println(βtemp)
-    push!(BCD,deepcopy(β_tilde))
-    #println(BCD)
-    β_unbiased = compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
-    BIC_new = compute_BIC(y, β_unbiased, IT, d)
-    if BIC_new < BIC
-      BIC = BIC_new
-      β1 = deepcopy(β_unbiased)
-      β2 = deepcopy(β_tilde)
-    end
+     # bayesian information criterion
+     #println(βtemp)
+     push!(BCD,deepcopy(β_tilde))
+     #println(BCD)
+     β_unbiased = compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
+     BIC_new = compute_BIC(y, β_unbiased, IT, d)
+     if BIC_new < BIC
+       BIC = BIC_new
+       β1 = deepcopy(β_unbiased)
+       β2 = deepcopy(β_tilde)
+     end
 
   end
   return BCD,β1,β2

@@ -6,13 +6,16 @@ include("CDtypes.jl")
 function initIT_range(N,components, f = Vector{Float64}(0) ; MAXITER=100)
 	#components = Int[]
 	nelements = zeros(Int,5)
-	elements = Vector{Any}(5)
+	elements = Vector{UnitRange{Int}}(5)
 	obs = N
 
 	if STEP in components
 		#push!(components,STEP)
 		nelements[STEP] = N-1
 		elements[STEP] = 1:(N-1)
+	else
+		nelements[STEP] = 0
+		elements[STEP] = 1:0
 	end
 	if SPIKE in components
 		#push!(components,SPIKE)
@@ -23,21 +26,33 @@ function initIT_range(N,components, f = Vector{Float64}(0) ; MAXITER=100)
 			nelements[SPIKE] = N
 			elements[SPIKE] = 1:N
 		end
+	else
+		nelements[SPIKE] = 0
+		elements[SPIKE] = 1:0
 	end
 	if SLOPE in components
 		#push!(components,SLOPE)
 		nelements[SLOPE] = N-1
 		elements[SLOPE] = 1:(N-1)
+	else
+		nelements[SLOPE] = 0
+		elements[SLOPE] = 1:0
 	end
 	if SIN in components
 		#push!(components,SIN)
 		nelements[SIN] = size(f)[1]
 		elements[SIN] = 1:size(f)[1]
+	else
+		nelements[SIN] = 0
+		elements[SIN] = 1:0	
 	end
 	if COS in components
 		#push!(components,COS)
 		nelements[COS] = size(f)[1]
 		elements[COS] = 1:size(f)[1]
+	else
+		nelements[COS] =  0
+		elements[COS] = 1:0
 	end
 
 	out = iterator(obs,components,elements,nelements,ones(Bool,TOTALCOMPONENTS),sum(nelements),MAXITER)

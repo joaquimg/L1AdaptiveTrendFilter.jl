@@ -412,3 +412,63 @@ GM[SIN, SIN]     = GMSinSin
 GM[SIN, COS]     = GMSinCos
 GM[COS, SIN]     = GMCosSin
 GM[COS, COS]     = GMCosCos
+
+function GM2(c1,c2,i::Int, j::Int, d, IT)
+  if c1 == STEP && c2 == STEP
+    return GMStepStep(i::Int, j::Int, d, IT)
+  elseif c1 == STEP && c2 == SPIKE
+    return GMStepSpike(i::Int, j::Int, d, IT)
+  elseif c1 == SPIKE && c2 == STEP
+    return GMSpikeStep(i::Int, j::Int, d, IT)
+  elseif c1 == STEP && c2 == SLOPE
+    return GMStepSlope(i::Int, j::Int, d, IT)
+  elseif c1 == SLOPE && c2 == STEP
+    return GMSlopeStep(i::Int, j::Int, d, IT)
+  elseif c1 == STEP && c2 == SIN
+    return GMStepSin(i::Int, j::Int, d, IT)
+  elseif c1 == SIN && c2 == STEP
+    return GMSinStep(i::Int, j::Int, d, IT)
+  elseif c1 == STEP && c2 == COS
+    return GMStepCos(i::Int, j::Int, d, IT)
+  elseif c1 == COS && c2 == STEP
+    return GMCosStep(i::Int, j::Int, d, IT)
+  elseif c1 == SPIKE && c2 == SPIKE
+    return GMSpikeSpike(i::Int, j::Int, d, IT)
+  elseif c1 == SPIKE && c2 == SLOPE
+    return GMSpikeSlope(i::Int, j::Int, d, IT)
+  elseif c1 == SLOPE && c2 == SPIKE
+    return GMSlopeSpike(i::Int, j::Int, d, IT)
+  elseif c1 == SPIKE && c2 == SIN
+    return GMSpikeSin(i::Int, j::Int, d, IT)
+  elseif c1 == SIN && c2 == SPIKE
+    return GMSinSpike(i::Int, j::Int, d, IT)
+  elseif c1 == SPIKE && c2 == COS
+    return GMSpikeCos(i::Int, j::Int, d, IT)
+  elseif c1 == COS && c2 == SPIKE
+    return GMCosSpike(i::Int, j::Int, d, IT)
+  elseif c1 == SLOPE && c2 == SLOPE
+    return GMSlopeSlope(i::Int, j::Int, d, IT)
+  elseif c1 == SLOPE && c2 == SIN
+    return GMSlopeSin(i::Int, j::Int, d, IT)
+  elseif c1 == SIN && c2 == SLOPE
+    return GMSinSlope(i::Int, j::Int, d, IT)
+  elseif c1 == SLOPE && c2 == COS
+    return GMSlopeCos(i::Int, j::Int, d, IT)
+  elseif c1 == COS && c2 == SLOPE
+    return GMCosSlope(i::Int, j::Int, d, IT)
+  elseif c1 == SIN && c2 == SIN
+    return GMSinSin(i::Int, j::Int, d, IT)
+  elseif c1 == SIN && c2 == COS
+    return GMSinCos(i::Int, j::Int, d, IT)
+  elseif c1 == COS && c2 == SIN
+    return GMCosSin(i::Int, j::Int, d, IT)
+  elseif c1 == COS && c2 == COS
+    return GMCosCos(i::Int, j::Int, d, IT)
+  end
+  return 0.0 :: Float64
+end
+
+
+
+
+

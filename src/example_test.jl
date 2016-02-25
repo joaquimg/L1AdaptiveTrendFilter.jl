@@ -1,5 +1,5 @@
 #cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
-#using Debug
+using Debug
 using PyPlot
 
 include("CDtypes.jl")
@@ -76,15 +76,15 @@ end
 if run == 6
 	## WARNING!!!!
 	## problem with cos and (step or slope)
-	t=1:10
+	t = 1:1000
 	y= sin(2*pi*t/10)+sin(2*pi*t/5)+cos(2*pi*t/10)
 	f = 2*pi./collect(5:10)
-	@time BCD,β1,β2 = CD(y,[1,2,3,4,5], numλ = 100, f = f)
+	@time BCD,β1,β2 = CD(y,[4,5], numλ = 100, f = f)
 	#@time  CD(y,[1,2,3,4,5], numλ = 100, f = f)
-	a = β1[4]
-	b = β2[4]
-	plot(a)
-	plot(b)
+	#a = β1[4]
+	#b = β2[4]
+	#plot(a)
+	#plot(b)
 	#writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
 	#writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
 end
