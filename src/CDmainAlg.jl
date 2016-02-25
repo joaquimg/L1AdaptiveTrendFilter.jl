@@ -68,7 +68,7 @@ function coordinate_descent(IT, d, xdy, Λ, y, lower_bounds, upper_bounds; spars
           end
 
           # univariate ordinary leasts squares coefficient
-          β_ols = β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - partial_fit)
+          β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
 
           # soft thresholding operator
           if abs(β_ols) <= λ
