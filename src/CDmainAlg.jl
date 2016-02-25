@@ -18,9 +18,9 @@ function CD(y,components; f = Vector{Float64}(0), numλ = 40)
 
     const Λ = computeλvec(IT,xdy,numλ)
 
-    @time @fastmath BCD,β1,β2 = CoordinateDescent(IT,d,xdy,Λ,y)
+    @time @fastmath BCD,β1,β2, y_best = CoordinateDescent(IT,d,xdy,Λ,y)
 #CoordinateDescent(IT,d,xdy,Λ,y)
-    return BCD,β1,β2
+    return BCD,β1,β2, y_best
 end
 
 # coordinate descent for the whole regularization path Λ
@@ -37,6 +37,7 @@ function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
 
   β1 = 0
   β2 = 0
+  y_best = 0
 #@bp
   # regularization path
   @inbounds for λ in Λ
@@ -88,13 +89,15 @@ function CoordinateDescent(IT, d, xdy, Λ, y; sparse=0)
      push!(BCD,deepcopy(β_tilde))
      #println(BCD)
      β_unbiased = compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
-     BIC_new = compute_BIC(y, β_unbiased, IT, d)
+     BIC_new, y_hat= compute_BIC(y, β_unbiased, IT, d)
      if BIC_new < BIC
+
        BIC = BIC_new
+       y_best = copy(y_hat)
        β1 = deepcopy(β_unbiased)
        β2 = deepcopy(β_tilde)
      end
 
   end
-  return BCD,β1,β2
+  return BCD,β1,β2,y_best
 end
