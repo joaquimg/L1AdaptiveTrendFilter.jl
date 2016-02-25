@@ -37,9 +37,7 @@ function computeλvec(IT,xdy,numλ; logarit = true )
     return vec
 end
 
-
-
-function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e-5::Float64)
+function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e-7::Float64)
 
     BIC = 0.0
     err = zeros(y)
@@ -78,7 +76,7 @@ function compute_BIC(y::Vector{Float64}, β, IT, d; ɛ = 1e-5::Float64, std = 1)
     return BIC, y_hat
 end
 
-function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
+function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
 
     β_ols = deepcopy(β_tilde)
     for c1 in IT.components
@@ -94,6 +92,11 @@ function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d)
             end
             # univariate ordinary least squares coefficient
             β_ols[c1][j] = β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - partial_fit)
+
+            # projection onto the box constraints [lower_bound, upper_bound]
+            β_ols[c1][j] = max(β_ols[c1][j], lower_bounds[c1])
+            β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
+
             # soft thresholding operator
             if abs(β_ols[c1][j]) <= λ
                 β_ols[c1][j] = 0.0

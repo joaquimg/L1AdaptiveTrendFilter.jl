@@ -1,9 +1,5 @@
 compute_components! = Vector{Any}(TOTALCOMPONENTS)
 
-
-
-
-
 function compute_estimate(y,IT,β,d)
 
     β_new, β0 = stdβ2usualβ(β,IT,d)
@@ -47,7 +43,7 @@ function compute_spike!(y,β,IT,d)
 end
 
 
-function compute_sin!(y, β, IT, d::dataCD) 
+function compute_sin!(y, β, IT, d::dataCD)
     compute_sin!(y, β, IT, d.fs)
 end
 function compute_sin!(y, β, IT, f)
@@ -71,13 +67,10 @@ function compute_cos!(y, β, IT, f)
     end
 end
 
-
-
 function stdβ2usualβ(β,IT,d)
     β_new = copy(β)
 
     β0 = zeros(TOTALCOMPONENTS)
-
 
     for i in IT.components
         for j in IT.elements[i]
@@ -92,7 +85,6 @@ function stdβ2usualβ(β,IT,d)
 
     return β_new, β0
 end
-
 
 compute_components![STEP] = compute_step!
 compute_components![SLOPE] = compute_slope!
