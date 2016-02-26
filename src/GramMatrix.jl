@@ -7,9 +7,12 @@ function GMStepStep(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Flo
   return ( m*μm*μM-(M-m)*(1-μm)*μM+(N-M)*(1-μm)*(1-μM) )/(σm*σM) :: Float64
 end
 function GMStepStep(i::Int, j::Int, d, IT)
-	m = min(i, j)::Int
-  	M = max(i, j)::Int
-    return GMStepStep(m, M, IT.obs, d.μ[STEP][m], d.σ[STEP][m], d.μ[STEP][M], d.σ[STEP][M]) :: Float64
+  	if i>j
+    	return GMStepStep(j, i, IT.obs, d.μ[STEP][j], d.σ[STEP][j], d.μ[STEP][i], d.σ[STEP][i]) :: Float64
+    else
+    	return GMStepStep(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[STEP][j], d.σ[STEP][j]) :: Float64
+    end
+    return 0.0 :: Float64
 end
 
 # step x slope
@@ -130,9 +133,12 @@ function GMSlopeSlope(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::F
     )/(σm*σM) :: Float64
 end
 function GMSlopeSlope(i::Int, j::Int, d, IT)
-	m = min(i, j)::Int
-  	M = max(i, j)::Int
-    return GMSlopeSlope(m, M, IT.obs, d.μ[SLOPE][m], d.σ[SLOPE][m], d.μ[SLOPE][M], d.σ[SLOPE][M]) :: Float64
+  	if j>i
+    	return GMSlopeSlope(i, j, IT.obs, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SLOPE][j], d.σ[SLOPE][j]) :: Float64
+	else
+		return GMSlopeSlope(j, i, IT.obs, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SLOPE][i], d.σ[SLOPE][i]) :: Float64
+	end
+	return 0.0::Float64
 end
 
 # slope x spike

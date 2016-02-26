@@ -67,7 +67,7 @@ function coordinate_descent(IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, y
           @inbounds for c2 in IT.components
             @inbounds for l in 1:size(activeSet[c2])[1]
               if activeSet[c2][l] 
-               @inbounds partial_fit += GM2(c1,c2,j,l,d,IT) * β_tilde[c2][l] 
+              	@inbounds partial_fit += GM2(c1,c2,j,l,d,IT) * β_tilde[c2][l] 
               end
             end
           end
