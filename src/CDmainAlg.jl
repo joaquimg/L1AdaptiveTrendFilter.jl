@@ -99,19 +99,19 @@ function coordinate_descent(IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, y
       end
     end
 
-#    # bayesian information criterion
-#    push!(BCD,deepcopy(β_tilde))
-#    β_unbiased = compute_OLS(β_tilde, λ, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
-#    BIC_new, y_hat= compute_BIC(y, β_unbiased, IT, d)
-#
-#    # save the best fit so far
-#    if BIC_new < BIC
-#       BIC = BIC_new
-#       y_best = copy(y_hat)
-#       β_best_unbiased = deepcopy(β_unbiased)
-#       β_best_biased = deepcopy(β_tilde)
-#    end
-#
+    # bayesian information criterion
+    push!(BCD,deepcopy(β_tilde))
+    β_unbiased = compute_OLS(β_tilde, λ, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
+    BIC_new, y_hat= compute_BIC(y, β_unbiased, IT, d)
+
+    # save the best fit so far
+    if BIC_new < BIC
+       BIC = BIC_new
+       y_best = copy(y_hat)
+       β_best_unbiased = deepcopy(β_unbiased)
+       β_best_biased = deepcopy(β_tilde)
+    end
+
   end
   return BCD, β_best_unbiased, β_best_biased, y_best
 end
