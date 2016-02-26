@@ -1,5 +1,5 @@
 
-function findλmax(IT,xdy)
+function findλmax(IT,xdy,d)
 
     λmax   = 0.0
     temp  = 0.0
@@ -8,8 +8,10 @@ function findλmax(IT,xdy)
 
     for i in IT.components
 
-        temp = maxabs(xdy[i])
-
+        #temp = maxabs(xdy[i].*d.σ[i])
+        #k=indmax(abs(xdy[i].*d.σ[i]))
+        temp,k=findmax(abs(xdy[i].*d.σ[i]))
+        temp=temp/d.σ[i][k]
         if temp > λmax
 
             λmax = temp
@@ -21,9 +23,9 @@ function findλmax(IT,xdy)
     return λmax/IT.obs
 end
 
-function computeλvec(IT,xdy,numλ; logarit = true )
+function computeλvec(IT,xdy,numλ,d; logarit = true )
 
-    λmax = findλmax(IT,xdy)
+    λmax = findλmax(IT,xdy,d)
 
 
     if logarit
@@ -86,7 +88,7 @@ function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
             for c2 in IT.components
                 for l in 1:size(activeSet[c2])[1]
                     if activeSet[c2][l]
-                        partial_fit = partial_fit + GM[c1,c2](j,l,d,IT) * β_tilde[c2][l]
+                        partial_fit = partial_fit + GM2(c1,c2,j,l,d,IT) * β_tilde[c2][l]
                     end
                 end
             end
@@ -94,12 +96,15 @@ function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
             β_ols[c1][j] = β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - partial_fit)
 
             # projection onto the box constraints [lower_bound, upper_bound]
-            β_ols[c1][j] = max(β_ols[c1][j], lower_bounds[c1])
-            β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
+            #β_ols[c1][j] = max(β_ols[c1][j], lower_bounds[c1])
+            #β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
             # hard thresholding operator
-            if abs(β_ols[c1][j]) <= λ
+            if abs(β_ols[c1][j]) <= λ*d.σ[c1][j]
+                #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ*d.σ[c1][j])
                 β_ols[c1][j] = 0.0
+            else
+                #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ*d.σ[c1][j])
             end
         end
     end

@@ -23,7 +23,7 @@ f = 2*pi./collect(6:48)
 print(f)
 
 @time BCD, β_best_unbiased, β_best_biased, y_best = l1_adaptive_trend_filter(
-  y, [1,2,3], numλ = 100
+  y, [3], numλ = 100
   )
 
 # components

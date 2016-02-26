@@ -17,7 +17,7 @@ function l1_adaptive_trend_filter(
   # inner products between response y and components
   const xdy = initXDY(IT,y,d)
   # build regularization path
-  const Λ = computeλvec(IT,xdy,numλ)
+  const Λ = computeλvec(IT,xdy,numλ,d)
 
   @time @fastmath BCD,β1,β2, y_best = coordinate_descent(
     IT, d, xdy, Λ, y, lower_bounds, upper_bounds
@@ -52,7 +52,7 @@ function coordinate_descent(IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, y
     change = true
     # loop until active set converges
     @inbounds for iter in 1:IT.maxIter
-    println(iter)
+    #println(iter)
       if !change
         break
       end
@@ -76,14 +76,14 @@ function coordinate_descent(IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, y
           β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
 
           # soft thresholding operator
-          if abs(β_ols) <= λ
+          if abs(β_ols) <= λ*d.σ[c1][j]
             if activeSet[c1][j]
               β_tilde[c1][j] = 0.0
               activeSet[c1][j] = false
               change = true
             end
           else
-            β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ)
+            β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ*d.σ[c1][j])
 
             # projection onto the box constraints [lower_bound, upper_bound]
             #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
@@ -99,18 +99,18 @@ function coordinate_descent(IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, y
       end
     end
 
-#    # bayesian information criterion
-#    push!(BCD,deepcopy(β_tilde))
-#    β_unbiased = compute_OLS(β_tilde, λ, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
-#    BIC_new, y_hat= compute_BIC(y, β_unbiased, IT, d)
-#
-#    # save the best fit so far
-#    if BIC_new < BIC
-#       BIC = BIC_new
-#       y_best = copy(y_hat)
-#       β_best_unbiased = deepcopy(β_unbiased)
-#       β_best_biased = deepcopy(β_tilde)
-#    end
+    # bayesian information criterion
+    push!(BCD,deepcopy(β_tilde))
+    β_unbiased = compute_OLS(β_tilde, λ, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
+    BIC_new, y_hat= compute_BIC(y, β_unbiased, IT, d)
+
+    # save the best fit so far
+    if BIC_new < BIC
+       BIC = BIC_new
+       y_best = copy(y_hat)
+       β_best_unbiased = deepcopy(β_unbiased)
+       β_best_biased = deepcopy(β_tilde)
+    end
 
   end
   return BCD, β_best_unbiased, β_best_biased, y_best

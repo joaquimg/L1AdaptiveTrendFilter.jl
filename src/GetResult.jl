@@ -68,7 +68,7 @@ function compute_cos!(y, β, IT, f)
 end
 
 function stdβ2usualβ(β,IT,d)
-    β_new = copy(β)
+    β_new = deepcopy(β)
 
     β0 = zeros(TOTALCOMPONENTS)
 
@@ -77,6 +77,7 @@ function stdβ2usualβ(β,IT,d)
             β_new[i][j] = β[i][j]/d.σ[i][j]
         end
     end
+
     for i in IT.components
         for j in IT.elements[i]
             β0[i] -= β[i][j]*d.μ[i][j]/d.σ[i][j]
