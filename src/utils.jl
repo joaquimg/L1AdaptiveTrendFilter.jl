@@ -104,7 +104,7 @@ function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
                 #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ*d.σ[c1][j])
                 β_ols[c1][j] = 0.0
             else
-                #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ*d.σ[c1][j])
+                #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ)
             end
         end
     end
