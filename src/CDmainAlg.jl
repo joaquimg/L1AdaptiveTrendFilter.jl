@@ -83,7 +83,7 @@ function coordinate_descent(IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, y
               change = true
             end
           else
-            β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ*d.σ[c1][j])
+            β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ)
 
             # projection onto the box constraints [lower_bound, upper_bound]
             #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
