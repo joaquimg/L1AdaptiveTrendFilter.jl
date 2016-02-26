@@ -76,7 +76,7 @@ end
 if run == 6
 	## WARNING!!!!
 	## problem with cos and (step or slope)
-	t = 1:100
+	t = 1:1000
 	y= sin(2*pi*t/10)+sin(2*pi*t/5)+cos(2*pi*t/10)
 	f = 2*pi./collect(5:10)
 	@time BCD,β1,β2 = l1_adaptive_trend_filter(y,[1,4,5], numλ = 40, f = f)

@@ -1,17 +1,15 @@
 # Closed-form formulas for the inner products between different kinds of components
 
 # step x step
-function GMStepStep(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
+function GMStepStep(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)
 
-  m = min(i, j)
-  M = max(i, j)
 
-  return (
-    m*μ[m]*μ[M]-(M-m)*(1-μ[m])*μ[M]+(N-M)*(1-μ[m])*(1-μ[M])
-    )/(σ[m]*σ[M]) :: Float64
+  return ( m*μm*μM-(M-m)*(1-μm)*μM+(N-M)*(1-μm)*(1-μM) )/(σm*σM) :: Float64
 end
 function GMStepStep(i::Int, j::Int, d, IT)
-    return GMStepStep(i, j, IT.obs, d.μ[STEP], d.σ[STEP]) :: Float64
+	m = min(i, j)::Int
+  	M = max(i, j)::Int
+    return GMStepStep(m, M, IT.obs, d.μ[STEP][m], d.σ[STEP][m], d.μ[STEP][M], d.σ[STEP][M]) :: Float64
 end
 
 # step x slope
@@ -117,25 +115,24 @@ function GMCosStep(i::Int, j::Int, d, IT)
 end
 
 # slope x slope
-function GMSlopeSlope(i::Int, j::Int, N::Int, μ::Vector{Float64}, σ::Vector{Float64})
-
-  m = min(i, j)
-  M = max(i, j)
+function GMSlopeSlope(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)
 
   return (
-    (1/6)*N - (1/6)*M + m*μ[m]*μ[M] - μ[M]*(m+1)*μ[m] - μ[M]*(m+1)*m
+    (1/6)*N - (1/6)*M + m*μM*μM - μM*(m+1)*μM - μM*(m+1)*m
     - (1/2)*(N+1)^2 + (1/3)*(N+1)^3 + (1/2)*(M+1)^2 - (1/3)*(M+1)^3
-    + (1/2)*μ[M]*(m+1)^2 - (1/2)*μ[M]*(m+1) + (1/2)*m*(M+1)^2
-    - (1/2)*m*(M+1) + (1/2)*μ[m]*(M+1)^2 - (1/2)*μ[m]*(M+1)
+    + (1/2)*μM*(m+1)^2 - (1/2)*μM*(m+1) + (1/2)*m*(M+1)^2
+    - (1/2)*m*(M+1) + (1/2)μM*(M+1)^2 - (1/2)*μM*(M+1)
     + (1/2)*M*(M+1)^2 - (1/2)*M*(M+1) - (1/2)*m*(N+1)^2 + (1/2)*m*(N+1)
-    - (1/2)*μ[m]*(N+1)^2 + (1/2)*μ[m]*(N+1) - (1/2)*M*(N+1)^2
-    + (1/2)*M*(N+1) - (1/2)*μ[M]*(N+1)^2 - (M+1)*m*M
-    - (M+1)*μ[m]*M + (N+1)*m*M + μ[M]*(N+1)*m + (N+1)*μ[m]*M
-    + μ[M]*(N+1)*μ[m] + (1/2)*μ[M]*(N+1)
-    )/(σ[m]*σ[M]) :: Float64
+    - (1/2)*μM*(N+1)^2 + (1/2)*μM*(N+1) - (1/2)*M*(N+1)^2
+    + (1/2)*M*(N+1) - (1/2)*μM*(N+1)^2 - (M+1)*m*M
+    - (M+1)*μM*M + (N+1)*m*M + μM*(N+1)*m + (N+1)*μM*M
+    + μM*(N+1)*μM + (1/2)*μM*(N+1)
+    )/(σm*σM) :: Float64
 end
 function GMSlopeSlope(i::Int, j::Int, d, IT)
-    return GMSlopeSlope(i, j, IT.obs, d.μ[SLOPE], d.σ[SLOPE]) :: Float64
+	m = min(i, j)::Int
+  	M = max(i, j)::Int
+    return GMSlopeSlope(m, M, IT.obs, d.μ[SLOPE][m], d.σ[SLOPE][m], d.μ[SLOPE][M], d.σ[SLOPE][M]) :: Float64
 end
 
 # slope x spike
@@ -226,12 +223,12 @@ function GMCosSlope(i::Int, j::Int, d, IT)
 end
 
 # spike x spike
-function GMSpikeSpike(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE::Vector{Float64})
+function GMSpikeSpike(i::Int, j::Int, N::Int, μSPIKEi::Float64, σSPIKEi::Float64)
 
   if i != j
     return (
-      (N-2)*μSPIKE[i]^2 - 2*μSPIKE[i]*(1-μSPIKE[i])
-    )/(σSPIKE[i]*σSPIKE[j]) :: Float64
+      (N-2)*μSPIKEi^2 - 2*μSPIKEi*(1-μSPIKEi)
+    )/(σSPIKEi*σSPIKEi) :: Float64
   else
     return float(N) :: Float64
   end
@@ -239,7 +236,7 @@ function GMSpikeSpike(i::Int, j::Int, N::Int, μSPIKE::Vector{Float64}, σSPIKE:
   return 0.0 :: Float64
 end
 function GMSpikeSpike(i::Int, j::Int, d, IT)
-    return GMSpikeSpike(i, j, IT.obs, d.μ[SPIKE], d.σ[SPIKE]) :: Float64
+    return GMSpikeSpike(i, j, IT.obs, d.μ[SPIKE][i], d.σ[SPIKE][i]) :: Float64
 end
 
 # spike x sine
