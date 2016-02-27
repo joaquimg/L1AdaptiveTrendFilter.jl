@@ -1,40 +1,43 @@
 
 function findλmax(IT,xdy,d)
 
-    λmax   = 0.0
-    temp  = 0.0
+  λmax   = 0.0
+  temp  = 0.0
+  maxPos = 0
 
-    maxPos = 0
+  for i in IT.components
 
-    for i in IT.components
+    temp, k = findmax(abs(xdy[i].*d.σ[i]))
+    temp = temp / d.σ[i][k]
 
-        #temp = maxabs(xdy[i].*d.σ[i])
-        #k=indmax(abs(xdy[i].*d.σ[i]))
-        temp,k=findmax(abs(xdy[i].*d.σ[i]))
-        temp=temp/d.σ[i][k]
-        if temp > λmax
-
-            λmax = temp
-
-        end
-
+    if temp > λmax
+      λmax = temp
     end
+  end
 
-    return λmax/IT.obs
+  return λmax/IT.obs
 end
 
-function computeλvec(IT,xdy,numλ,d; logarit = true )
+function compute_λ_path(IT, xdy, numλ, d; logarit=true)
 
-    λmax = findλmax(IT,xdy,d)
-
+    λ_max = findλmax(IT,xdy,d)
 
     if logarit
-
-        vec = λmax*(logspace(1,0.001,numλ)-1.0)/9.0
+        vec = λ_max*(logspace(1,0.001,numλ)-1.0)/9.0
     else
+        vec = λ_max*(linspace(1,0.001,numλ))
+    end
+    return vec
+end
 
-        vec = λmax*(linspace(1,0.001,numλ))
+function compute_γ_path(IT, xdy, numγ, d; logarit=true)
 
+    γ_max = 1
+
+    if logarit
+        vec = γ_max * (logspace(1, 0.001, numγ) - 1.0) / 9.0
+    else
+        vec = γ_max * (linspace(1, 0.001, numγ))
     end
     return vec
 end
@@ -60,7 +63,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
         end
     end
 
-    BIC = N * log(var(err)) + k * log(N)
+    BIC = N * log(var(err)) + 2 * k * log(N)
 
     return BIC
 
@@ -78,7 +81,7 @@ function compute_BIC(y::Vector{Float64}, β, IT, d; ɛ = 1e-5::Float64, std = 1)
   return BIC, y_hat
 end
 
-function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
+function compute_OLS(β_tilde, λ, w, activeSet,IT, xdy, d, lower_bounds, upper_bounds)
 
     β_ols = deepcopy(β_tilde)
     for c1 in IT.components
@@ -100,11 +103,8 @@ function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
             #β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
             # hard thresholding operator
-            if abs(β_ols[c1][j]) <= λ*d.σ[c1][j]
-                #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ*d.σ[c1][j])
+            if abs(β_ols[c1][j]) <= w[c1][j] * λ #* d.σ[c1][j]
                 β_ols[c1][j] = 0.0
-            else
-                #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ)
             end
         end
     end
