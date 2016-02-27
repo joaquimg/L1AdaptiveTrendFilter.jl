@@ -1,7 +1,7 @@
 
 function l1_adaptive_trend_filter(
-    y, components; f = Vector{Float64}(0), numλ=40, numγ=2, MAXITER=100,
-    lower_bounds=-10e+7*ones(TOTALCOMPONENTS), upper_bounds=10e+7*ones(TOTALCOMPONENTS)
+    y, components; f = Vector{Float64}(0), numλ=40, numγ=2, MAXITER=100, verbose=false,
+    lower_bounds=-10e+7*ones(TOTALCOMPONENTS), upper_bounds=10e+7*ones(TOTALCOMPONENTS),
     )
 
   # subtracting the mean
@@ -15,26 +15,33 @@ function l1_adaptive_trend_filter(
   # ?
   const d = initData(IT, f, f)
   # inner products between response y and components
-  const xdy = initXDY(IT,y,d)
+  const xdy = initXDY(IT, y, d)
   # build regularization path for λ
   const Λ = compute_λ_path(IT, xdy, numλ, d)
   # build regularization path for γ
   const Γ = compute_γ_path(IT, xdy, numγ, d)
 
-  @time @fastmath BCD,β1,β2, y_best = coordinate_descent(
-    IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds
+  @time @fastmath BCD, β1, β2, y_best, λ_best, γ_best = coordinate_descent(
+    IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, verbose
     )
 
   # adding back the mean
   y_best = y_best + y_mean
 
-  return BCD,β1,β2, y_best
+  if verbose
+    print(string(
+            "best regularization according to BIC was (λ=", round(λ_best),
+            ", γ=", round(γ_best,2), ") .\n"
+            ))
+  end
+
+  return BCD, β1, β2, y_best, λ_best, γ_best
 end
 
 # coordinate descent algorithm for the regularization path (Λ x Γ)
 function coordinate_descent(
     IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, Γ::Vector{Float64},
-    y, lower_bounds, upper_bounds; sparse=0
+    y, lower_bounds, upper_bounds, verbose; sparse=0
     )
 
   # initializations
@@ -58,9 +65,15 @@ function coordinate_descent(
   @inbounds for γ in Γ
     @inbounds for λ in Λ
 
-      path_iteration += 1
-      println(path_iteration)
       change = true
+
+      if verbose
+        path_iteration += 1
+        print(string(
+                "regularizers = (", round(λ, 2), ", ", round(γ, 2),
+                ") path iteration = ", path_iteration, ".\n"
+                ))
+      end
 
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
@@ -88,7 +101,8 @@ function coordinate_descent(
             β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
 
             # weighted penalty
-            w = 1.0 / (abs(β_ols)^γ)
+#             w = 1.0 / (abs(β_ols)^γ)
+            w = 1.0 / (abs(xdy[c1][j])^γ)
 
             # soft thresholding operator
             if abs(β_ols) <= w * λ #* d.σ[c1][j]
@@ -121,14 +135,16 @@ function coordinate_descent(
 
       # save the best fit so far
       if BIC_new < BIC
-         BIC = BIC_new
-         y_best = copy(y_hat)
-         β_best_unbiased = deepcopy(β_unbiased)
-         β_best_biased = deepcopy(β_tilde)
+        BIC = BIC_new
+        y_best = copy(y_hat)
+        β_best_unbiased = deepcopy(β_unbiased)
+        β_best_biased = deepcopy(β_tilde)
+        λ_best = λ
+        γ_best = γ
       end
 
     end
   end
 
-  return BCD, β_best_unbiased, β_best_biased, y_best
+  return BCD, β_best_unbiased, β_best_biased, y_best, λ_best, γ_best
 end
