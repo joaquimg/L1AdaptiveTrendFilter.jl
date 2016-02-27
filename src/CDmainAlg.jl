@@ -61,7 +61,7 @@ function coordinate_descent(
   λ_best = 0.0
   γ_best = 0.0
   w = Vector{Float64}[]
-  for i in TOTALCOMPONENTS
+  for i in 1:TOTALCOMPONENTS
     push!(w, zeros(IT.nelements[i]))
   end
 
@@ -107,18 +107,18 @@ function coordinate_descent(
             β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
 
             # weighted penalty
-#             w[c1][j] = 1.0 / (abs(β_ols)^γ)
-            w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
+            w[c1][j] = 1.0 / (abs(β_ols)^γ)
+#             w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
 
             # soft thresholding operator
-            if abs(β_ols) <= w * λ #* d.σ[c1][j]
+            if abs(β_ols) <= w[c1][j] * λ #* d.σ[c1][j]
               if activeSet[c1][j]
                 β_tilde[c1][j] = 0.0
                 activeSet[c1][j] = false
                 change = true
               end
             else
-              β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - w * λ)
+              β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - w[c1][j] * λ)
 
               # projection onto the box constraints [lower_bound, upper_bound]
               #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
