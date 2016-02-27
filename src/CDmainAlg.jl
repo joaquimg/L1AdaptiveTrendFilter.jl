@@ -79,12 +79,12 @@ function coordinate_descent(
 
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
-      #println(iter)
+
         if !change
           break
         end
-
         change = false
+
         # cycle through every component
         @inbounds for c1 in IT.components
           @inbounds for j in IT.elements[c1]

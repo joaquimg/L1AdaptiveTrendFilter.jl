@@ -3,21 +3,16 @@ function findλmax(IT,xdy,d)
 
   λmax   = 0.0
   temp  = 0.0
-
   maxPos = 0
 
   for i in IT.components
 
-    #temp = maxabs(xdy[i].*d.σ[i])
-    #k=indmax(abs(xdy[i].*d.σ[i]))
-    temp,k=findmax(abs(xdy[i].*d.σ[i]))
-    temp=temp/d.σ[i][k]
+    temp, k = findmax(abs(xdy[i].*d.σ[i]))
+    temp = temp / d.σ[i][k]
+
     if temp > λmax
-
       λmax = temp
-
     end
-
   end
 
   return λmax/IT.obs
@@ -25,24 +20,24 @@ end
 
 function compute_λ_path(IT, xdy, numλ, d; logarit=true)
 
-    λmax = findλmax(IT,xdy,d)
+    λ_max = findλmax(IT,xdy,d)
 
     if logarit
-        vec = λmax*(logspace(1,0.001,numλ)-1.0)/9.0
+        vec = λ_max*(logspace(1,0.001,numλ)-1.0)/9.0
     else
-        vec = λmax*(linspace(1,0.001,numλ))
+        vec = λ_max*(linspace(1,0.001,numλ))
     end
     return vec
 end
 
 function compute_γ_path(IT, xdy, numγ, d; logarit=true)
 
-    γmax = 1
+    γ_max = 1
 
     if logarit
-        vec = γmax * (logspace(1, 0.001, numγ) - 1.0) / 9.0
+        vec = γ_max * (logspace(1, 0.001, numγ) - 1.0) / 9.0
     else
-        vec = γmax*(linspace(1, 0.001, numγ))
+        vec = γ_max * (linspace(1, 0.001, numγ))
     end
     return vec
 end
@@ -68,7 +63,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
         end
     end
 
-    BIC = N * log(var(err)) + k * log(N)
+    BIC = N * log(var(err)) + 2 * k * log(N)
 
     return BIC
 
@@ -108,9 +103,9 @@ function compute_OLS(β_tilde, λ, activeSet,IT, xdy, d, lower_bounds, upper_bou
             #β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
             # hard thresholding operator
-            if abs(β_ols[c1][j]) <= λ #* d.σ[c1][j]
-                β_ols[c1][j] = 0.0
-            end
+#             if abs(β_ols[c1][j]) <= w * λ #* d.σ[c1][j]
+#                 β_ols[c1][j] = 0.0
+#             end
         end
     end
     return β_ols
