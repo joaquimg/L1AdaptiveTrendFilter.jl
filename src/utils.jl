@@ -68,7 +68,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
         end
     end
 
-    BIC = N * log(var(err)) + 2 * k * log(N)
+    BIC = N * log(var(err)) + k * log(N)
 
     return BIC
 

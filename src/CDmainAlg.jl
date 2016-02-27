@@ -30,7 +30,7 @@ function l1_adaptive_trend_filter(
 
   if verbose
     print(string(
-            "best regularization according to BIC was (λ=", round(λ_best),
+            "best regularization according to BIC was (λ=", round(λ_best, 2),
             ", γ=", round(γ_best,2), ") \n"
             ))
   end
