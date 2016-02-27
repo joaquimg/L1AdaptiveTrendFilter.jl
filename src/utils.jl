@@ -1,40 +1,48 @@
 
 function findλmax(IT,xdy,d)
 
-    λmax   = 0.0
-    temp  = 0.0
+  λmax   = 0.0
+  temp  = 0.0
 
-    maxPos = 0
+  maxPos = 0
 
-    for i in IT.components
+  for i in IT.components
 
-        #temp = maxabs(xdy[i].*d.σ[i])
-        #k=indmax(abs(xdy[i].*d.σ[i]))
-        temp,k=findmax(abs(xdy[i].*d.σ[i]))
-        temp=temp/d.σ[i][k]
-        if temp > λmax
+    #temp = maxabs(xdy[i].*d.σ[i])
+    #k=indmax(abs(xdy[i].*d.σ[i]))
+    temp,k=findmax(abs(xdy[i].*d.σ[i]))
+    temp=temp/d.σ[i][k]
+    if temp > λmax
 
-            λmax = temp
-
-        end
+      λmax = temp
 
     end
 
-    return λmax/IT.obs
+  end
+
+  return λmax/IT.obs
 end
 
-function computeλvec(IT,xdy,numλ,d; logarit = true )
+function compute_λ_path(IT, xdy, numλ, d; logarit=true)
 
     λmax = findλmax(IT,xdy,d)
 
-
     if logarit
-
         vec = λmax*(logspace(1,0.001,numλ)-1.0)/9.0
     else
-
         vec = λmax*(linspace(1,0.001,numλ))
+    end
+    return vec
+end
 
+function compute_λ_path(IT, xdy, numγ, d; logarit=true)
+
+    γmax = 2
+
+    if logarit
+        vec = γmax * (logspace(1, 0.001, numγ) - 1.0) / 9.0
+    else
+        vec = γmax*(linspace(1, 0.001, numγ))
     end
     return vec
 end
@@ -60,7 +68,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
         end
     end
 
-    BIC = N * log(var(err)) + k * log(N)
+    BIC = N * log(var(err)) + 2 * k * log(N)
 
     return BIC
 

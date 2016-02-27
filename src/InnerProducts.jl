@@ -38,7 +38,7 @@ end
 function xdy_spike(IT,y::Vector{Float64},d)
     N = IT.obs
     Nel = IT.nelements[SPIKE]
-    xdy = zeros(N)
+    xdy = zeros(Nel)
     y_s = sum(y)
 
     for i in 1:Nel
