@@ -31,7 +31,7 @@ function l1_adaptive_trend_filter(
   if verbose
     print(string(
             "best regularization according to BIC was (λ=", round(λ_best),
-            ", γ=", round(γ_best,2), ") .\n"
+            ", γ=", round(γ_best,2), ") \n"
             ))
   end
 
@@ -55,9 +55,11 @@ function coordinate_descent(
   BIC = Inf::Float64
   β_ols = 0.0::Float64
   partial_fit = 0.0::Float64
-  β_best_unbiased = 0
-  β_best_biased = 0
+  β_best_unbiased = 0.0
+  β_best_biased = 0.0
   y_best = 0
+  λ_best = 0.0
+  γ_best = 0.0
 
   # regularization path
   path_iteration = 0
