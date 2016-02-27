@@ -35,9 +35,9 @@ function compute_λ_path(IT, xdy, numλ, d; logarit=true)
     return vec
 end
 
-function compute_λ_path(IT, xdy, numγ, d; logarit=true)
+function compute_γ_path(IT, xdy, numγ, d; logarit=true)
 
-    γmax = 2
+    γmax = 1
 
     if logarit
         vec = γmax * (logspace(1, 0.001, numγ) - 1.0) / 9.0
@@ -86,7 +86,7 @@ function compute_BIC(y::Vector{Float64}, β, IT, d; ɛ = 1e-5::Float64, std = 1)
   return BIC, y_hat
 end
 
-function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
+function compute_OLS(β_tilde, λ, activeSet,IT, xdy, d, lower_bounds, upper_bounds)
 
     β_ols = deepcopy(β_tilde)
     for c1 in IT.components
@@ -108,7 +108,7 @@ function compute_OLS(β_tilde,λ,activeSet,IT,xdy,d,lower_bounds,upper_bounds)
             #β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
             # hard thresholding operator
-            if abs(β_ols[c1][j]) <= λ*d.σ[c1][j]
+            if abs(β_ols[c1][j]) <= λ #* d.σ[c1][j]
                 #β_ols[c1][j] = sign(β_ols[c1][j]) * (abs(β_ols[c1][j]) - λ*d.σ[c1][j])
                 β_ols[c1][j] = 0.0
             else

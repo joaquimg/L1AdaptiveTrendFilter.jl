@@ -11,7 +11,7 @@ function l1_adaptive_trend_filter(
   #prepare check for dimension sizes
   const N = size(y)[1]
   # iterator
-  const IT = initIT_range(N,components,f,MAXITER=MAXITER)
+  const IT = initIT_range(N, components, f, MAXITER=MAXITER)
   # ?
   const d = initData(IT, f, f)
   # inner products between response y and components
@@ -31,7 +31,7 @@ function l1_adaptive_trend_filter(
   return BCD,β1,β2, y_best
 end
 
-# coordinate descent algorithm for the regularization path Λ
+# coordinate descent algorithm for the regularization path (Λ x Γ)
 function coordinate_descent(
     IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, Γ::Vector{Float64},
     y, lower_bounds, upper_bounds; sparse=0
@@ -53,13 +53,15 @@ function coordinate_descent(
   y_best = 0
 
   # regularization path
-  c = 0
+  path_iteration = 0
 
   @inbounds for γ in Γ
     @inbounds for λ in Λ
-    c+=1
-    println(c)
+
+      path_iteration += 1
+      println(path_iteration)
       change = true
+
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
       #println(iter)
@@ -85,15 +87,18 @@ function coordinate_descent(
             # univariate ordinary leasts squares coefficient
             β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
 
+            # weighted penalty
+            w = 1.0 / (abs(β_ols)^γ)
+
             # soft thresholding operator
-            if abs(β_ols) <= λ*d.σ[c1][j]
+            if abs(β_ols) <= w * λ #* d.σ[c1][j]
               if activeSet[c1][j]
                 β_tilde[c1][j] = 0.0
                 activeSet[c1][j] = false
                 change = true
               end
             else
-              β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - λ)
+              β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - w * λ)
 
               # projection onto the box constraints [lower_bound, upper_bound]
               #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
