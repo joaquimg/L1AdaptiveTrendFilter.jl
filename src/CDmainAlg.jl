@@ -60,6 +60,10 @@ function coordinate_descent(
   y_best = 0
   λ_best = 0.0
   γ_best = 0.0
+  w = Vector{Float64}[]
+  for i in TOTALCOMPONENTS
+    push!(w, zeros(IT.nelements[i]))
+  end
 
   # regularization path
   path_iteration = 0
@@ -103,8 +107,8 @@ function coordinate_descent(
             β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
 
             # weighted penalty
-#             w = 1.0 / (abs(β_ols)^γ)
-            w = 1.0 / (abs(xdy[c1][j])^γ)
+#             w[c1][j] = 1.0 / (abs(β_ols)^γ)
+            w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
 
             # soft thresholding operator
             if abs(β_ols) <= w * λ #* d.σ[c1][j]
@@ -132,7 +136,7 @@ function coordinate_descent(
 
       # bayesian information criterion
       push!(BCD,deepcopy(β_tilde))
-      β_unbiased = compute_OLS(β_tilde, λ, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
+      β_unbiased = compute_OLS(β_tilde, λ, w, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
       BIC_new, y_hat= compute_BIC(y, β_unbiased, IT, d)
 
       # save the best fit so far

@@ -81,7 +81,7 @@ function compute_BIC(y::Vector{Float64}, β, IT, d; ɛ = 1e-5::Float64, std = 1)
   return BIC, y_hat
 end
 
-function compute_OLS(β_tilde, λ, activeSet,IT, xdy, d, lower_bounds, upper_bounds)
+function compute_OLS(β_tilde, λ, w, activeSet,IT, xdy, d, lower_bounds, upper_bounds)
 
     β_ols = deepcopy(β_tilde)
     for c1 in IT.components
@@ -103,9 +103,9 @@ function compute_OLS(β_tilde, λ, activeSet,IT, xdy, d, lower_bounds, upper_bou
             #β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
             # hard thresholding operator
-#             if abs(β_ols[c1][j]) <= w * λ #* d.σ[c1][j]
-#                 β_ols[c1][j] = 0.0
-#             end
+            if abs(β_ols[c1][j]) <= w[c1][j] * λ #* d.σ[c1][j]
+                β_ols[c1][j] = 0.0
+            end
         end
     end
     return β_ols
