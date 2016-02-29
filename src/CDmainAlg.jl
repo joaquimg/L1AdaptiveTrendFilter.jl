@@ -45,16 +45,16 @@ function coordinate_descent(
     )
 
   # initializations
-  if sparse == 1
-    BCD, β_tilde, β, activeSet = initSparse(IT)
-  else
-    @time BCD, β_tilde, β, activeSet = initDense(IT)
-  end
+  #if sparse == 1
+  #  BCD, β_tilde, β, activeSet = initSparse(IT)
+  #else
+  @time BCD, β_tilde, β, activeSet = initDense(IT)
+  #end
 
   # memory allocation
   BIC = Inf::Float64
   β_ols = 0.0::Float64
-  partial_fit = 0.0::Float64
+  partial_fit = 0.0#zeros(1)#0.0#::Float64
   β_best_unbiased = 0.0
   β_best_biased = 0.0
   y_best = 0
@@ -96,15 +96,15 @@ function coordinate_descent(
             # compute the partial fit with the components in the active set
             partial_fit = 0.0
             @inbounds for c2 in IT.components
-              @inbounds for l in 1:size(activeSet[c2])[1]
+              @inbounds for l in IT.elements[c2]#1:size(activeSet[c2])[1]
                 if activeSet[c2][l]
-                  @inbounds partial_fit += GM2(c1,c2,j,l,d,IT) * β_tilde[c2][l]
+                  @inbounds partial_fit += GM2(c1,c2,j,l,d,IT)* β_tilde[c2][l]
                 end
               end
             end
 
             # univariate ordinary leasts squares coefficient
-            β_ols =  β_tilde[c1][j] + (1.0/IT.obs) *(xdy[c1][j] - partial_fit)
+            β_ols =  β_tilde[c1][j] + (1.0/IT.obs) * (xdy[c1][j] - partial_fit)
 
             # weighted penalty
             w[c1][j] = 1.0 / (abs(β_ols)^γ)

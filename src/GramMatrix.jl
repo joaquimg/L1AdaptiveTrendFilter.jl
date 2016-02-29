@@ -12,7 +12,7 @@ function GMStepStep(i::Int, j::Int, d, IT)
     else
     	return GMStepStep(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[STEP][j], d.σ[STEP][j]) :: Float64
     end
-    return 0.0 :: Float64
+    #return 0.0 :: Float64
 end
 
 # step x slope
@@ -39,7 +39,7 @@ function GMStepSlope(
       )/(σSTEP*σSLOPE) :: Float64
   end
 
-  return 0.0 :: Float64
+  #return 0.0 :: Float64
 end
 function GMStepSlope(i::Int, j::Int, d, IT)
     return GMStepSlope(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[SLOPE][j], d.σ[SLOPE][j]) :: Float64
@@ -365,32 +365,32 @@ function GMCosCos(i::Int, j::Int, d, IT)
     return GMCosCos(i, j, IT.obs, d.μ[COS][i], d.σ[COS][i],d.μ[COS][j], d.σ[COS][j],d.fc[i],d.fc[j]) :: Float64
 end
 
-GM = Matrix{Function}(TOTALCOMPONENTS, TOTALCOMPONENTS)
-GM[STEP, STEP]   = GMStepStep
-GM[STEP, SPIKE]  = GMStepSpike
-GM[SPIKE, STEP]  = GMSpikeStep
-GM[STEP, SLOPE]  = GMStepSlope
-GM[SLOPE, STEP]  = GMSlopeStep
-GM[STEP, SIN]    = GMStepSin
-GM[SIN, STEP]    = GMSinStep
-GM[STEP, COS]    = GMStepCos
-GM[COS, STEP]    = GMCosStep
-GM[SPIKE, SPIKE] = GMSpikeSpike
-GM[SPIKE, SLOPE] = GMSpikeSlope
-GM[SLOPE, SPIKE] = GMSlopeSpike
-GM[SPIKE, SIN]   = GMSpikeSin
-GM[SIN, SPIKE]   = GMSinSpike
-GM[SPIKE, COS]   = GMSpikeCos
-GM[COS, SPIKE]   = GMCosSpike
-GM[SLOPE, SLOPE] = GMSlopeSlope
-GM[SLOPE, SIN]   = GMSlopeSin
-GM[SIN, SLOPE]   = GMSinSlope
-GM[SLOPE, COS]   = GMSlopeCos
-GM[COS, SLOPE]   = GMCosSlope
-GM[SIN, SIN]     = GMSinSin
-GM[SIN, COS]     = GMSinCos
-GM[COS, SIN]     = GMCosSin
-GM[COS, COS]     = GMCosCos
+# GM = Matrix{Function}(TOTALCOMPONENTS, TOTALCOMPONENTS)
+# GM[STEP, STEP]   = GMStepStep
+# GM[STEP, SPIKE]  = GMStepSpike
+# GM[SPIKE, STEP]  = GMSpikeStep
+# GM[STEP, SLOPE]  = GMStepSlope
+# GM[SLOPE, STEP]  = GMSlopeStep
+# GM[STEP, SIN]    = GMStepSin
+# GM[SIN, STEP]    = GMSinStep
+# GM[STEP, COS]    = GMStepCos
+# GM[COS, STEP]    = GMCosStep
+# GM[SPIKE, SPIKE] = GMSpikeSpike
+# GM[SPIKE, SLOPE] = GMSpikeSlope
+# GM[SLOPE, SPIKE] = GMSlopeSpike
+# GM[SPIKE, SIN]   = GMSpikeSin
+# GM[SIN, SPIKE]   = GMSinSpike
+# GM[SPIKE, COS]   = GMSpikeCos
+# GM[COS, SPIKE]   = GMCosSpike
+# GM[SLOPE, SLOPE] = GMSlopeSlope
+# GM[SLOPE, SIN]   = GMSlopeSin
+# GM[SIN, SLOPE]   = GMSinSlope
+# GM[SLOPE, COS]   = GMSlopeCos
+# GM[COS, SLOPE]   = GMCosSlope
+# GM[SIN, SIN]     = GMSinSin
+# GM[SIN, COS]     = GMSinCos
+# GM[COS, SIN]     = GMCosSin
+# GM[COS, COS]     = GMCosCos
 
 function GM2(c1,c2,i::Int, j::Int, d, IT)
   if c1 == STEP && c2 == STEP
@@ -443,8 +443,9 @@ function GM2(c1,c2,i::Int, j::Int, d, IT)
     return GMCosSin(i::Int, j::Int, d, IT) :: Float64
   elseif c1 == COS && c2 == COS
     return GMCosCos(i::Int, j::Int, d, IT) :: Float64
+  else
+    return 0.0 :: Float64
   end
-  return 0.0 :: Float64
 end
 
 
