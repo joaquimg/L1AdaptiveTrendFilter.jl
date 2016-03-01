@@ -1,7 +1,7 @@
 #cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
 # using Debug
-cd("D:/ComponentFilterCD/examples")
-#using PyPlot
+#cd("D:/ComponentFilterCD/examples")
+using PyPlot
 
 include("../src/CDtypes.jl")
 include("../src/initializations.jl")
@@ -12,12 +12,13 @@ include("../src/InnerProducts.jl")
 include("../src/Normalization.jl")
 include("../src/utils.jl")
 
-#y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
+y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
+y = y[:,1]
 
 #y=readcsv("C:/Users/LabOpto/Documents/SmartGit Projects/TestBench.csv")
-y = ones(10)
+#y = ones(10)
 
-run = 6
+run = 2
 
 if run == 1
 	##TESTE STEP + SPIKE
@@ -32,13 +33,12 @@ end
 
 if run == 2
 	##TESTE SLOPE
-	@time BCD,β1,β2 = CD(y,[3], numλ = 100)
+	@time BCD,β1,y_best = l1_adaptive_trend_filter(y,[3], numλ = 100)
 	a = β1[3]
-	b = β2[3]
-	plot(a)
-	plot(b)
+	PyPlot.plot(y)
+	PyPlot.plot(a)
+	PyPlot.plot(y_best)
 	writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia1.csv",a)
-	writecsv("C:/Users/LabOpto/Documents/SmartGit Projects/ResultsJulia2.csv",b)
 end
 
 if run == 3

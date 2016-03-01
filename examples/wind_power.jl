@@ -1,7 +1,7 @@
 #cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
 # using Debug
-# using PyPlot
-using Gadfly
+using PyPlot
+# using Gadfly
 using DataFrames
 
 include("../src/CDtypes.jl")
@@ -22,16 +22,16 @@ y_original = copy(y)
 f = 2*pi./collect(6:48)
 print(f)
 
-@time BCD, β_best_unbiased, β_best_biased, y_best, λ_best, γ_best = l1_adaptive_trend_filter(
+@time BCD, β_best, y_best, λ_best, γ_best = l1_adaptive_trend_filter(
   y, [1, 2, 3, 4, 5], numλ=30, numγ=4, f=f, verbose=true
   )
 
 # components
-step = β_best_unbiased[1]
-spike = β_best_unbiased[2]
-slope = β_best_unbiased[3]
-seno = β_best_unbiased[4]
-cosseno = β_best_unbiased[5]
+step = β_best[1]
+spike = β_best[2]
+slope = β_best[3]
+seno = β_best[4]
+cosseno = β_best[5]
 
 # plot (Gadfly)
 draw(

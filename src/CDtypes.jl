@@ -12,7 +12,12 @@ type iterator
 
 	components::Vector{Int}
     #??
-	elements::Vector{UnitRange{Int}}#Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
+	elements::Vector{Vector{Int}}#Vector{UnitRange{Int}}#Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
+
+	#iterating_elements::Union{Vector{UnitRange{Int}},Vector{Vector{Int}}}
+	# inicilaiza igual ao de cima
+	# iteraness em vez do de cima
+	# depois do primeiro lasso modidifica esse
 
 	nelements::Vector{Int}
 

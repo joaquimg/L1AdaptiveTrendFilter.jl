@@ -57,13 +57,13 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
 
     for i in IT.components
         for j in IT.elements[i]
-            if abs(β[i][j]) > ɛ
+            if abs(β[i][j]) > 0.0
                 k += 1.0
             end
         end
     end
 
-    BIC = N * log(var(err)) + 2 * k * log(N)
+    BIC = N * log(var(err)) + k * log(N)
 
     return BIC
 
@@ -103,9 +103,9 @@ function compute_OLS(β_tilde, λ, w, activeSet,IT, xdy, d, lower_bounds, upper_
             #β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
             # hard thresholding operator
-            if abs(β_ols[c1][j]) <= w[c1][j] * λ #* d.σ[c1][j]
-                β_ols[c1][j] = 0.0
-            end
+            #if abs(β_ols[c1][j]) <= w[c1][j]^γ * λ * d.σ[c1][j]
+            #    β_ols[c1][j] = 0.0
+            #end
         end
     end
     return β_ols
