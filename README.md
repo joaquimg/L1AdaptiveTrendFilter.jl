@@ -1,2 +1,2 @@
-# L1 Adaptive Trend Filter
+# L1AdaptiveTrendFilter.jl
 
