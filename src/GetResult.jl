@@ -74,13 +74,13 @@ function stdβ2usualβ(β,IT,d)
 
     for i in IT.components
         for j in IT.elements[i]
-            β_new[i][j] = β[i][j]/d.σ[i][j]
+            β_new[i][j] = β[i][j]
         end
     end
 
     for i in IT.components
         for j in IT.elements[i]
-            β0[i] -= β[i][j]*d.μ[i][j]/d.σ[i][j]
+            β0[i] -= β[i][j]*d.μ[i][j]
         end
     end
 
