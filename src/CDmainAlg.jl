@@ -31,14 +31,16 @@ function l1_adaptive_trend_filter(
     end
   end
 
-  # lasso pass
-  @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-    IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
-    )
+#   # lasso pass
+#   @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+#     IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
+#     )
 
-  # exclude the components the lasso has set to zero
-  update_components!(IT, w, β_best)
-  print("\n\n\n\n\n End of lasso \n\n\n\n\n")
+#   # exclude the components the lasso has set to zero
+#   print("\n\n\n\n\n End of lasso \n\n\n\n\n")
+#   print(β_best)
+#   update_components!(IT, w, β_best)
+#   print("\n\n\n\n\n Starting Adaptive lasso \n\n\n\n\n")
 
   @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
@@ -122,21 +124,21 @@ function coordinate_descent(
             partial_fit = 0.0
             @inbounds for c2 in IT.components
               @inbounds for l in IT.elements[c2]
-                if activeSet[c2][l]
+                if activeSet[c2][l] && (c1, j) != (c2, l)
                   @inbounds partial_fit += GM2(c1, c2, j, l, d, IT) * β_tilde[c2][l]
                 end
               end
             end
 
             # univariate ordinary leasts squares coefficient
-            β_ols =  β_tilde[c1][j] + (1.0 / IT.obs) * (xdy[c1][j] - partial_fit)
+            inner_prod_partial_residual = xdy[c1][j] - partial_fit
 
             # weighted penalty
-            w[c1][j] = 1.0 / (abs(β_ols)^γ)
+            #w[c1][j] = 1.0 / (abs(β_ols)^γ)
             #w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
 
             # soft thresholding operator
-            if abs(β_ols) <= w[c1][j]^γ * λ #* d.σ[c1][j]
+            if abs(inner_prod_partial_residual) <= λ
               if activeSet[c1][j]
                 β_tilde[c1][j] = 0.0
                 activeSet[c1][j] = false
@@ -144,7 +146,7 @@ function coordinate_descent(
                 #println("$(c1)  , $(j)")
               end
             else
-              β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - w[c1][j]^γ * λ)# * d.σ[c1][j])
+              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ) / (d.σ[c1][j]^2)
 
               # projection onto the box constraints [lower_bound, upper_bound]
               #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
@@ -178,6 +180,8 @@ function coordinate_descent(
     end
   end
 
+  print(activeSet)
+
   return β_path, β_best, y_best, λ_best, γ_best
 end
 
@@ -187,13 +191,13 @@ function update_components!(IT, w, β)
   # clear given iterator
   for c in IT.components
     IT.elements[c] = Int[]
-  end  
+  end
 
   for c in IT.components
     for j in 1:IT.nelements[c]
 
       if β[c][j] != 0.0
-        # pre-compute weight 
+        # pre-compute weight
         w[c][j] = abs(1.0 / β[c][j])
         # update iterator only with nonzero elements
         push!(IT.elements[c], j)
@@ -204,14 +208,3 @@ function update_components!(IT, w, β)
 
   return nothing
 end
-
-
-
-
-
-
-
-
-
-
-

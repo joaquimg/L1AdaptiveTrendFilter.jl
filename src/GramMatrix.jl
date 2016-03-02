@@ -3,8 +3,7 @@
 # step x step
 function GMStepStep(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)
 
-
-  return ( m*μm*μM-(M-m)*(1-μm)*μM+(N-M)*(1-μm)*(1-μM) )/(σm*σM) :: Float64
+  return (m*μm*μM-(M-m)*(1-μm)*μM+(N-M)*(1-μm)*(1-μM)) :: Float64
 end
 function GMStepStep(i::Int, j::Int, d, IT)
   	if i>j
@@ -188,7 +187,7 @@ function GMSlopeSin(
     -(1/2)*μSIN*(N+1)^2+(1/2)*sin(ω)*(N+1)*cos((N+1)*ω)/(cos(ω)-1)-(1/2*(N+1))*sin((N+1)*ω)
     -(1/2)*(μSLOPE+l)*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
     +(1/2)*(l*cos(ω)+μSLOPE*cos(ω)-l-μSLOPE-1)*sin((N+1)*ω)/(cos(ω)-1)
-`  -(l*μSIN+(1/2)*μSIN+μSLOPE*μSIN)*(l+1)
+    -(l*μSIN+(1/2)*μSIN+μSLOPE*μSIN)*(l+1)
     +(1/2)*μSIN*(l+1)^2-(1/2)*sin(ω)*(l+1)*cos((l+1)*ω)/(cos(ω)-1)
     +(1/2*(l+1))*sin((l+1)*ω)
     +(1/2)*(μSLOPE+l)*sin(ω)*cos((l+1)*ω)/(cos(ω)-1)
@@ -254,10 +253,11 @@ function GMSpikeSin(
     μSIN::Float64, σSIN::Float64, ω::Float64
     )
 
-   return (μSPIKE*μSIN*(N+1)-(1/2)*μSPIKE*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
-        +(1/2)*μSPIKE*sin((N+1)*ω)-μSPIKE*μSIN+(1/2)*μSPIKE*sin(ω)*cos(f[s])/(cos(f[s])-1)
-        -(1/2)*μSPIKE*sin(ω)+μSPIKE*(sin(p*ω)-μSIN)+(1-μSPIKE)*(sin(p*ω)-μSIN)
-        ) :: Float64
+   return (
+    μSPIKE*μSIN*(N+1)-(1/2)*μSPIKE*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
+    +(1/2)*μSPIKE*sin((N+1)*ω)-μSPIKE*μSIN+(1/2)*μSPIKE*sin(ω)*cos(f[s])/(cos(f[s])-1)
+    -(1/2)*μSPIKE*sin(ω)+μSPIKE*(sin(p*ω)-μSIN)+(1-μSPIKE)*(sin(p*ω)-μSIN)
+    ) :: Float64
 end
 function GMSpikeSin(i::Int, j::Int, d, IT)
     return GMSpikeSin(i, j, IT.obs, d.μ[SPIKE][i], d.σ[SPIKE][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[j]) :: Float64
@@ -479,8 +479,3 @@ function GM2(c1,c2,i::Int, j::Int, d, IT)
     return 0.0 :: Float64
   end
 end
-
-
-
-
-
