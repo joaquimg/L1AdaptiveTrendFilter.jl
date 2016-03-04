@@ -50,7 +50,7 @@ function compute_sin!(y, β, IT, f)
 
     for j in IT.elements[SIN]
         for i in 1:IT.obs
-            y[i] = y[i]+sin(f[j]*i)*β[j]
+            y[i] = y[i] + sin(f[j] * i) * β[j]
         end
     end
 end
@@ -62,7 +62,7 @@ function compute_cos!(y, β, IT, f)
 
     for j in IT.elements[COS]
         for i in 1:IT.obs
-            y[i] = y[i]+cos(f[j]*i)*β[j]
+            y[i] = y[i] + cos(f[j] * i) * β[j]
         end
     end
 end
@@ -80,7 +80,7 @@ function stdβ2usualβ(β,IT,d)
 
     for i in IT.components
         for j in IT.elements[i]
-            β0[i] -= β[i][j]*d.μ[i][j]
+            β0[i] -= β[i][j] * d.μ[i][j]
         end
     end
 

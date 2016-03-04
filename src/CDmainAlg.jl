@@ -110,6 +110,7 @@ function coordinate_descent(
 
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
+
         println(iter)
         if !change_flag
           break
@@ -131,7 +132,7 @@ function coordinate_descent(
             end
 
             # univariate ordinary leasts squares coefficient
-            inner_prod_partial_residual = xdy[c1][j] - partial_fit
+            inner_prod_partial_residual = (xdy[c1][j] - partial_fit) / IT.obs
 
             # weighted penalty
             #w[c1][j] = 1.0 / (abs(β_ols)^γ)
@@ -147,7 +148,6 @@ function coordinate_descent(
               end
             else
               β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ) / (d.σ[c1][j]^2)
-
               # projection onto the box constraints [lower_bound, upper_bound]
               #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
               #β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
