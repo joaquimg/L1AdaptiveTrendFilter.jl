@@ -31,10 +31,10 @@ function l1_adaptive_trend_filter(
     end
   end
 
-#   # lasso pass
-#   @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-#     IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
-#     )
+  # lasso pass
+  @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+    IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
+    )
 
 #   # exclude the components the lasso has set to zero
 #   print("\n\n\n\n\n End of lasso \n\n\n\n\n")
@@ -42,9 +42,9 @@ function l1_adaptive_trend_filter(
 #   update_components!(IT, w, β_best)
 #   print("\n\n\n\n\n Starting Adaptive lasso \n\n\n\n\n")
 
-  @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-    IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
-    )
+#   @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+#     IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
+#     )
   # adding back the mean
   y_best = y_best + y_mean
 
@@ -55,7 +55,7 @@ function l1_adaptive_trend_filter(
             ))
   end
 
-  return β_path, β_best, y_best, λ_best, γ_best
+  return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
 
 # coordinate descent algorithm for the regularization path (Λ x Γ)
@@ -81,7 +81,7 @@ function coordinate_descent(
   γ_best = 0.0
   path_iteration = 0
 
-  #w = Vector{Float64}[]
+  y_path = Vector{Float64}[]
   #for i in 1:TOTALCOMPONENTS
   #  push!(w, zeros(IT.nelements[i]))
   #end
@@ -168,6 +168,10 @@ function coordinate_descent(
       #β_unbiased = compute_OLS(β_tilde, λ, w, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
       BIC_new, y_hat= compute_BIC(y, β_tilde, IT, d)
 
+      push!(y_path, copy(y_hat))
+
+      print(string(" BIC = ",BIC_new))
+
       # save the best fit so far
       if BIC_new < BIC
         BIC = BIC_new
@@ -182,7 +186,7 @@ function coordinate_descent(
 
   print(activeSet)
 
-  return β_path, β_best, y_best, λ_best, γ_best
+  return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
 
 

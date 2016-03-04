@@ -32,7 +32,7 @@ end
 
 function compute_γ_path(IT, xdy, numγ, d; logarit=true)
 
-    γ_max = 1
+    γ_max = 2
 
     if logarit
         vec = γ_max * (logspace(1, 0.001, numγ) - 1.0) / 9.0
@@ -42,7 +42,7 @@ function compute_γ_path(IT, xdy, numγ, d; logarit=true)
     return vec
 end
 
-function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e-7::Float64)
+function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e-5::Float64)
 
     BIC = 0.0
     err = zeros(y)
@@ -57,7 +57,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
 
     for i in IT.components
         for j in IT.elements[i]
-            if abs(β[i][j]) > 0.0
+            if abs(β[i][j]) == 0.0
                 k += 1.0
             end
         end
