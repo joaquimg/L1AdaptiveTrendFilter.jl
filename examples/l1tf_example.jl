@@ -14,17 +14,17 @@ include("../src/Normalization.jl")
 include("../src/utils.jl")
 
 # get wind power data
-y=readtable("l1tf.csv")
+y=readtable("l1tf.csv", header=false)
 y = convert(Array , y[:,1])
 y_original = copy(y)
-
+print(y_original)
 # frequencies
 f = 2*pi./collect(6:48)
-print(f)
+#print(f)
 
 @time BCD, β_best, y_best = l1_adaptive_trend_filter(
-  y, [1,3], numλ=100, numγ=2, verbose=true
-  )
+   y, [1,3], numλ=100, numγ=2, verbose=true
+   )
 
 # PyPlot.plot(y)
 # PyPlot.plot(y_best)
