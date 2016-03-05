@@ -27,7 +27,7 @@ function l1_adaptive_trend_filter(
     if in(i,IT.components)
       push!(w, ones(IT.nelements[i]))
     else
-      push!(w, zeros(0))
+      push!(w, ones(0))
     end
   end
 
@@ -36,15 +36,15 @@ function l1_adaptive_trend_filter(
     IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
     )
 
-#   # exclude the components the lasso has set to zero
-#   print("\n\n\n\n\n End of lasso \n\n\n\n\n")
-#   print(β_best)
-#   update_components!(IT, w, β_best)
-#   print("\n\n\n\n\n Starting Adaptive lasso \n\n\n\n\n")
+  # exclude the components the lasso has set to zero
+  print("\n\n\n\n\n End of lasso \n\n\n\n\n")
+  print(β_best)
+  update_components!(IT, w, β_best, d)
+  print("\n\n\n\n\n Starting Adaptive lasso \n\n\n\n\n")
 
-#   @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-#     IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
-#     )
+  @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+    IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
+   )
   # adding back the mean
   y_best = y_best + y_mean
 
@@ -139,7 +139,7 @@ function coordinate_descent(
             #w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
 
             # soft thresholding operator
-            if abs(inner_prod_partial_residual) <= λ
+            if abs(inner_prod_partial_residual) <= λ * w[c1][j]^γ
               if activeSet[c1][j]
                 β_tilde[c1][j] = 0.0
                 activeSet[c1][j] = false
@@ -147,7 +147,7 @@ function coordinate_descent(
                 #println("$(c1)  , $(j)")
               end
             else
-              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ) / (d.σ[c1][j]^2)
+              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ * w[c1][j]^γ) / (d.σ[c1][j]^2)
               # projection onto the box constraints [lower_bound, upper_bound]
               #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
               #β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
@@ -190,7 +190,7 @@ function coordinate_descent(
 end
 
 
-function update_components!(IT, w, β)
+function update_components!(IT, w, β, d)
 
   # clear given iterator
   for c in IT.components

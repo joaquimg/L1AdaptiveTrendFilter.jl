@@ -22,7 +22,7 @@ print(y_original)
 f = 2*pi./collect(6:48)
 #print(f)
 
-@time BCD, y_path,β_best, y_best = l1_adaptive_trend_filter(
+@time BCD, y_path, β_best, y_best = l1_adaptive_trend_filter(
    y, [3], numλ=100, numγ=4, verbose=true
    )
 
@@ -43,4 +43,4 @@ f = 2*pi./collect(6:48)
 # draw(SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/wind_power_case_study/seno.svg", 14inch, 8inch), plot(x=1:length(seno),y=seno, Geom.point, Geom.line))
 # draw(SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/wind_power_case_study/cosseno.svg", 14inch, 8inch), plot(x=1:length(cosseno), y=cosseno, Geom.point, Geom.line))
 draw(SVG("fit.svg", 14inch, 8inch), plot(layer(x=1:length(y_original), y=y_original, Geom.point, Geom.line, Theme(default_color=color("red"))),
-                                        layer(x=1:length(y_best), y=y_path[95], Geom.point, Geom.line, Theme(default_color=color("blue")))))
+                                        layer(x=1:length(y_best), y=y_best, Geom.point, Geom.line, Theme(default_color=color("blue")))))
