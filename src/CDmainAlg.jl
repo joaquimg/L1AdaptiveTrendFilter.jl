@@ -170,7 +170,7 @@ function coordinate_descent(
 
       push!(y_path, copy(y_hat))
 
-      print(string(" BIC = ",BIC_new))
+      print(string(" BIC = ", BIC_new))
 
       # save the best fit so far
       if BIC_new < BIC
@@ -183,8 +183,6 @@ function coordinate_descent(
 
     end
   end
-
-  print(activeSet)
 
   return β_path, y_path, β_best, y_best, λ_best, γ_best
 end

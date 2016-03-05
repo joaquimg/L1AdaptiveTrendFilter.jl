@@ -1,8 +1,8 @@
 compute_components! = Vector{Any}(TOTALCOMPONENTS)
 
-function compute_estimate(y,IT,β,d)
+function compute_estimate(y, IT, β, d)
 
-    β_new, β0 = stdβ2usualβ(β,IT,d)
+    β_new, β0 = stdβ2usualβ(β, IT, d)
 
     y = zeros(IT.obs)
     for i in IT.components
