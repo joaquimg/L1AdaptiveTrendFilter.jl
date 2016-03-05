@@ -23,7 +23,7 @@ f = 2*pi./collect(6:48)
 #print(f)
 
 @time BCD, y_path, β_best, y_best = l1_adaptive_trend_filter(
-   y, [3], numλ=100, numγ=4, verbose=true
+   y, [1,2,3], numλ=100, numγ=4, verbose=true
    )
 
 # PyPlot.plot(y)

@@ -163,10 +163,10 @@ function coordinate_descent(
         end
       end
 
-      # bayesian information criterion
+
       push!(β_path, deepcopy(β_tilde))
-      #β_unbiased = compute_OLS(β_tilde, λ, w, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
-      BIC_new, y_hat= compute_BIC(y, β_tilde, IT, d)
+      # bayesian information criterion
+      BIC_new, y_hat= compute_BIC(y, β_tilde, activeSet, IT, d)
 
       push!(y_path, copy(y_hat))
 
