@@ -37,10 +37,7 @@ function l1_adaptive_trend_filter(
     )
 
   # exclude the components the lasso has set to zero
-  print(w)
-  print("\n\n\n\n\n End of lasso \n\n\n\n\n")
   update_components!(IT, w, β_best, d, xdy)
-  print(w)
 
   @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
@@ -54,8 +51,6 @@ function l1_adaptive_trend_filter(
             ", γ=", round(γ_best, 3), ") \n"
             ))
   end
-
-  print(β_best)
 
   return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
