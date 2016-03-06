@@ -27,22 +27,21 @@ function l1_adaptive_trend_filter(
     if in(i,IT.components)
       push!(w, ones(IT.nelements[i]))
     else
-      push!(w, zeros(0))
+      push!(w, ones(0))
     end
   end
 
   # lasso pass
-  @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+  @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
     )
 
   # exclude the components the lasso has set to zero
-  update_components!(IT, w, β_best)
-  print("\n\n\n\n\n End of lasso \n\n\n\n\n")
+  update_components!(IT, w, β_best, d, xdy)
 
-  @time @fastmath β_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+  @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
-    )
+   )
   # adding back the mean
   y_best = y_best + y_mean
 
@@ -53,7 +52,7 @@ function l1_adaptive_trend_filter(
             ))
   end
 
-  return β_path, β_best, y_best, λ_best, γ_best
+  return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
 
 # coordinate descent algorithm for the regularization path (Λ x Γ)
@@ -79,7 +78,7 @@ function coordinate_descent(
   γ_best = 0.0
   path_iteration = 0
 
-  #w = Vector{Float64}[]
+  y_path = Vector{Float64}[]
   #for i in 1:TOTALCOMPONENTS
   #  push!(w, zeros(IT.nelements[i]))
   #end
@@ -108,6 +107,7 @@ function coordinate_descent(
 
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
+
         println(iter)
         if !change_flag
           break
@@ -122,21 +122,21 @@ function coordinate_descent(
             partial_fit = 0.0
             @inbounds for c2 in IT.components
               @inbounds for l in IT.elements[c2]
-                if activeSet[c2][l]
+                if activeSet[c2][l] && (c1, j) != (c2, l)
                   @inbounds partial_fit += GM2(c1, c2, j, l, d, IT) * β_tilde[c2][l]
                 end
               end
             end
 
             # univariate ordinary leasts squares coefficient
-            β_ols =  β_tilde[c1][j] + (1.0 / IT.obs) * (xdy[c1][j] - partial_fit)
+            inner_prod_partial_residual = (xdy[c1][j] - partial_fit) / IT.obs
 
             # weighted penalty
-            w[c1][j] = 1.0 / (abs(β_ols)^γ)
-            #w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
+            #w[c1][j] = 1.0 / (abs(β_ols)^γ)
+            w[c1][j] = 1.0 / abs(inner_prod_partial_residual)
 
             # soft thresholding operator
-            if abs(β_ols) <= w[c1][j]^γ * λ #* d.σ[c1][j]
+            if abs(inner_prod_partial_residual) <= λ * w[c1][j]^γ
               if activeSet[c1][j]
                 β_tilde[c1][j] = 0.0
                 activeSet[c1][j] = false
@@ -144,8 +144,7 @@ function coordinate_descent(
                 #println("$(c1)  , $(j)")
               end
             else
-              β_tilde[c1][j] = sign(β_ols) * (abs(β_ols) - w[c1][j]^γ * λ)# * d.σ[c1][j])
-
+              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ * w[c1][j]^γ) / (d.σ[c1][j]^2)
               # projection onto the box constraints [lower_bound, upper_bound]
               #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
               #β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
@@ -161,10 +160,14 @@ function coordinate_descent(
         end
       end
 
-      # bayesian information criterion
+
       push!(β_path, deepcopy(β_tilde))
-      #β_unbiased = compute_OLS(β_tilde, λ, w, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
-      BIC_new, y_hat= compute_BIC(y, β_tilde, IT, d)
+      # bayesian information criterion
+      BIC_new, y_hat = compute_BIC(y, β_tilde, activeSet, IT, d, xdy)
+
+      push!(y_path, copy(y_hat))
+
+      print(string(" BIC = ", BIC_new))
 
       # save the best fit so far
       if BIC_new < BIC
@@ -178,23 +181,24 @@ function coordinate_descent(
     end
   end
 
-  return β_path, β_best, y_best, λ_best, γ_best
+  return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
 
 
-function update_components!(IT, w, β)
+function update_components!(IT, w, β, d, xdy)
 
   # clear given iterator
   for c in IT.components
     IT.elements[c] = Int[]
-  end  
+  end
 
   for c in IT.components
     for j in 1:IT.nelements[c]
 
       if β[c][j] != 0.0
-        # pre-compute weight 
+        # pre-compute weight
         w[c][j] = abs(1.0 / β[c][j])
+        β[c][j] = 0.0
         # update iterator only with nonzero elements
         push!(IT.elements[c], j)
       end
@@ -204,14 +208,3 @@ function update_components!(IT, w, β)
 
   return nothing
 end
-
-
-
-
-
-
-
-
-
-
-

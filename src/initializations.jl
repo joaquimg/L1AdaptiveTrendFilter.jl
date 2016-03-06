@@ -124,7 +124,7 @@ function initXDY(IT,y,data)
 
 	for i in 1:TOTALCOMPONENTS
 		if in(i,IT.components)
-			
+
 			push!(xdy0,xdy[i](IT,y,data) )
 
 		else

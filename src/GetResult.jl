@@ -1,8 +1,8 @@
 compute_components! = Vector{Any}(TOTALCOMPONENTS)
 
-function compute_estimate(y,IT,β,d)
+function compute_estimate(y, IT, β, d)
 
-    β_new, β0 = stdβ2usualβ(β,IT,d)
+    β_new, β0 = stdβ2usualβ(β, IT, d)
 
     y = zeros(IT.obs)
     for i in IT.components
@@ -14,7 +14,7 @@ function compute_estimate(y,IT,β,d)
         end
     end
 
-    return y,β_new
+    return y, β_new
 end
 
 function compute_step!(y,β,IT,d)
@@ -50,7 +50,7 @@ function compute_sin!(y, β, IT, f)
 
     for j in IT.elements[SIN]
         for i in 1:IT.obs
-            y[i] = y[i]+sin(f[j]*i)*β[j]
+            y[i] = y[i] + sin(f[j] * i) * β[j]
         end
     end
 end
@@ -62,7 +62,7 @@ function compute_cos!(y, β, IT, f)
 
     for j in IT.elements[COS]
         for i in 1:IT.obs
-            y[i] = y[i]+cos(f[j]*i)*β[j]
+            y[i] = y[i] + cos(f[j] * i) * β[j]
         end
     end
 end
@@ -74,13 +74,13 @@ function stdβ2usualβ(β,IT,d)
 
     for i in IT.components
         for j in IT.elements[i]
-            β_new[i][j] = β[i][j]/d.σ[i][j]
+            β_new[i][j] = β[i][j]
         end
     end
 
     for i in IT.components
         for j in IT.elements[i]
-            β0[i] -= β[i][j]*d.μ[i][j]/d.σ[i][j]
+            β0[i] -= β[i][j] * d.μ[i][j]
         end
     end
 
