@@ -42,5 +42,5 @@ f = 2*pi./collect(6:48)
 # draw(SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/wind_power_case_study/slope.svg", 14inch, 8inch), plot(x=1:length(slope),y=slope, Geom.point, Geom.line))
 # draw(SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/wind_power_case_study/seno.svg", 14inch, 8inch), plot(x=1:length(seno),y=seno, Geom.point, Geom.line))
 # draw(SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/wind_power_case_study/cosseno.svg", 14inch, 8inch), plot(x=1:length(cosseno), y=cosseno, Geom.point, Geom.line))
-draw(SVG("fit.svg", 14inch, 8inch), plot(layer(x=1:length(y_original), y=y_original, Geom.point, Geom.line, Theme(default_color=color("red"))),
-                                        layer(x=1:length(y_best), y=y_best, Geom.point, Geom.line, Theme(default_color=color("blue")))))
+draw(SVG("fit.svg", 14inch, 8inch), plot(layer(x=1:length(y_original), y=y_original, Geom.line, Theme(default_color=color("red"))),
+                                        layer(x=1:length(y_best), y=y_best, Geom.line, Theme(default_color=color("blue")))))

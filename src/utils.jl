@@ -32,7 +32,7 @@ end
 
 function compute_γ_path(IT, xdy, numγ, d; logarit=true)
 
-    γ_max = 1
+    γ_max = 2
 
     if logarit
         vec = γ_max * (logspace(1, 0.001, numγ) - 1.0) / 9.0
@@ -63,7 +63,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
         end
     end
 
-    BIC = N * log(var(err)) + k * log(N)
+    BIC = N * log(var(err)) + 3 * k * log(N)
 
     return BIC
 
@@ -88,11 +88,11 @@ function compute_OLS(β, activeSet, IT, xdy, d)
 
   @inbounds for c1 in IT.components
     @inbounds for j in IT.elements[c1]
-      if activeSet[c1][j]
+      if β[c1][j] != 0.0
         partial_fit = 0.0
         @inbounds for c2 in IT.components
           @inbounds for l in IT.elements[c2]
-            if activeSet[c2][l] && (c1, j) != (c2, l)
+            if β[c2][l] != 0.0 && (c1, j) != (c2, l)
               @inbounds partial_fit += GM2(c1, c2, j, l, d, IT) * β[c2][l]
             end
           end

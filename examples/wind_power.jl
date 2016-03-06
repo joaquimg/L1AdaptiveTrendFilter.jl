@@ -22,13 +22,13 @@ y_original = copy(y)
 f = 2*pi./collect(6:48)
 
 @time BCD, y_path, β_best, y_best, λ_best, γ_best = l1_adaptive_trend_filter(
-  y, [1, 2, 3, 4, 5], numλ=100, numγ=4, f=f, verbose=true
+  y, [1, 2, 4, 5], numλ=200, numγ=5, f=f, verbose=true
   )
 
 # components
 step = β_best[1]
 spike = β_best[2]
-slope = β_best[3]
+# slope = β_best[3]
 seno = β_best[4]
 cosseno = β_best[5]
 
@@ -43,10 +43,10 @@ draw(
 draw(
   SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/WindPower_CaseStudy/spike.svg", 14inch, 8inch),
   plot(x=1:length(spike),y=spike, Geom.point, Geom.line, Guide.xlabel("Hours")))
-draw(
-  SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/WindPower_CaseStudy/slope.svg", 14inch, 8inch),
-  plot(x=1:length(slope),y=slope, Geom.point, Geom.line)
-  )
+# draw(
+#   SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/WindPower_CaseStudy/slope.svg", 14inch, 8inch),
+#   plot(x=1:length(slope),y=slope, Geom.point, Geom.line)
+#   )
 draw(
   SVG("/Users/mariosouto/Dropbox/SAM/L1_Adaptive_Trend_Filter/WindPower_CaseStudy/trigonometric.svg", 7inch, 4.5inch),
   plot(

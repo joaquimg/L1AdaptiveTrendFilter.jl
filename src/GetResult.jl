@@ -14,7 +14,7 @@ function compute_estimate(y, IT, β, d)
         end
     end
 
-    return y,β_new
+    return y, β_new
 end
 
 function compute_step!(y,β,IT,d)
