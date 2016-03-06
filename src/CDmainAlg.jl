@@ -37,10 +37,10 @@ function l1_adaptive_trend_filter(
     )
 
   # exclude the components the lasso has set to zero
+  print(w)
   print("\n\n\n\n\n End of lasso \n\n\n\n\n")
-  print(β_best)
-  update_components!(IT, w, β_best, d)
-  print("\n\n\n\n\n Starting Adaptive lasso \n\n\n\n\n")
+  update_components!(IT, w, β_best, d, xdy)
+  print(w)
 
   @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
@@ -54,6 +54,8 @@ function l1_adaptive_trend_filter(
             ", γ=", round(γ_best, 3), ") \n"
             ))
   end
+
+  print(β_best)
 
   return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
@@ -136,7 +138,7 @@ function coordinate_descent(
 
             # weighted penalty
             #w[c1][j] = 1.0 / (abs(β_ols)^γ)
-            #w[c1][j] = 1.0 / (abs(xdy[c1][j])^γ)
+            w[c1][j] = 1.0 / abs(inner_prod_partial_residual)
 
             # soft thresholding operator
             if abs(inner_prod_partial_residual) <= λ * w[c1][j]^γ
@@ -166,7 +168,7 @@ function coordinate_descent(
 
       push!(β_path, deepcopy(β_tilde))
       # bayesian information criterion
-      BIC_new, y_hat= compute_BIC(y, β_tilde, activeSet, IT, d)
+      BIC_new, y_hat = compute_BIC(y, β_tilde, activeSet, IT, d, xdy)
 
       push!(y_path, copy(y_hat))
 
@@ -188,7 +190,7 @@ function coordinate_descent(
 end
 
 
-function update_components!(IT, w, β, d)
+function update_components!(IT, w, β, d, xdy)
 
   # clear given iterator
   for c in IT.components
@@ -201,6 +203,7 @@ function update_components!(IT, w, β, d)
       if β[c][j] != 0.0
         # pre-compute weight
         w[c][j] = abs(1.0 / β[c][j])
+        β[c][j] = 0.0
         # update iterator only with nonzero elements
         push!(IT.elements[c], j)
       end

@@ -32,7 +32,7 @@ end
 
 function compute_γ_path(IT, xdy, numγ, d; logarit=true)
 
-    γ_max = 2
+    γ_max = 1
 
     if logarit
         vec = γ_max * (logspace(1, 0.001, numγ) - 1.0) / 9.0
@@ -68,7 +68,7 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
     return BIC
 
 end
-function compute_BIC(y::Vector{Float64}, β, activeSet, IT, d; ɛ = 1e-5::Float64, std = 1)
+function compute_BIC(y::Vector{Float64}, β, activeSet, IT, d, xdy; ɛ = 1e-5::Float64, std = 1)
 
   β_ols = compute_OLS(β, activeSet, IT, xdy, d)
   y_hat, β_new = compute_estimate(zeros(y), IT, β_ols, d)
@@ -82,25 +82,28 @@ function compute_BIC(y::Vector{Float64}, β, activeSet, IT, d; ɛ = 1e-5::Float6
   return BIC, y_hat
 end
 
-@debug function compute_OLS(β, activeSet, IT, xdy, d)
+function compute_OLS(β, activeSet, IT, xdy, d)
 
-  @bp
   β_ols = deepcopy(β)
 
   @inbounds for c1 in IT.components
     @inbounds for j in IT.elements[c1]
-
-      partial_fit = 0.0
-      @inbounds for c2 in IT.components
-        @inbounds for l in IT.elements[c2]
-          if activeSet[c2][l] && (c1, j) != (c2, l)
-            @inbounds partial_fit += GM2(c1, c2, j, l, d, IT) * β[c2][l]
+      if activeSet[c1][j]
+        partial_fit = 0.0
+        @inbounds for c2 in IT.components
+          @inbounds for l in IT.elements[c2]
+            if activeSet[c2][l] && (c1, j) != (c2, l)
+              @inbounds partial_fit += GM2(c1, c2, j, l, d, IT) * β[c2][l]
+            end
           end
         end
+
+        # univariate ordinary leasts squares coefficient
+        β_ols[c1][j] = (xdy[c1][j] - partial_fit) / (IT.obs * (d.σ[c1][j]^2))
+      else
+        β_ols[c1][j] = 0.0
       end
 
-      # univariate ordinary leasts squares coefficient
-      β_ols[c1][j] = (xdy[c1][j] - partial_fit) / (d.σ[c1][j]^2)
     end
   end
 

@@ -1,5 +1,5 @@
 #cd("C:/Users/LabOpto/Documents/SmartGit Projects/src")
-using Debug
+# using Debug
 # using PyPlot
 using Gadfly
 using DataFrames
@@ -22,7 +22,7 @@ y_original = copy(y)
 f = 2*pi./collect(6:48)
 
 @time BCD, y_path, β_best, y_best, λ_best, γ_best = l1_adaptive_trend_filter(
-  y, [1, 2, 3, 4, 5], numλ=30, numγ=4, f=f, verbose=true
+  y, [1, 2, 3, 4, 5], numλ=100, numγ=4, f=f, verbose=true
   )
 
 # components
