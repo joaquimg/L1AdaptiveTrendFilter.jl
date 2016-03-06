@@ -44,28 +44,30 @@ end
 
 function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e-5::Float64)
 
-    BIC = 0.0
-    err = zeros(y)
+  BIC = 0.0
+  err = zeros(y)
 
-    N = IT.obs
+  N = IT.obs
 
-    for i in 1:IT.obs
-        err[i] = y[i] - y_hat[i]
+  for i in 1:IT.obs
+    err[i] = y[i] - y_hat[i]
+  end
+
+  k = 0::Int64
+  p = 0::Int64
+
+  for i in IT.components
+    for j in IT.elements[i]
+      p += 1
+      if abs(β[i][j]) != 0.0
+        k += 1
+      end
     end
+  end
 
-    k = 0.0::Float64
+  BIC = N * log(var(err)) + k * log(N) + 2 * log(binomial(BigInt(p), BigInt(k)))
 
-    for i in IT.components
-        for j in IT.elements[i]
-            if abs(β[i][j]) != 0.0
-                k += 1.0
-            end
-        end
-    end
-
-    BIC = N * log(var(err)) + k * log(N)
-
-    return BIC
+  return BIC
 end
 function compute_BIC(y::Vector{Float64}, β, activeSet, IT, d, xdy; ɛ = 1e-5::Float64, std = 1)
 
