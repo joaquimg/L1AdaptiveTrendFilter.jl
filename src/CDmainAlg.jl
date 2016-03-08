@@ -17,7 +17,7 @@ function l1_adaptive_trend_filter(
   # inner products between response y and components
   const xdy = initXDY(IT, y, d)
   # build regularization path for λ
-  const Λ = compute_λ_path(IT, xdy, numλ, d)
+  path, λ_max = compute_λ_path(IT, xdy, numλ, d)
   # build regularization path for γ
   const Γ = compute_γ_path(IT, xdy, numγ, d)
 
@@ -33,15 +33,16 @@ function l1_adaptive_trend_filter(
 
   # lasso pass
   @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-    IT, d, xdy, Λ, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
+    IT, d, xdy, path, λ_max, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
     )
 
   # exclude the components the lasso has set to zero
   update_components!(IT, w, β_best, d, xdy)
 
   @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-    IT, d, xdy, Λ, Γ, y, lower_bounds, upper_bounds, w, verbose
+    IT, d, xdy, path, λ_max, Γ, y, lower_bounds, upper_bounds, w, verbose
    )
+
   # adding back the mean
   y_best = y_best + y_mean
 
@@ -57,7 +58,7 @@ end
 
 # coordinate descent algorithm for the regularization path (Λ x Γ)
 function coordinate_descent(
-    IT::iterator, d::dataCD, xdy, Λ::Vector{Float64}, Γ::Vector{Float64},
+    IT::iterator, d::dataCD, xdy, path, λ_max, Γ::Vector{Float64},
     y, lower_bounds, upper_bounds, w, verbose; sparse=0
     )
 
@@ -93,7 +94,9 @@ function coordinate_descent(
        end
     end
 
-    @inbounds for λ in Λ
+    @inbounds for path_iter in path
+
+      λ = path_iter * λ_max
 
       change_flag = true
 
@@ -133,10 +136,10 @@ function coordinate_descent(
 
             # weighted penalty
             #w[c1][j] = 1.0 / (abs(β_ols)^γ)
-            w[c1][j] = 1.0 / abs(inner_prod_partial_residual)
+#             w[c1][j] = 1.0 / abs(inner_prod_partial_residual)
 
             # soft thresholding operator
-            if abs(inner_prod_partial_residual) <= λ * w[c1][j]^γ
+            if abs(inner_prod_partial_residual) <= λ[c1] * w[c1][j]^γ
               if activeSet[c1][j]
                 β_tilde[c1][j] = 0.0
                 activeSet[c1][j] = false
@@ -144,10 +147,11 @@ function coordinate_descent(
                 #println("$(c1)  , $(j)")
               end
             else
-              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ * w[c1][j]^γ) / (d.σ[c1][j]^2)
+              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ[c1] * w[c1][j]^γ) / (d.σ[c1][j]^2)
+
               # projection onto the box constraints [lower_bound, upper_bound]
-              #β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
-              #β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
+              β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
+              β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
 
               if !activeSet[c1][j] #&& β_tilde[c1][j] != 0.0
                 activeSet[c1][j] = true
@@ -197,7 +201,7 @@ function update_components!(IT, w, β, d, xdy)
 
       if β[c][j] != 0.0
         # pre-compute weight
-        w[c][j] = abs(1.0 / β[c][j])
+        w[c][j] = abs(1.0 / β[c][j]) #/ (d.σ[c][j]^2)
         β[c][j] = 0.0
         # update iterator only with nonzero elements
         push!(IT.elements[c], j)
