@@ -1,21 +1,24 @@
 
 function findλmax(IT,xdy,d)
 
-  λmax   = 0.0
-  temp  = 0.0
+  λmax = Vector{Float64}(5)
+  temp = 0.0
   maxPos = 0
 
   for i in IT.components
 
-    temp, k = findmax(abs(xdy[i].*d.σ[i]))
-    temp = temp / d.σ[i][k]
+    λmax[i] = maximum(abs(xdy[i]))
+#     temp, k = findmax(abs(xdy[i]))#.*d.σ[i]))
+#     temp = temp #/ d.σ[i][k]
 
-    if temp > λmax
-      λmax = temp
-    end
+#     if temp > λmax
+#       λmax = temp
+#     end
   end
 
-  return λmax/IT.obs
+  print(λmax)
+
+  return λmax / IT.obs
 end
 
 function compute_λ_path(IT, xdy, numλ, d; logarit=true)
@@ -23,11 +26,11 @@ function compute_λ_path(IT, xdy, numλ, d; logarit=true)
     λ_max = findλmax(IT,xdy,d)
 
     if logarit
-        vec = λ_max*(logspace(1,0.001,numλ)-1.0)/9.0
+        path = (logspace(1,0.001,numλ)-1.0)/9.0
     else
-        vec = λ_max*(linspace(1,0.001,numλ))
+        path = (linspace(1,0.001,numλ))
     end
-    return vec
+    return path, λ_max
 end
 
 function compute_γ_path(IT, xdy, numγ, d; logarit=true)
@@ -65,14 +68,17 @@ function compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β, IT; ɛ = 1e
     end
   end
 
-  BIC = N * log(var(err)) + k * log(N) + 2 * log(binomial(BigInt(p), BigInt(k)))
+  BIC = N * log(var(err)) + k * log(N) + 2 * convert(Float64, log(binomial(BigInt(p), BigInt(k))))
 
   return BIC
 end
-function compute_BIC(y::Vector{Float64}, β, activeSet, IT, d, xdy; ɛ = 1e-5::Float64, std = 1)
+function compute_BIC(
+    y::Vector{Float64}, β, activeSet, IT, d, xdy, ɛ = 1e-5::Float64, std = 1,
+    lower_bounds=-10e+7*ones(TOTALCOMPONENTS), upper_bounds=10e+7*ones(TOTALCOMPONENTS)
+    )
 
-  β_ols = compute_OLS(β, activeSet, IT, xdy, d)
-  y_hat, β_new = compute_estimate(zeros(y), IT, β_ols, d)
+  β_ols = compute_OLS(β, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
+  y_hat, β_new = compute_estimate(zeros(y), IT, β, d)
 
   if std == 1
     BIC = compute_BIC(y_hat::Vector{Float64}, y::Vector{Float64}, β_ols, IT)
@@ -83,7 +89,7 @@ function compute_BIC(y::Vector{Float64}, β, activeSet, IT, d, xdy; ɛ = 1e-5::F
   return BIC, y_hat
 end
 
-function compute_OLS(β, activeSet, IT, xdy, d)
+function compute_OLS(β, activeSet, IT, xdy, d, lower_bounds, upper_bounds)
 
   β_ols = deepcopy(β)
 
@@ -104,6 +110,9 @@ function compute_OLS(β, activeSet, IT, xdy, d)
       else
         β_ols[c1][j] = 0.0
       end
+
+      β_ols[c1][j] = max(β_ols[c1][j], lower_bounds[c1])
+      β_ols[c1][j] = min(β_ols[c1][j], upper_bounds[c1])
 
     end
   end
