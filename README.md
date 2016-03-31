@@ -16,7 +16,7 @@ Then simply include the command `using L1AdaptiveTrendFilter` to import the pack
 The function `l1_adaptive_trend_filter` performs the filtering via coordinate descent and takes the following required inputs:
 
 * y : Signal or time-series to be filtered;
-* components: List of integers correspond to the types of components to be considered.
+* components: List of integers corresponding to the types of components to be considered.
 
 And some optional inputs:
 
@@ -27,6 +27,15 @@ And some optional inputs:
 * verbose: Boolean flag for displaying progress of algorithm (Default=false);
 * lower_bounds: List of lower bounds for each component type (Default=[-∞,-∞,-∞,-∞,-∞]);
 * upper_bounds: List of upper bpunds for each component type (Default=[+∞,+∞,+∞,+∞,+∞]).
+
+This function returns:
+
+*  β_path: Path of components coefficients;
+*  y_path: Path of filtered signals;
+*  β_best: Best components coefficients according to the EBIC criteria;
+*  y_best: Best filtered signal according to the EBIC criteria;
+*  λ_best: Best value for the λ regularizer according to the EBIC criteria;
+*  γ_best: Best value for the γ regularizer according to the EBIC criteria.
 
 ## Example
 
