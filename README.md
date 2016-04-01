@@ -18,7 +18,7 @@ The function `l1_adaptive_trend_filter` performs the filtering via coordinate de
 * y : Signal or time-series to be filtered;
 * components: List of integers corresponding to the types of components to be considered.
 
-And some optional inputs:
+Optional inputs:
 
 * f: Vector of overcomplete frequencies (Default=ø);
 * numλ: Size of the regularizer path for the parameter λ (Default=40);
