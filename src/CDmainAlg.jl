@@ -32,14 +32,14 @@ function l1_adaptive_trend_filter(
   end
 
   # lasso pass
-  @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+  @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, path, λ_max, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
     )
 
   # exclude the components the lasso has set to zero
   update_components!(IT, w, β_best, d, xdy)
 
-  @time @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+  @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
     IT, d, xdy, path, λ_max, Γ, y, lower_bounds, upper_bounds, w, verbose
    )
 
@@ -66,7 +66,7 @@ function coordinate_descent(
   #if sparse == 1
   #  β_path, β_tilde, β, activeSet = initSparse(IT)
   #else
-  @time β_path, β_tilde, β, activeSet = initDense(IT)
+  β_path, β_tilde, β, activeSet = initDense(IT)
   #end
 
   # memory allocation
