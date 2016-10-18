@@ -1,6 +1,6 @@
 
 function l1_adaptive_trend_filter{T<:Real, S<:Integer}(
-    y::Vector{T}, components::Vector{S}; f = Vector{T}(0), numλ::T=T(40), numγ::T=T(10), MAXITER::Integer=500, verbose::Bool=false,
+    y::Vector{T}, components::Vector{S}; f = Vector{T}(0), numλ::S=S(40), numγ::S=S(10), MAXITER::S=S(500), verbose::Bool=false,
     lower_bounds=-10e+7*ones(T, TOTALCOMPONENTS), upper_bounds=10e+7*ones(T, TOTALCOMPONENTS),
     )
 
