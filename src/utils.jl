@@ -16,7 +16,7 @@ function findλmax(IT,xdy,d)
 #     end
   end
 
-  print(λmax)
+  #print(λmax)
 
   return λmax / IT.obs
 end
