@@ -15,8 +15,9 @@ Then simply include the command `using L1AdaptiveTrendFilter` to import the pack
 
 The function `l1_adaptive_trend_filter` performs the filtering via coordinate descent and takes the following required inputs:
 
-* y : Signal or time-series to be filtered;
-* components: List of integers corresponding to the types of components to be considered.
+* y : Signal or time-series to be filtered; (Must be a vector of reals)
+* components: List of integers corresponding to the types of components to be considered. (must be a vector of integers containing some of the following numbers: 1 = Step, 2 = Spike, 3 = Slope, 4 = Sine, 5 = Cossine )
+    
 
 Optional inputs:
 
@@ -38,6 +39,28 @@ This function returns:
 *  γ_best: Best value for the γ regularizer according to the EBIC criteria.
 
 ## Example
+
+```
+# after initializing the package with
+# Pkg.clone("git://github.com/joaquimg/L1AdaptiveTrendFilter.jl.git")
+
+#You mus include the library with:
+using L1AdaptiveTrendFilter
+
+y = rand(18) # some inputs
+components = [1,3] #(meaning we only consider step and slope components)
+
+# run the algorithm
+beta_path, y_path, beta_best, y_best, lambda_best, gamma_best = l1_adaptive_trend_filter(y,components)
+```
+
+## Re-installing
+one option is to remove the package and add it again:
+```
+Pkg.rm("L1AdaptiveTrendFilter")
+workspace()
+Pkg.clone("git://github.com/joaquimg/L1AdaptiveTrendFilter.jl.git")
+```
 
 ## Citing this package
 
