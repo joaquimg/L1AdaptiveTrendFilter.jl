@@ -1,7 +1,7 @@
 
-function l1_adaptive_trend_filter(
-    y::Vector{Real}, components::Vector{Integer}; f = Vector{Float64}(0), numλ=40, numγ=10, MAXITER=500, verbose=false,
-    lower_bounds=-10e+7*ones(TOTALCOMPONENTS), upper_bounds=10e+7*ones(TOTALCOMPONENTS),
+function l1_adaptive_trend_filter{T<:Real, S<:Integer}(
+    y::Vector{T}, components::Vector{S}; f = Vector{T}(0), numλ::T=40, numγ::T=10, MAXITER::Integer=500, verbose::Bool=false,
+    lower_bounds=-10e+7*ones(T, TOTALCOMPONENTS), upper_bounds=10e+7*ones(T, TOTALCOMPONENTS),
     )
 
   # subtracting the mean
