@@ -110,8 +110,9 @@ function coordinate_descent(
 
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
-
-        println(iter)
+        if verbose
+          println(iter)
+        end
         if !change_flag
           break
         end
