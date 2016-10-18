@@ -170,9 +170,11 @@ function coordinate_descent(
       BIC_new, y_hat = compute_BIC(y, β_tilde, activeSet, IT, d, xdy)
 
       push!(y_path, copy(y_hat))
-
-      print(string(" BIC = ", BIC_new))
-
+    
+      if verbose
+        print(string(" BIC = ", BIC_new))
+      end
+      
       # save the best fit so far
       if BIC_new < BIC
         BIC = BIC_new
