@@ -3,10 +3,10 @@ include("CDtypes.jl")
 #N=10
 #IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
-function initIT_range(N,components, f = Vector{Float64}(0) ; MAXITER=100)
+function initIT_range(N::Int, components::Vector{Int}, f::Vector{Float64} = Float64[]; MAXITER::Int=100)
 	#components = Int[]
-	nelements = zeros(Int,5)
-	elements = Vector{Vector{Int}}(5)
+	nelements = zeros(Int, TOTALCOMPONENTS)
+	elements = Vector{Vector{Int}}(TOTALCOMPONENTS)
 	obs = N
 
 	if STEP in components
@@ -15,11 +15,12 @@ function initIT_range(N,components, f = Vector{Float64}(0) ; MAXITER=100)
 		elements[STEP] = collect( 1:(N-1) )
 	else
 		nelements[STEP] = 0
-		elements[STEP] = collect( 1:0 )
+		elements[STEP] = Int[]
 	end
+
 	if SPIKE in components
 		#push!(components,SPIKE)
-		if ( STEP in components || SLOPE in components )
+		if ( STEP in components || SLOPE in components ) # last step and last spike are the same
 			nelements[SPIKE] = N-1
 			elements[SPIKE] = collect( 1:(N-1) )
 		else
@@ -28,39 +29,41 @@ function initIT_range(N,components, f = Vector{Float64}(0) ; MAXITER=100)
 		end
 	else
 		nelements[SPIKE] = 0
-		elements[SPIKE] = collect( 1:0 )
+		elements[SPIKE] = Int[]
 	end
+
 	if SLOPE in components
 		#push!(components,SLOPE)
 		nelements[SLOPE] = N-1
 		elements[SLOPE] = collect( 1:(N-1) )
 	else
 		nelements[SLOPE] = 0
-		elements[SLOPE] = 1:0
+		elements[SLOPE] = Int[]
 	end
+
 	if SIN in components
 		#push!(components,SIN)
-		nelements[SIN] = size(f)[1]
-		elements[SIN] = collect( 1:size(f)[1] )
+		nelements[SIN] = length(f)
+		elements[SIN] = collect( 1:length(f))
 	else
 		nelements[SIN] = 0
-		elements[SIN] = collect( 1:0 )
+		elements[SIN] = Int[]
 	end
+
 	if COS in components
 		#push!(components,COS)
-		nelements[COS] = size(f)[1]
-		elements[COS] = collect( 1:size(f)[1] )
+		nelements[COS] = length(f)
+		elements[COS] = collect( 1:length(f))
 	else
 		nelements[COS] =  0
-		elements[COS] = collect( 1:0 )
+		elements[COS] = Int[]
 	end
 
-	out = iterator(obs,components,elements,nelements,ones(Bool,TOTALCOMPONENTS),sum(nelements),MAXITER)
-
-	return out
+	return iterator(obs, components, elements, nelements, ones(Bool,TOTALCOMPONENTS), sum(nelements),MAXITER)
 end
 
-function initSparse(IT)
+function initSparse(IT::iterator)
+
 	BCD = Array{SparseMatrixCSC{Float64,Int},1}[]
 
 	beta_tilde = SparseMatrixCSC{Float64,Int}[]
@@ -68,7 +71,7 @@ function initSparse(IT)
 
 	activeSet = SparseMatrixCSC{Bool,Int}[]
 
-	for i in 1:5
+	for i in 1:TOTALCOMPONENTS
 
 		if i in IT.components
 
@@ -86,7 +89,7 @@ function initSparse(IT)
 
 	end
 
-	return BCD,beta_tilde,beta,activeSet
+	return BCD, beta_tilde, beta, activeSet
 end
 
 function initDense(IT)
@@ -97,25 +100,25 @@ function initDense(IT)
 
 	activeSet = Vector{Bool}[]
 
-	for i in 1:5
+	for i in 1:TOTALCOMPONENTS
 
 		if i in IT.components
 
-			push!(beta_tilde,zeros(IT.nelements[i]))
-			push!(beta,zeros(IT.nelements[i]))
+			push!(beta_tilde, zeros(IT.nelements[i]))
+			push!(beta, zeros(IT.nelements[i]))
 			push!(activeSet,zeros(Bool,IT.nelements[i]))
 
 		else
 
 			push!(beta_tilde,zeros(0))
-			push!(beta,zeros(0))
+			push!(beta, zeros(0))
 			push!(activeSet,zeros(Bool,0))
 
 		end
 
 	end
 
-	return BCD,beta_tilde,beta,activeSet
+	return BCD, beta_tilde, beta, activeSet
 end
 
 function initXDY(IT,y,data)
@@ -125,10 +128,10 @@ function initXDY(IT,y,data)
 	for i in 1:TOTALCOMPONENTS
 		if in(i,IT.components)
 
-			push!(xdy0,xdy[i](IT,y,data) )
+			push!(xdy0, xdy[i](IT,y,data) )
 
 		else
-			push!(xdy0,Vector{Float64}(0) )
+			push!(xdy0, Float64[] )
 		end
 		#temp)
 	end
@@ -139,7 +142,7 @@ end
 
 #change for no preallocation and simply edit field
 #requires changing normalizations.jl (returns)
-function initData(IT,fs=[],fc=[])
+function initData(IT::iterator, fs::Vector{Float64}=Float64[], fc::Vector{Float64}=Float64[])
 
 	d = dataCD()
 	for i in IT.components
@@ -147,6 +150,7 @@ function initData(IT,fs=[],fc=[])
 	end
 	d.fs = fs
 	d.fc = fc
+	
 	return d
 end
 

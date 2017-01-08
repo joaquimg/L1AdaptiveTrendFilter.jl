@@ -1,66 +1,72 @@
 
-function l1_adaptive_trend_filter{T<:Real, S<:Integer}(
-    y::Vector{T}, components::Vector{S}; f = Vector{T}(0), numλ::S=S(40), numγ::S=S(10), MAXITER::S=S(500), verbose::Bool=false,
-    lower_bounds=-10e+7*ones(T, TOTALCOMPONENTS), upper_bounds=10e+7*ones(T, TOTALCOMPONENTS),
-    )
+function l1_adaptive_trend_filter{T<:Float64, S<:Int}(
+    y::Vector{T}, components::Vector{S}; f::Vector{T} = Vector{T}(0), numλ::S=S(40), numγ::S=S(10), MAXITER::S=S(500), verbose::Bool=false,
+    lower_bounds::Vector{T}=-10e+7*ones(T, TOTALCOMPONENTS), upper_bounds::Vector{T}=10e+7*ones(T, TOTALCOMPONENTS) )
 
-  # subtracting the mean
-  y_mean = mean(y)
-  y = y - y_mean
+    # subtracting the mean
+    y_mean = mean(y)
+    y = y - y_mean
 
-  # prepare check for dimension sizes
-  const N = size(y)[1]
-  # iterator
-  IT = initIT_range(N, components, f, MAXITER=MAXITER)
-  # compute moments
-  const d = initData(IT, f, f)
-  # inner products between response y and components
-  const xdy = initXDY(IT, y, d)
-  # build regularization path for λ
-  path, λ_max = compute_λ_path(IT, xdy, numλ, d)
-  # build regularization path for γ
-  const Γ = compute_γ_path(IT, xdy, numγ, d)
+    # prepare check for dimension sizes
+    const N = length(y)
 
-  # initialize weights
-  w = Vector{Float64}[]
-  for i in 1:TOTALCOMPONENTS
-    if in(i,IT.components)
-      push!(w, ones(IT.nelements[i]))
-    else
-      push!(w, ones(0))
+    # iterator
+    IT = initIT_range(N, components, f, MAXITER=MAXITER)::iterator
+
+    # compute moments
+    const d = initData(IT, f, f)::dataCD
+
+    # inner products between response y and components
+    const xdy = initXDY(IT, y, d)
+
+    # build regularization path for λ (same path shape, different λs)
+    path, λ_max = compute_λ_path(IT, xdy, numλ, d)
+
+    # build regularization path for γ (unique path)
+    const Γ = compute_γ_path(IT, xdy, numγ, d)
+
+    # initialize weights
+    w = Vector{Float64}[]
+    for i in 1:TOTALCOMPONENTS
+        if in(i,IT.components)
+            push!(w, ones(IT.nelements[i]))
+        else
+            push!(w, ones(0))
+        end
     end
-  end
 
-  # lasso pass
-  @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-    IT, d, xdy, path, λ_max, [1.0,] , y, lower_bounds, upper_bounds, w ,verbose
+    # lasso pass
+    @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+      IT, d, xdy, path, λ_max, [1.0,] , y, lower_bounds, upper_bounds, w, verbose
+      )
+
+    # exclude the components the lasso has set to zero
+    update_components!(IT, w, β_best, d, xdy)
+
+    @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
+      IT, d, xdy, path, λ_max, Γ, y, lower_bounds, upper_bounds, w, verbose
     )
 
-  # exclude the components the lasso has set to zero
-  update_components!(IT, w, β_best, d, xdy)
+    # adding back the mean
+    y_best = y_best + y_mean
 
-  @fastmath β_path, y_path, β_best, y_best, λ_best, γ_best = coordinate_descent(
-    IT, d, xdy, path, λ_max, Γ, y, lower_bounds, upper_bounds, w, verbose
-   )
+    if verbose
+      print(string(
+              "best regularization according to BIC was (λ=", round(λ_best, 3),
+              ", γ=", round(γ_best, 3), ") \n"
+              ))
+    end
 
-  # adding back the mean
-  y_best = y_best + y_mean
-
-  if verbose
-    print(string(
-            "best regularization according to BIC was (λ=", round(λ_best, 3),
-            ", γ=", round(γ_best, 3), ") \n"
-            ))
-  end
-
-  return β_path, y_path, β_best, y_best, λ_best, γ_best
+    return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
 
 # coordinate descent algorithm for the regularization path (Λ x Γ)
 function coordinate_descent(
-    IT::iterator, d::dataCD, xdy, path, λ_max, Γ::Vector{Float64},
-    y, lower_bounds, upper_bounds, w, verbose; sparse=0
+    IT::iterator, d::dataCD, xdy::Vector{Vector{Float64}}, path::Vector{Float64}, λ_max::Vector{Float64}, Γ::Vector{Float64},
+    y::Vector{Float64}, lower_bounds::Vector{Float64}, upper_bounds::Vector{Float64}, w::Vector{Vector{Float64}}, verbose::Bool; sparse::Int = 0
     )
+
+  const N = IT.obs
 
   # initializations
   #if sparse == 1
@@ -88,11 +94,7 @@ function coordinate_descent(
   @inbounds for γ in Γ
 
     # clear warm-start
-    for i in IT.components
-      for j in IT.elements[i]
-         β_tilde[i][j] = 0.0
-       end
-    end
+    clear_warmstart!(β_tilde, IT)
 
     @inbounds for path_iter in path
 
@@ -110,26 +112,28 @@ function coordinate_descent(
 
       # loop until active set converges
       @inbounds for iter in 1:IT.maxIter
+
         if verbose
           println(iter)
         end
+
+        # convergence check
         if !change_flag
           break
         end
         change_flag = false
 
         # cycle through every component
-        @inbounds for c1 in IT.components
-          @inbounds for j in IT.elements[c1]
+        @inbounds for c1 in IT.components, j in IT.elements[c1]
+
+            # consider hoisting means and variaces, for better memoru use
 
             # compute the partial fit with the components in the active set
             partial_fit = 0.0
-            @inbounds for c2 in IT.components
-              @inbounds for l in IT.elements[c2]
-                if activeSet[c2][l] && (c1, j) != (c2, l)
-                  @inbounds partial_fit += GM2(c1, c2, j, l, d, IT) * β_tilde[c2][l]
+            @inbounds for c2 in IT.components, l in IT.elements[c2]
+                @inbounds if activeSet[c2][l] && (c1, j) != (c2, l)
+                    @inbounds partial_fit += GM2(c1, c2, j, l, d, N) * β_tilde[c2][l]
                 end
-              end
             end
 
             # univariate ordinary leasts squares coefficient
@@ -137,52 +141,53 @@ function coordinate_descent(
 
             # weighted penalty
             #w[c1][j] = 1.0 / (abs(β_ols)^γ)
-#             w[c1][j] = 1.0 / abs(inner_prod_partial_residual)
+            # w[c1][j] = 1.0 / abs(inner_prod_partial_residual)
 
-            # soft thresholding operator
-            if abs(inner_prod_partial_residual) <= λ[c1] * w[c1][j]^γ
-              if activeSet[c1][j]
-                β_tilde[c1][j] = 0.0
-                activeSet[c1][j] = false
-                change_flag = true
-                #println("$(c1)  , $(j)")
-              end
-            else
-              β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ[c1] * w[c1][j]^γ) / (d.σ[c1][j]^2)
+            # # soft thresholding operator
+            # if abs(inner_prod_partial_residual) <= λ[c1] * w[c1][j]^γ
+            #     if activeSet[c1][j]
+            #         β_tilde[c1][j] = 0.0
+            #         activeSet[c1][j] = false
+            #         change_flag = true
+            #         #println("$(c1)  , $(j)")
+            #     end
+            # else
+            #     β_tilde[c1][j] = sign(inner_prod_partial_residual) * (abs(inner_prod_partial_residual) - λ[c1] * w[c1][j]^γ) / (d.σ[c1][j]^2)
 
-              # projection onto the box constraints [lower_bound, upper_bound]
-              β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
-              β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
+            #     # projection onto the box constraints [lower_bound, upper_bound]
+            #     β_tilde[c1][j] = max(β_tilde[c1][j], lower_bounds[c1])
+            #     β_tilde[c1][j] = min(β_tilde[c1][j], upper_bounds[c1])
 
-              if !activeSet[c1][j] #&& β_tilde[c1][j] != 0.0
-                activeSet[c1][j] = true
-                change_flag = true
-                #println("$(c1)  , $(j)")
-              end
-            end
+            #     if !activeSet[c1][j] #&& β_tilde[c1][j] != 0.0
+            #         activeSet[c1][j] = true
+            #         change_flag = true
+            #         #println("$(c1)  , $(j)")
+            #     end
+            # end
+            soft_treshold(j, inner_prod_partial_residual, λ[c1], γ, w[c1][j], activeSet[c1], β_tilde[c1], d.σ[c1][j], lower_bounds[c1], upper_bounds[c1])
 
           end
-        end
       end
 
 
       push!(β_path, deepcopy(β_tilde))
+
       # bayesian information criterion
       BIC_new, y_hat = compute_BIC(y, β_tilde, activeSet, IT, d, xdy)
 
       push!(y_path, copy(y_hat))
     
       if verbose
-        print(string(" BIC = ", BIC_new))
+          print(string(" BIC = ", BIC_new))
       end
       
       # save the best fit so far
       if BIC_new < BIC
-        BIC = BIC_new
-        y_best = copy(y_hat)
-        β_best = deepcopy(β_tilde)
-        λ_best = λ
-        γ_best = γ
+          BIC = BIC_new
+          y_best = copy(y_hat)
+          β_best = deepcopy(β_tilde)
+          λ_best = λ
+          γ_best = γ
       end
 
     end
@@ -191,6 +196,47 @@ function coordinate_descent(
   return β_path, y_path, β_best, y_best, λ_best, γ_best
 end
 
+function clear_warmstart!(β_tilde::Vector{Vector{Float64}}, IT::iterator)
+
+  # clear warm-start
+    for i in IT.components
+        for j in IT.elements[i]
+            β_tilde[i][j] = 0.0
+        end
+    end
+
+    nothing
+end
+
+function soft_treshold(j::Int, residual::Float64, λ::Float64, γ::Float64, w::Float64, activeSet::Vector{Bool}, β_tilde::Vector{Float64}, 
+    var::Float64, lb::Float64, ub::Float64 )::Bool
+
+    if abs(residual) <= λ * w^γ
+        if activeSet[j]
+            β_tilde[j] = 0.0
+            activeSet[j] = false
+            return true
+            #println("$(c1)  , $(j)")
+        else
+            return false
+        end
+    else
+        β_tilde[j] = sign(residual) * (abs(residual) - λ * w^γ) / (var^2)
+
+        # projection onto the box constraints [lower_bound, upper_bound]
+        β_tilde[j] = max(β_tilde[j], lb)
+        β_tilde[j] = min(β_tilde[j], ub)
+
+        if !activeSet[j] #&& β_tilde[c1][j] != 0.0
+            activeSet[j] = true
+            return true
+            #println("$(c1)  , $(j)")
+        else
+            return false
+        end
+    end
+    return false
+end
 
 function update_components!(IT, w, β, d, xdy)
 

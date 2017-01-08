@@ -56,9 +56,7 @@ function getSpikeData(IT)
     return σ,μ
 end
 
-function getSineData(IT,f)
-    getSineData(IT, f)
-end
+
 function getSineData(IT, ω)
     N = IT.obs
     N_frequencies = IT.nelements[4]
@@ -99,9 +97,7 @@ function getSineData(IT, ω)
     return σ,μ
 end
 
-function getCosData(IT,f)
-    getCosData(IT, f)
-end
+
 function getCosData(IT, ω)
     N = IT.obs
     N_frequencies = IT.nelements[5]

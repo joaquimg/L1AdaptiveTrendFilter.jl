@@ -1,15 +1,16 @@
 # Closed-form formulas for the inner products between different kinds of components
 
 # step x step
-function GMStepStep(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)
+function GMStepStep(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)::Float64
 
-  return (m*μm*μM-(M-m)*(1-μm)*μM+(N-M)*(1-μm)*(1-μM)) :: Float64
+  return  (m*μm*μM-(M-m)*(1-μm)*μM+(N-M)*(1-μm)*(1-μM)) :: Float64
+
 end
-function GMStepStep(i::Int, j::Int, d, IT)
+function GMStepStep(i::Int, j::Int, d, IT)::Float64
   	if i>j
-    	return GMStepStep(j, i, IT.obs, d.μ[STEP][j], d.σ[STEP][j], d.μ[STEP][i], d.σ[STEP][i]) :: Float64
+    	return GMStepStep(j, i, IT, d.μ[STEP][j], d.σ[STEP][j], d.μ[STEP][i], d.σ[STEP][i]) :: Float64
     else
-    	return GMStepStep(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[STEP][j], d.σ[STEP][j]) :: Float64
+    	return GMStepStep(i, j, IT, d.μ[STEP][i], d.σ[STEP][i], d.μ[STEP][j], d.σ[STEP][j]) :: Float64
     end
     #return 0.0 :: Float64
 end
@@ -18,7 +19,7 @@ end
 function GMStepSlope(
     t::Int, l::Int, N::Int, μSTEP::Float64, σSTEP::Float64,
     μSLOPE::Float64, σSLOPE::Float64
-    )
+    )::Float64
 
   if l > t
     return (
@@ -40,43 +41,43 @@ function GMStepSlope(
 
   #return 0.0 :: Float64
 end
-function GMStepSlope(i::Int, j::Int, d, IT)
-    return GMStepSlope(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[SLOPE][j], d.σ[SLOPE][j]) :: Float64
+function GMStepSlope(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMStepSlope(i, j, IT, d.μ[STEP][i], d.σ[STEP][i], d.μ[SLOPE][j], d.σ[SLOPE][j]) :: Float64
 end
-function GMSlopeStep(i::Int, j::Int, d, IT)
-    return GMStepSlope(j, i, IT.obs, d.μ[STEP][j], d.σ[STEP][j], d.μ[SLOPE][i], d.σ[SLOPE][i]) :: Float64
+function GMSlopeStep(i::Int, j::Int, d, IT)::Float64
+    return GMStepSlope(j, i, IT, d.μ[STEP][j], d.σ[STEP][j], d.μ[SLOPE][i], d.σ[SLOPE][i]) :: Float64
 end
 
 # step x spike
 function GMStepSpike(
     i::Int, j::Int, N::Int, μSTEP::Float64, σSTEP::Float64,
     μSPIKE::Float64, σSPIKE::Float64
-    )
+    )::Float64
 
   if j > i
     return (
       i*μSPIKE*μSTEP - (N-i)*(1-μSTEP)*μSPIKE + (1-μSTEP)*μSPIKE + (1-μSPIKE)*(1-μSTEP)
-      )  :: Float64
+      )::Float64
   else
     return (
       i*μSPIKE*μSTEP - μSTEP*μSPIKE - μSTEP*(1-μSPIKE) - (N-i)*(1-μSTEP)*μSPIKE
-      )  :: Float64
+      )::Float64
   end
 
   return 0.0 :: Float64
 end
-function GMStepSpike(i::Int, j::Int, d, IT)
-    return GMStepSpike(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[SPIKE][j], d.σ[SPIKE][j])  :: Float64
+function GMStepSpike(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMStepSpike(i, j, IT, d.μ[STEP][i], d.σ[STEP][i], d.μ[SPIKE][j], d.σ[SPIKE][j])::Float64
 end
-function GMSpikeStep(i::Int, j::Int, d, IT)
-    return GMStepSpike(j, i, IT.obs, d.μ[STEP][j], d.σ[STEP][j], d.μ[SPIKE][i], d.σ[SPIKE][i])  :: Float64
+function GMSpikeStep(i::Int, j::Int, d, IT)::Float64
+    return GMStepSpike(j, i, IT, d.μ[STEP][j], d.σ[STEP][j], d.μ[SPIKE][i], d.σ[SPIKE][i])::Float64
 end
 
 # step x sine
 function GMStepSin(
     t::Int, s::Int, N::Int, μSTEP::Float64, σSTEP::Float64,
     μSIN::Float64, σSIN::Float64,ω::Float64
-    )
+    )::Float64
 
   return (
     μSTEP*μSIN*(t+1)-(1/2)*μSTEP*sin(ω)*cos((t+1)*ω)/(cos(ω)-1)
@@ -84,22 +85,22 @@ function GMStepSin(
     -(1/2)*μSTEP*sin(ω)+(μSTEP*μSIN-μSIN)*(N+1)-(1/2)*(-1+μSTEP)*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
     +(-1/2+(1/2)*μSTEP)*sin((N+1)*ω)-(μSTEP*μSIN-μSIN)*(t+1)
     +(1/2)*(-1+μSTEP)*sin(ω)*cos((t+1)*ω)/(cos(ω)-1)-(-1/2+(1/2)*μSTEP)*sin((t+1)*ω)
-    ) :: Float64
+    )::Float64
 
   #return GM::Float64
 end
-function GMStepSin(i::Int, j::Int, d, IT)
-    return GMStepSin(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[SIN][j], d.σ[SIN][j],d.fs[j]) :: Float64
+function GMStepSin(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMStepSin(i, j, IT, d.μ[STEP][i], d.σ[STEP][i], d.μ[SIN][j], d.σ[SIN][j],d.fs[j]) :: Float64
 end
-function GMSinStep(i::Int, j::Int, d, IT)
-    return GMStepSin(j, i, IT.obs, d.μ[STEP][j], d.σ[STEP][j], d.μ[SIN][i], d.σ[SIN][i],d.fs[i]) :: Float64
+function GMSinStep(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMStepSin(j, i, IT, d.μ[STEP][j], d.σ[STEP][j], d.μ[SIN][i], d.σ[SIN][i],d.fs[i]) :: Float64
 end
 
 # step x cosine
 function GMStepCos(
     t::Int, c::Int, N::Int, μSTEP::Float64, σSTEP::Float64,
     μCOS::Float64, σCOS::Float64,ω::Float64
-    )
+    )::Float64
 
     return (
     μSTEP*μCOS*(t+1)+(1/2)*μSTEP*cos((t+1)*ω)
@@ -109,17 +110,17 @@ function GMStepCos(
     -(1/2)*(1-μSTEP)*sin(ω)*sin((N+1)*ω)/(cos(ω)-1)
     -(μSTEP*μCOS-μCOS)*(t+1)-(-1/2+(1/2)*μSTEP)*cos((t+1)*ω)
     +(1/2)*(1-μSTEP)*sin(ω)*sin((t+1)*ω)/(cos(ω)-1)
-    ) :: Float64
+    )::Float64
 end
-function GMStepCos(i::Int, j::Int, d, IT)
-    return GMStepCos(i, j, IT.obs, d.μ[STEP][i], d.σ[STEP][i], d.μ[COS][j], d.σ[COS][j],d.fc[j]) :: Float64
+function GMStepCos(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMStepCos(i, j, IT, d.μ[STEP][i], d.σ[STEP][i], d.μ[COS][j], d.σ[COS][j],d.fc[j]) :: Float64
 end
-function GMCosStep(i::Int, j::Int, d, IT)
-    return GMStepCos(j, i, IT.obs, d.μ[STEP][j], d.σ[STEP][j], d.μ[COS][i], d.σ[COS][i],d.fc[i]) :: Float64
+function GMCosStep(i::Int, j::Int, d, IT)::Float64
+    return GMStepCos(j, i, IT, d.μ[STEP][j], d.σ[STEP][j], d.μ[COS][i], d.σ[COS][i],d.fc[i]) :: Float64
 end
 
 # slope x slope
-function GMSlopeSlope(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)
+function GMSlopeSlope(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::Float64, σM::Float64)::Float64
 
   return (
     (1/6)*N - (1/6)*M + m*μM*μM - μM*(m+1)*μM - μM*(m+1)*m
@@ -133,11 +134,11 @@ function GMSlopeSlope(m::Int, M::Int, N::Int, μm::Float64, σm::Float64, μM::F
     + μM*(N+1)*μM + (1/2)*μM*(N+1)
     ) :: Float64
 end
-function GMSlopeSlope(i::Int, j::Int, d, IT)
+function GMSlopeSlope(i::Int, j::Int, d::dataCD, IT::Int)::Float64
   	if j>i
-    	return GMSlopeSlope(i, j, IT.obs, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SLOPE][j], d.σ[SLOPE][j]) :: Float64
+    	return GMSlopeSlope(i, j, IT, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SLOPE][j], d.σ[SLOPE][j]) :: Float64
 	else
-		return GMSlopeSlope(j, i, IT.obs, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SLOPE][i], d.σ[SLOPE][i]) :: Float64
+		return GMSlopeSlope(j, i, IT, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SLOPE][i], d.σ[SLOPE][i]) :: Float64
 	end
 	return 0.0::Float64
 end
@@ -146,7 +147,7 @@ end
 function GMSlopeSpike(
     l::Int, p::Int, N::Int, μSLOPE::Float64, σSLOPE::Float64,
                             μSPIKE::Float64, σSPIKE::Float64,
-    )
+    )::Float64
 
   if p > l
     return (
@@ -155,30 +156,30 @@ function GMSlopeSpike(
       - μSPIKE*(l+1)*μSLOPE + (1/2)*μSPIKE*(l+1)^2
       - (1/2)*μSPIKE*(l+1) + (p-l-μSLOPE)*μSPIKE
       + (p-l-μSLOPE)*(1-μSPIKE)
-      ) :: Float64
+      )::Float64
   else
     return (
       l*μSLOPE*μSPIKE + μSPIKE*(N+1)*l + μSPIKE*(N+1)*μSLOPE
       - (1/2)*μSPIKE*(N+1)^2 + (1/2)*μSPIKE*(N+1) - μSPIKE*(l+1)*l
       - μSPIKE*(l+1)*μSLOPE + (1/2)*μSPIKE*(l+1)^2
       - (1/2)*μSPIKE*(l+1) - μSLOPE*μSPIKE - μSLOPE*(1-μSPIKE)
-      ) :: Float64
+      )::Float64
   end
 
   return 0.0::Float64
 end
-function GMSlopeSpike(i::Int, j::Int, d, IT)
-    return GMSlopeSpike(i, j, IT.obs, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SPIKE][j], d.σ[SPIKE][j]) :: Float64
+function GMSlopeSpike(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSlopeSpike(i, j, IT, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SPIKE][j], d.σ[SPIKE][j]) :: Float64
 end
-function GMSpikeSlope(i::Int, j::Int, d, IT)
-    return GMSlopeSpike(j, i, IT.obs, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SPIKE][i], d.σ[SPIKE][i]) :: Float64
+function GMSpikeSlope(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSlopeSpike(j, i, IT, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SPIKE][i], d.σ[SPIKE][i]) :: Float64
 end
 
 # slope x sine
 function GMSlopeSin(
     l::Int, s::Int, N::Int, μSLOPE::Float64, σSLOPE::Float64,
     μSIN::Float64, σSIN::Float64,ω::Float64
-    )
+    )::Float64
 
   return (
     μSLOPE*μSIN*(l+1)-(1/2)*μSLOPE*sin(ω)*cos((l+1)*ω)/(cos(ω)-1)
@@ -192,20 +193,20 @@ function GMSlopeSin(
     +(1/2*(l+1))*sin((l+1)*ω)
     +(1/2)*(μSLOPE+l)*sin(ω)*cos((l+1)*ω)/(cos(ω)-1)
     -(1/2)*(l*cos(ω)+μSLOPE*cos(ω)-l-μSLOPE-1)*sin((l+1)*ω)/(cos(ω)-1)
-    ) :: Float64
+    )::Float64
 end
-function GMSlopeSin(i::Int, j::Int, d, IT)
-    return GMSlopeSin(i, j, IT.obs, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[j]) :: Float64
+function GMSlopeSin(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSlopeSin(i, j, IT, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[j]) :: Float64
 end
-function GMSinSlope(i::Int, j::Int, d, IT)
-    return GMSlopeSin(j, i, IT.obs, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SIN][i], d.σ[SIN][i], d.fs[i]) :: Float64
+function GMSinSlope(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSlopeSin(j, i, IT, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[SIN][i], d.σ[SIN][i], d.fs[i]) :: Float64
 end
 
 # slope x cosine
-function GMSlopeCos(
+@inline function GMSlopeCos(
     l::Int, c::Int, N::Int, μSLOPE::Float64, σSLOPE::Float64,
     μCOS::Float64, σCOS::Float64, ω::Float64
-    )
+    )::Float64
 
   return (
     μSLOPE*μCOS*(l+1)+(1/2)*μSLOPE*cos((l+1)*ω)
@@ -221,37 +222,37 @@ function GMSlopeCos(
     +(1/2)*sin(ω)*(l+1)*sin((l+1)*ω)/(cos(ω)-1)
     -(1/2)*(l*cos(ω)+μSLOPE*cos(ω)-l-μSLOPE-1)*cos((l+1)*ω)/(cos(ω)-1)
     -(1/2)*(l+μSLOPE)*sin(ω)*sin((l+1)*ω)/(cos(ω)-1)
-    ) :: Float64
+    )::Float64
 end
-function GMSlopeCos(i::Int, j::Int, d, IT)
-    return GMSlopeCos(i, j, IT.obs, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[COS][j], d.σ[COS][j],d.fc[j]) :: Float64
+function GMSlopeCos(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSlopeCos(i, j, IT, d.μ[SLOPE][i], d.σ[SLOPE][i], d.μ[COS][j], d.σ[COS][j], d.fc[j])::Float64
 end
-function GMCosSlope(i::Int, j::Int, d, IT)
-    return GMSlopeCos(j, i, IT.obs, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[COS][i], d.σ[COS][i],d.fc[i]) :: Float64
+function GMCosSlope(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSlopeCos(j, i, IT, d.μ[SLOPE][j], d.σ[SLOPE][j], d.μ[COS][i], d.σ[COS][i], d.fc[i])::Float64
 end
 
 # spike x spike
-function GMSpikeSpike(i::Int, j::Int, N::Int, μSPIKEi::Float64, σSPIKEi::Float64)
+@inline function GMSpikeSpike(i::Int, j::Int, N::Int, μSPIKEi::Float64, σSPIKEi::Float64)::Float64
 
   if i != j
     return (
       (N-2)*μSPIKEi^2 - 2*μSPIKEi*(1-μSPIKEi)
-    ) :: Float64
+    )::Float64
   else
-    return float(N) :: Float64
+    return float(N)::Float64
   end
 
-  return 0.0 :: Float64
+  return 0.0::Float64
 end
-function GMSpikeSpike(i::Int, j::Int, d, IT)
-    return GMSpikeSpike(i, j, IT.obs, d.μ[SPIKE][i], d.σ[SPIKE][i]) :: Float64
+function GMSpikeSpike(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSpikeSpike(i, j, IT, d.μ[SPIKE][i], d.σ[SPIKE][i])::Float64
 end
 
 # spike x sine
-function GMSpikeSin(
+@inline function GMSpikeSin(
     p::Int, s::Int, N::Int, μSPIKE::Float64, σSPIKE::Float64,
     μSIN::Float64, σSIN::Float64, ω::Float64
-    )
+    )::Float64
 
    return (
     μSPIKE*μSIN*(N+1)-(1/2)*μSPIKE*sin(ω)*cos((N+1)*ω)/(cos(ω)-1)
@@ -259,15 +260,15 @@ function GMSpikeSin(
     -(1/2)*μSPIKE*sin(ω)+μSPIKE*(sin(p*ω)-μSIN)+(1-μSPIKE)*(sin(p*ω)-μSIN)
     ) :: Float64
 end
-function GMSpikeSin(i::Int, j::Int, d, IT)
-    return GMSpikeSin(i, j, IT.obs, d.μ[SPIKE][i], d.σ[SPIKE][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[j]) :: Float64
+function GMSpikeSin(i::Int, j::Int, d::dataCD, IT::Int)
+    return GMSpikeSin(i, j, IT, d.μ[SPIKE][i], d.σ[SPIKE][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[j]) :: Float64
 end
-function GMSinSpike(i::Int, j::Int, d, IT)
-    return GMSpikeSin(j, i, IT.obs, d.μ[SPIKE][j], d.σ[SPIKE][j], d.μ[SIN][i], d.σ[SIN][i], d.fs[i]) :: Float64
+function GMSinSpike(i::Int, j::Int, d::dataCD, IT::Int)
+    return GMSpikeSin(j, i, IT, d.μ[SPIKE][j], d.σ[SPIKE][j], d.μ[SIN][i], d.σ[SIN][i], d.fs[i]) :: Float64
 end
 
 # spike x cosine
-function GMSpikeCos(
+@inline function GMSpikeCos(
     p::Int, c::Int, N::Int, μSPIKE::Float64, σSPIKE::Float64,
     μCOS::Float64, σCOS::Float64, ω::Float64
     )
@@ -277,22 +278,22 @@ function GMSpikeCos(
     +(1/2)*μSPIKE*sin(ω)*sin((N+1)*ω)/(cos(ω)-1)
     -μSPIKE*μCOS-(1/2)*μSPIKE*cos(ω)-(1/2)*μSPIKE*sin(ω)^2/(cos(ω)-1)
     +μSPIKE*(cos(p*ω)-μCOS)+(1-μSPIKE)*(cos(p*ω)-μCOS)
-    ) :: Float64
+    )::Float64
 end
-function GMSpikeCos(i::Int, j::Int, d, IT)
-    return GMSpikeCos(i, j, IT.obs, d.μ[SPIKE][i], d.σ[SPIKE][i], d.μ[COS][j], d.σ[COS][j],d.fc[j]) :: Float64
+function GMSpikeCos(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSpikeCos(i, j, IT, d.μ[SPIKE][i], d.σ[SPIKE][i], d.μ[COS][j], d.σ[COS][j],d.fc[j]) :: Float64
 end
-function GMCosSpike(i::Int, j::Int, d, IT)
-    return GMSpikeCos(j, i, IT.obs, d.μ[SPIKE][j], d.σ[SPIKE][j], d.μ[COS][i], d.σ[COS][i],d.fc[i]) :: Float64
+function GMCosSpike(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSpikeCos(j, i, IT, d.μ[SPIKE][j], d.σ[SPIKE][j], d.μ[COS][i], d.σ[COS][i],d.fc[i]) :: Float64
 end
 
 # sine x sine
-function GMSinSin(i::Int, j::Int, N::Int, μSINi::Float64, σSINi::Float64, μSINj::Float64, σSINj::Float64,ωi::Float64,ωj::Float64)
+@inline function GMSinSin(i::Int, j::Int, N::Int, μSINi::Float64, σSINi::Float64, μSINj::Float64, σSINj::Float64, ωi::Float64, ωj::Float64)::Float64
 
   #ATENTION HERE
   #there still may be a ptoblem from cos(ωi) = cos(ωj) with i != j
   if i == j
-    return float(N) :: Float64
+    return float(N)::Float64
   elseif abs( cos(ωj)-cos(ωi) ) <= 1e-8
     #cancelation that need to happen for finiteness
     return (
@@ -303,7 +304,7 @@ function GMSinSin(i::Int, j::Int, N::Int, μSINi::Float64, σSINi::Float64, μSI
       +(1/2)*sin(ωi)*sin(ωj)
       +(1/2)*μSINj*sin(ωi)*cos(ωi)/(-1+cos(ωi))+(1/2)*μSINi*sin(ωj)*cos(ωj)/(cos(ωj)-1)
       -(1/2)*μSINj*sin(ωi)-(1/2)*μSINi*sin(ωj)
-      ) :: Float64
+      )::Float64
   else
     return (
       μSINj*μSINi*(N+1)+(1/2)*sin(ωj)*cos((N+1)*ωj)*sin((N+1)*ωi)/(cos(ωj)-cos(ωi))
@@ -314,21 +315,21 @@ function GMSinSin(i::Int, j::Int, N::Int, μSINi::Float64, σSINi::Float64, μSI
       +(1/2)*sin(ωi)*sin(ωj)*cos(ωi)/(cos(ωj)-cos(ωi))+(1/2)*sin(ωi)*sin(ωj)
       +(1/2)*μSINj*sin(ωi)*cos(ωi)/(-1+cos(ωi))+(1/2)*μSINi*sin(ωj)*cos(ωj)/(cos(ωj)-1)
       -(1/2)*μSINj*sin(ωi)-(1/2)*μSINi*sin(ωj)
-      ) :: Float64
+      )::Float64
   end
 
-  return 0.0 :: Float64
+  return 0.0::Float64
 end
-function GMSinSin(i::Int, j::Int, d, IT)
-    return GMSinSin(i, j, IT.obs, d.μ[SIN][i], d.σ[SIN][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[i], d.fs[j]) :: Float64
+function GMSinSin(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMSinSin(i, j, IT, d.μ[SIN][i], d.σ[SIN][i], d.μ[SIN][j], d.σ[SIN][j], d.fs[i], d.fs[j]) :: Float64
 end
 
 
 # sine x cosine
-function GMSinCos(
+@inline function GMSinCos(
     s::Int, c::Int, N::Int, μSIN::Float64, σSIN::Float64,
     μCOS::Float64, σCOS::Float64, ωs::Float64, ωc::Float64
-    )
+    )::Float64
 
   if abs(cos(ωc)-cos(ωs)) >= 1e-5
 
@@ -340,7 +341,7 @@ function GMSinCos(
       -(1/2)*sin(ωs)*cos(ωs)*cos(ωc)/(cos(ωs)-cos(ωc))+(1/2)*sin(ωs)*cos(ωc)
       -(1/2)*sin(ωc)^2*sin(ωs)/(cos(ωs)-cos(ωc))-(1/2)*μSIN*cos(ωc)+(1/2)*μCOS*sin(ωs)*cos(ωs)/(cos(ωs)-1)
       -(1/2)*μSIN*sin(ωc)^2/(cos(ωc)-1)-(1/2)*sin(ωs)*μCOS
-      ) :: Float64
+      )::Float64
 
   else
     return (
@@ -349,24 +350,24 @@ function GMSinCos(
       +(1/2)*(-cos(ωs)*μSIN+μCOS*sin(ωs)-μSIN)*sin((N+1)*ωs)/sin(ωs)-μSIN*μCOS
       +(1/2)*cos(ωs)^3/sin(ωs)+(1/2)*cos(ωs)*sin(ωs)-(1/2)*(cos(ωs)*μCOS+μSIN*sin(ωs)+μCOS)*cos(ωs)/sin(ωs)
       +(1/2)*cos(ωs)*μSIN-(1/2)*μCOS*sin(ωs)+(1/2)*μSIN
-      ) :: Float64
+      )::Float64
 
   end
 
-  return 0.0 :: Float64
+  return 0.0::Float64
 end
-function GMSinCos(i::Int, j::Int, d, IT)
-    return GMSinCos(i, j, IT.obs, d.μ[SIN][i], d.σ[SIN][i], d.μ[COS][j], d.σ[COS][j],d.fs[i],d.fc[j]) :: Float64
+function GMSinCos(i::Int, j::Int, d::dataCD, IT::Int)
+    return GMSinCos(i, j, IT, d.μ[SIN][i], d.σ[SIN][i], d.μ[COS][j], d.σ[COS][j],d.fs[i],d.fc[j]) :: Float64
 end
-function GMCosSin(i::Int, j::Int, d, IT)
-    return GMSinCos(j, i, IT.obs, d.μ[SIN][j], d.σ[SIN][j], d.μ[COS][i], d.σ[COS][i],d.fs[j],d.fc[i]) :: Float64
+function GMCosSin(i::Int, j::Int, d::dataCD, IT::Int)
+    return GMSinCos(j, i, IT, d.μ[SIN][j], d.σ[SIN][j], d.μ[COS][i], d.σ[COS][i],d.fs[j],d.fc[i]) :: Float64
 end
 
 # cosine x cosine
-function GMCosCos(i::Int, j::Int, N::Int, μCOSi::Float64, σCOSi::Float64, μCOSj::Float64, σCOSj::Float64,ωi::Float64,ωj::Float64)
+@inline function GMCosCos(i::Int, j::Int, N::Int, μCOSi::Float64, σCOSi::Float64, μCOSj::Float64, σCOSj::Float64, ωi::Float64, ωj::Float64)::Float64
 
   if i == j
-    return float(N)
+    return float(N)::Float64
   elseif abs(cos(ωi)-cos(ωj) ) >= 1e-8
     return (
       μCOSj*μCOSi*(N+1)-(1/2)*cos((N+1)*ωj)*cos((N+1)*ωi)
@@ -378,7 +379,7 @@ function GMCosCos(i::Int, j::Int, N::Int, μCOSi::Float64, σCOSi::Float64, μCO
       -(1/2)*sin(ωi)^2*cos(ωj)/(cos(ωj)-cos(ωi))
       +(1/2)*sin(ωj)^2*cos(ωi)/(cos(ωj)-cos(ωi))-(1/2)*μCOSj*cos(ωi)
       -(1/2)*cos(ωj)*μCOSi-(1/2)*μCOSj*sin(ωi)^2/(-1+cos(ωi))-(1/2)*μCOSi*sin(ωj)^2/(cos(ωj)-1)
-      ) :: Float64
+      )::Float64
   else
     return (
       μCOSj*μCOSi*(N+1)-(1/2)*cos((N+1)*ωj)*cos((N+1)*ωi)
@@ -389,12 +390,12 @@ function GMCosCos(i::Int, j::Int, N::Int, μCOSi::Float64, σCOSi::Float64, μCO
       -(1/2)*μCOSj*cos(ωi)-(1/2)*cos(ωj)*μCOSi
       -(1/2)*μCOSj*sin(ωi)^2/(-1+cos(ωi))
       -(1/2)*μCOSi*sin(ωj)^2/(cos(ωj)-1)
-      ) :: Float64
+      )::Float64
   end
   return 0.0::Float64
 end
-function GMCosCos(i::Int, j::Int, d, IT)
-    return GMCosCos(i, j, IT.obs, d.μ[COS][i], d.σ[COS][i],d.μ[COS][j], d.σ[COS][j],d.fc[i],d.fc[j]) :: Float64
+function GMCosCos(i::Int, j::Int, d::dataCD, IT::Int)::Float64
+    return GMCosCos(i, j, IT, d.μ[COS][i], d.σ[COS][i],d.μ[COS][j], d.σ[COS][j],d.fc[i],d.fc[j])::Float64
 end
 
 # GM = Matrix{Function}(TOTALCOMPONENTS, TOTALCOMPONENTS)
@@ -424,58 +425,58 @@ end
 # GM[COS, SIN]     = GMCosSin
 # GM[COS, COS]     = GMCosCos
 
-function GM2(c1,c2,i::Int, j::Int, d, IT)
+function GM2(c1,c2,i::Int, j::Int, d::dataCD, IT::Int)::Float64
   if c1 == STEP && c2 == STEP
-    return GMStepStep(i::Int, j::Int, d, IT) :: Float64
+    return GMStepStep(i::Int, j::Int, d, IT)::Float64
   elseif c1 == STEP && c2 == SPIKE
-    return GMStepSpike(i::Int, j::Int, d, IT) :: Float64
+    return GMStepSpike(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SPIKE && c2 == STEP
-    return GMSpikeStep(i::Int, j::Int, d, IT) :: Float64
+    return GMSpikeStep(i::Int, j::Int, d, IT)::Float64
   elseif c1 == STEP && c2 == SLOPE
-    return GMStepSlope(i::Int, j::Int, d, IT) :: Float64
+    return GMStepSlope(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SLOPE && c2 == STEP
-    return GMSlopeStep(i::Int, j::Int, d, IT) :: Float64
+    return GMSlopeStep(i::Int, j::Int, d, IT)::Float64
   elseif c1 == STEP && c2 == SIN
-    return GMStepSin(i::Int, j::Int, d, IT) :: Float64
+    return GMStepSin(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SIN && c2 == STEP
-    return GMSinStep(i::Int, j::Int, d, IT) :: Float64
+    return GMSinStep(i::Int, j::Int, d, IT)::Float64
   elseif c1 == STEP && c2 == COS
-    return GMStepCos(i::Int, j::Int, d, IT) :: Float64
+    return GMStepCos(i::Int, j::Int, d, IT)::Float64
   elseif c1 == COS && c2 == STEP
-    return GMCosStep(i::Int, j::Int, d, IT) :: Float64
+    return GMCosStep(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SPIKE && c2 == SPIKE
-    return GMSpikeSpike(i::Int, j::Int, d, IT) :: Float64
+    return GMSpikeSpike(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SPIKE && c2 == SLOPE
-    return GMSpikeSlope(i::Int, j::Int, d, IT):: Float64
+    return GMSpikeSlope(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SLOPE && c2 == SPIKE
-    return GMSlopeSpike(i::Int, j::Int, d, IT) :: Float64
+    return GMSlopeSpike(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SPIKE && c2 == SIN
-    return GMSpikeSin(i::Int, j::Int, d, IT) :: Float64
+    return GMSpikeSin(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SIN && c2 == SPIKE
-    return GMSinSpike(i::Int, j::Int, d, IT) :: Float64
+    return GMSinSpike(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SPIKE && c2 == COS
-    return GMSpikeCos(i::Int, j::Int, d, IT):: Float64
+    return GMSpikeCos(i::Int, j::Int, d, IT)::Float64
   elseif c1 == COS && c2 == SPIKE
-    return GMCosSpike(i::Int, j::Int, d, IT) :: Float64
+    return GMCosSpike(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SLOPE && c2 == SLOPE
-    return GMSlopeSlope(i::Int, j::Int, d, IT) :: Float64
+    return GMSlopeSlope(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SLOPE && c2 == SIN
-    return GMSlopeSin(i::Int, j::Int, d, IT) :: Float64
+    return GMSlopeSin(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SIN && c2 == SLOPE
-    return GMSinSlope(i::Int, j::Int, d, IT) :: Float64
+    return GMSinSlope(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SLOPE && c2 == COS
-    return GMSlopeCos(i::Int, j::Int, d, IT) :: Float64
+    return GMSlopeCos(i::Int, j::Int, d, IT)::Float64
   elseif c1 == COS && c2 == SLOPE
-    return GMCosSlope(i::Int, j::Int, d, IT) :: Float64
+    return GMCosSlope(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SIN && c2 == SIN
-    return GMSinSin(i::Int, j::Int, d, IT) :: Float64
+    return GMSinSin(i::Int, j::Int, d, IT)::Float64
   elseif c1 == SIN && c2 == COS
-    return GMSinCos(i::Int, j::Int, d, IT) :: Float64
+    return GMSinCos(i::Int, j::Int, d, IT)::Float64
   elseif c1 == COS && c2 == SIN
-    return GMCosSin(i::Int, j::Int, d, IT) :: Float64
+    return GMCosSin(i::Int, j::Int, d, IT)::Float64
   elseif c1 == COS && c2 == COS
-    return GMCosCos(i::Int, j::Int, d, IT) :: Float64
+    return GMCosCos(i::Int, j::Int, d, IT)::Float64
   else
-    return 0.0 :: Float64
+    return 0.0::Float64
   end
 end

@@ -2,13 +2,13 @@
 
 # STEP component
 #correct here to remove U an L
-function xdy_step(IT,y::Vector{Float64},d)
+function xdy_step(IT::iterator, y::Vector{Float64}, d::dataCD)
     N = IT.obs
     Nel = IT.nelements[STEP]
     xdy = zeros(Nel)
     y_s = sum(y)
 
-    for i in 1:Nel
+    @inbounds for i in 1:Nel
         for j in i+1:N
             xdy[i] += y[j]
         end
@@ -19,13 +19,13 @@ function xdy_step(IT,y::Vector{Float64},d)
 end
 
 # SLOPE component
-function xdy_slope(IT,y::Vector{Float64},d)
+function xdy_slope(IT::iterator, y::Vector{Float64}, d::dataCD)
     N = IT.obs
     Nel = IT.nelements[SLOPE]
     xdy = zeros(Nel)
     y_s = sum(y)
 
-    for i in 1:Nel
+    @inbounds for i in 1:Nel
         for j in i:N
             xdy[i] += y[j] * (j-i)
         end
@@ -35,26 +35,26 @@ function xdy_slope(IT,y::Vector{Float64},d)
 end
 
 # SPIKE component
-function xdy_spike(IT,y::Vector{Float64},d)
+function xdy_spike(IT::iterator, y::Vector{Float64}, d::dataCD)
     N = IT.obs
     Nel = IT.nelements[SPIKE]
     xdy = zeros(Nel)
     y_s = sum(y)
 
-    for i in 1:Nel
+    @inbounds for i in 1:Nel
         xdy[i] =(y[i] -d.μ[SPIKE][i]*y_s)
     end
     return xdy
 end
 
 # SINE component
-function xdy_sin(IT,y::Vector{Float64},d)
+function xdy_sin(IT::iterator, y::Vector{Float64}, d::dataCD)
     N = IT.obs
     nf = IT.nelements[SIN]
     xdy0 = zeros(nf)
     y_s = sum(y)
 
-    for i in 1:nf
+    @inbounds for i in 1:nf
         for j in 1:N
             xdy0[i] += y[j] * sin(d.fs[i]*j)
         end
@@ -64,13 +64,13 @@ function xdy_sin(IT,y::Vector{Float64},d)
 end
 
 # COSINE component
-function xdy_cos(IT,y::Vector{Float64},d)
+function xdy_cos(IT::iterator, y::Vector{Float64}, d::dataCD)
     N = IT.obs
     nf = IT.nelements[COS]
     xdy = zeros(nf)
     y_s = sum(y)
 
-    for i in 1:nf
+    @inbounds for i in 1:nf
         for j in 1:N
             xdy[i] += y[j] * cos(d.fc[i]*j)
         end
