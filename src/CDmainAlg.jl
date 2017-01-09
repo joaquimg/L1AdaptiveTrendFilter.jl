@@ -1,4 +1,42 @@
+"""
+l1_adaptive_trend_filter{T<:Float64, S<:Int}(y::Vector{T}, components::Vector{S}; f::Vector{T} = Vector{T}(0), numλ::S=S(40), numγ::S=S(10), MAXITER::S=S(500), verbose::Bool=false,lower_bounds::Vector{T}=-10e+7*ones(T, TOTALCOMPONENTS), upper_bounds::Vector{T}=10e+7*ones(T, TOTALCOMPONENTS) )
 
+The function `l1_adaptive_trend_filter` performs the filtering via coordinate descent and takes the following required inputs:
+
+* y : Signal or time-series to be filtered; (Must be a vector of reals)
+* components: List of integers corresponding to the types of components to be considered. (must be a vector of integers containing some of the following numbers: 1 = Step, 2 = Spike, 3 = Slope, 4 = Sine, 5 = Cossine )
+    
+
+Optional inputs:
+
+* f: Vector of overcomplete frequencies (Default=ø);
+* numλ: Size of the regularizer path for the parameter λ (Default=40);
+* numγ: Size of the regularizer path for the parameter γ (Default=10);
+* MAXITER: Maximum number of iterations (Default=500);
+* verbose: Boolean flag for displaying progress of algorithm (Default=false);
+* lower_bounds: List of lower bounds for each component type (Default=[-∞,-∞,-∞,-∞,-∞]);
+* upper_bounds: List of upper bpunds for each component type (Default=[+∞,+∞,+∞,+∞,+∞]).
+
+This function returns:
+
+*  β_path: Path of components coefficients;
+*  y_path: Path of filtered signals;
+*  β_best: Best components coefficients according to the EBIC criteria;
+*  y_best: Best filtered signal according to the EBIC criteria;
+*  λ_best: Best value for the λ regularizer according to the EBIC criteria;
+*  γ_best: Best value for the γ regularizer according to the EBIC criteria.
+
+## Example
+
+```
+y = rand(18) # some inputs
+components = [1,3] #(meaning we only consider step and slope components)
+
+# run the algorithm
+beta_path, y_path, beta_best, y_best, lambda_best, gamma_best = l1_adaptive_trend_filter(y,components)
+```
+
+"""
 function l1_adaptive_trend_filter{T<:Float64, S<:Int}(
     y::Vector{T}, components::Vector{S}; f::Vector{T} = Vector{T}(0), numλ::S=S(40), numγ::S=S(10), MAXITER::S=S(500), verbose::Bool=false,
     lower_bounds::Vector{T}=-10e+7*ones(T, TOTALCOMPONENTS), upper_bounds::Vector{T}=10e+7*ones(T, TOTALCOMPONENTS) )
@@ -164,7 +202,7 @@ function coordinate_descent(
             #         #println("$(c1)  , $(j)")
             #     end
             # end
-            soft_treshold(j, inner_prod_partial_residual, λ[c1], γ, w[c1][j], activeSet[c1], β_tilde[c1], d.σ[c1][j], lower_bounds[c1], upper_bounds[c1])
+            change_flag = soft_treshold(j, inner_prod_partial_residual, λ[c1], γ, w[c1][j], activeSet[c1], β_tilde[c1], d.σ[c1][j], lower_bounds[c1], upper_bounds[c1])
 
           end
       end

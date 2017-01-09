@@ -44,7 +44,7 @@ This function returns:
 # after initializing the package with
 # Pkg.clone("git://github.com/joaquimg/L1AdaptiveTrendFilter.jl.git")
 
-#You mus include the library with:
+#You must include the library with:
 using L1AdaptiveTrendFilter
 
 y = rand(18) # some inputs

@@ -1,7 +1,4 @@
-include("CDtypes.jl")
 
-#N=10
-#IT = iterator(N,[1, 2],[10, 10, 0, 0, 0])
 
 function initIT_range(N::Int, components::Vector{Int}, f::Vector{Float64} = Float64[]; MAXITER::Int=100)
 	#components = Int[]

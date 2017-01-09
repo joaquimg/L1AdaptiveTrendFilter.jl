@@ -1,4 +1,4 @@
-compute_components! = Vector{Any}(TOTALCOMPONENTS)
+const compute_components! = Vector{Any}(TOTALCOMPONENTS)
 
 function compute_estimate(y, IT, β, d)
 

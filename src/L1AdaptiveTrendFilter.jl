@@ -18,8 +18,10 @@ module L1AdaptiveTrendFilter
     # initializes basic types and vectors (betas, paths...)
     include("initializations.jl")
 
-    #
+    # core algorithm
     include("CDmainAlg.jl")
+
+    # computes estimated y from betas
     include("GetResult.jl")
 
     # functions for all terms in the gram matrix (cross corelations)
